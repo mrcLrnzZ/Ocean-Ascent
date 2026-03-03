@@ -1,27 +1,32 @@
 export const W = window.innerWidth;
 export const H = window.innerHeight;
 
-// -------------------
-// MAP DIMENSIONS
-// -------------------
-export const GROUND_Y   = 390;   // The Y-coordinate where the grass sits
-export const SHORE_END  = 740;   // The X-coordinate where land ends and water begins
+export const GROUND_Y   = 550;   
+export const WATER_Y = 550;
+export const SHORE_END  = 740;   
 
-// -------------------
-// COLOR PALETTE (P)
-// -------------------
+export const PIER_END_X = 680;
+
 export const P = {
+
   // Sky Gradient Colors
   skyTop:    '#5bc8f5', 
   skyBot:    '#8ad8f8',
   
-  // Land Colors
-  grassTop:  '#7ec850', // Bright green top
-  grassMid:  '#5a9a30', // Darker green side
-  grassDark: '#3a6a1a', // Shadow under grass
-  dirtTop:   '#8a6040', // Top soil
-  dirtMid:   '#6a4828', // Deep earth
+  // lugar Colors
+  sandTop:   '#f0d080',
+  sandMid:   '#d8b060',
   
-  // Simple Water Placeholder (so we can see the edge)
-  waterDeep: '#0a2050'
+  grassTop:  '#7ec850', 
+  grassMid:  '#5a9a30', 
+  grassDark: '#3a6a1a',
+
+  dirtTop:   '#8a6040', 
+  dirtMid:   '#6a4828', 
+  
+  // tubig Colors
+  waterTop:  '#4090c8',  
+  waterDeep: '#0051ff',  
+  waterFoam: '#a8d8f0'   
+
 };

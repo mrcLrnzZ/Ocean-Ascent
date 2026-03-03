@@ -1,6 +1,5 @@
-import { WATER_Y } from 'constants.js';
+import { WATER_Y } from './constants.js'; 
 
 export function waveSurf(x, frame) {
-  // Simple sine wave formula: Base Height + Sine(Time + Location) * Strength
-  return WATER_Y + Math.sin(frame * 0.04 + x * 0.010) * 5; 
+    return WATER_Y + Math.sin(frame * 0.04 + x * 0.010) * 5; 
 }

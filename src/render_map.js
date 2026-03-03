@@ -1,35 +1,77 @@
-import { P, W, H, GROUND_Y, SHORE_END } from './constants.js';
+import { P, W, H, GROUND_Y, SHORE_END, WATER_Y } from './constants.js';
+import { waveSurf } from './environment.js';
 
-// Helper to draw a rectangle (x, y, width, height, color)
-function rect(ctx, x, y, w, h, c) { 
-  ctx.fillStyle = c; 
-  ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(w), Math.ceil(h)); 
+const sandImg = new Image();
+sandImg.src = 'assets/sandtile.png';
+
+const soilImg = new Image();
+soilImg.src = 'assets/soiltile.png';
+
+function rect(ctx, x, y, w, h, c) {
+    ctx.fillStyle = c;
+    ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(w), Math.ceil(h));
 }
 
-// 1. Draw the Sky
 export function drawSky(ctx) {
-  // Create a nice gradient from top to bottom
-  const g = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
-  g.addColorStop(0, P.skyTop);
-  g.addColorStop(1, P.skyBot);
-  
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
+    const g = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
+    g.addColorStop(0, P.skyTop);
+    g.addColorStop(1, P.skyBot);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
 }
 
-// 2. Draw the Land (The Shore)
-export function drawGround(ctx) {
-  // A. The Deep Dirt (Underground)
-  // Starts at SHORE_END and goes left to 0
-  rect(ctx, 0, GROUND_Y + 10, SHORE_END, H - GROUND_Y, P.dirtMid);
-  
-  // B. The Top Soil (Just below grass)
-  rect(ctx, 0, GROUND_Y, SHORE_END, 10, P.dirtTop);
-  
-  // C. The Grass Strip (The surface)
-  rect(ctx, 0, GROUND_Y - 10, SHORE_END, 10, P.grassTop);
-  
-  // D. Grass Details (Highlights and Shadows)
-  rect(ctx, 0, GROUND_Y - 10, SHORE_END, 2, P.grassMid); // Highlight
-  rect(ctx, 0, GROUND_Y - 2, SHORE_END, 4, P.grassDark); // Shadow edge
+export function drawGround(ctx, cx = 0) {
+    const gx = -cx; 
+    const tileW = 302; 
+    const tileH = 68; 
+
+    // 1. Draw SAND (The top surface layer)
+    if (sandImg.complete && sandImg.naturalWidth !== 0) {
+        for (let tx = 0; tx < SHORE_END; tx += tileW) {
+            ctx.drawImage(
+                sandImg, 
+                Math.floor(gx + tx), 
+                GROUND_Y, 
+                tileW, 
+                tileH
+            );
+        }
+    }
+
+    // 2. Draw SOIL (Stretched vertically to the bottom)
+    if (soilImg.complete && soilImg.naturalWidth !== 0) {
+        // Horizontal loop still needed to cover the width of the shore
+        for (let tx = 0; tx < SHORE_END; tx += tileW) {
+            ctx.drawImage(
+                soilImg, 
+                Math.floor(gx + tx), // X position
+                GROUND_Y + tileH,     // Y starts under the sand
+                tileW,                // Keep original width
+                H - (GROUND_Y + tileH) // STRETCH: Current screen height minus the top offset
+            );
+        }
+    } else {
+        // Fallback solid color if images fail to load
+        ctx.fillStyle = P.dirtMid;
+        ctx.fillRect(gx, GROUND_Y + tileH, SHORE_END, H - GROUND_Y);
+    }
+}
+
+export function drawWater(ctx, cx, frame) {
+    const startX = SHORE_END - cx;
+    if (startX < W) {
+        const g = ctx.createLinearGradient(0, WATER_Y, 0, H);
+        g.addColorStop(0, P.waterTop);
+        g.addColorStop(1, P.waterDeep);
+        
+        ctx.fillStyle = g;
+        ctx.fillRect(Math.floor(startX), WATER_Y, W - startX, H - WATER_Y);
+
+        ctx.fillStyle = P.waterFoam;
+        for (let x = SHORE_END; x < W + cx; x += 20) {
+            const screenX = x - cx;
+            const y = waveSurf(x, frame);
+            rect(ctx, screenX, y, 15, 2, P.waterFoam);
+        }
+    }
 }
