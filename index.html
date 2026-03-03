@@ -3,9 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wasssaaapppp</title>
+    <title>Deep Waters – Fishing Adventure</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <canvas id="gameCanvas"></canvas>
     
+    <div id="overlay">
+        <div id="hud-left">
+            <span class="lbl">Money</span> <span class="val" id="h-money">$0</span><br>
+            <span class="lbl">Rod</span> <span class="val" id="h-rod">Bamboo Rod</span><br>
+            <span class="lbl">Boat</span> <span class="val" id="h-boat">None</span><br>
+            <span class="lbl">Catch</span> <span class="val" id="h-catch">0 fish</span>
+        </div>
+
+        <div id="hud-right">
+            <span id="h-wx">☀ Sunny</span><br>
+            <span id="h-wind">Wind: 0mph</span><br>
+            <span id="h-wave">Waves: Calm</span>
+        </div>
+        
+        <button id="almanac-btn">📖 Almanac</button>
+        <button id="fs-btn" title="Toggle Fullscreen">⛶</button>
+
+        <div id="power-wrap">
+            <div class="lbl">PWR</div>
+            <div id="power-bar"><div id="power-fill" style="height:0%"></div></div>
+        </div>
+
+        <div id="depth-wrap">
+            <div class="lbl">DEPTH</div>
+            <div id="depth-bar"><div id="depth-fill" style="height:0%"></div></div>
+            <div id="depth-val">0m</div>
+        </div>
+
+        <div id="reel-wrap">
+            <div id="reel-label">🎣 Fish on! Mash SPACE!</div>
+            <div id="reel-bar-bg"><div id="reel-fill" style="width:100%"></div></div>
+        </div>
+
+        <div id="ctrl-bar"></div>
+        <div id="notif"></div>
+        <div id="popup"></div>
+        
+        <div id="zone-warn">
+            <h3>⚠ Danger Zone!</h3>
+            <p id="zone-warn-msg"></p>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
 </body>
 </html>
