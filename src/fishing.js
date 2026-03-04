@@ -1,5 +1,5 @@
 // src/fishing.js
-import { WATER_Y, GRAVITY } from './constants.js';
+import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END } from './constants.js';
 
 export class Rod {
     constructor(player) {
@@ -12,10 +12,10 @@ export class Rod {
         this.vy = 0;
         this.angle = -Math.PI / 4;
         this.power = 0;
-        this.maxPower = 15;
+        this.maxPower = 7.5; // taga control kung gaano kalakas yung bato
         this.isCasting = false;
         this.isBaitInWater = false;
-        this.isSinking = false; // 🆕 sinking phase
+        this.isSinking = false; // sinking phase
 
         // Bait sprite
         this.baitImg = new Image();
@@ -25,7 +25,7 @@ export class Rod {
         // Reel-in
         this.reeling = false;
         this.reelTimer = 0;
-        this.reelDuration = 500;
+        this.reelDuration = 20;
 
         // Where the bait actually landed / settled
         this.landedX = null;
@@ -33,7 +33,8 @@ export class Rod {
 
         // Sinking config
         this.sinkSpeed = 0.8;      // pixels per frame downward
-        this.sinkDepth = 200;       // how many pixels below WATER_Y it sinks
+        this.sinkDepth = SHORE_LINE_DEPTH; // how many pixels below WATER_Y it sinks
+
     }
 
     update(keys) {
@@ -46,6 +47,13 @@ export class Rod {
 
             if (!keys[' ']) {
                 if (this.power > 0) {
+
+                    const projectedX = this.player.x + Math.cos(this.angle) * this.power * 10;
+                if (projectedX <= SHORE_END) {
+                    // Don't allow cast — aiming at land
+                    this.power = 0;
+                    return;
+                }
                     this.isCasting = true;
                     this.vx = Math.cos(this.angle) * this.power;
                     this.vy = Math.sin(this.angle) * this.power;
@@ -67,7 +75,7 @@ export class Rod {
                 this.y += this.vy;
 
                 // Hit water surface — begin sinking phase
-                if (this.y >= WATER_Y) {
+                if (this.y >= WATER_Y && isOverWater(this.x)) {
                     this.y = WATER_Y;
                     this.vx = 0;
                     this.vy = 0;
@@ -104,7 +112,7 @@ export class Rod {
             const dy = (this.player.y - this.y);
             const dist = Math.hypot(dx, dy);
 
-            const reelSpeed = 5;
+            const reelSpeed = 2;
             if (dist < reelSpeed) {
                 this.reset();
             } else {
@@ -191,4 +199,7 @@ export class Rod {
         this.landedX = null;
         this.landedY = null;
     }
+}
+function isOverWater(x) {
+    return x >= SHORE_END;
 }
