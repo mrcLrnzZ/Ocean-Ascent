@@ -8,17 +8,14 @@ const ctx = canvas.getContext('2d');
 canvas.width = W;
 canvas.height = H;
 
-// 2. INITIALIZE VARIABLES
 const player = new Player();
 const keys = {};
 let frame = 0;
 let cameraX = 0; // Needed for scrolling
 
-// 3. INPUT LISTENERS
 window.addEventListener('keydown', e => keys[e.key] = true);
 window.addEventListener('keyup', e => keys[e.key] = false);
 
-// 4. THE SINGLE COMBINED GAME LOOP
 function loop() {
     // A. Update logic
     frame++; 

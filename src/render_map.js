@@ -58,7 +58,9 @@ export function drawGround(ctx, cx = 0) {
 }
 
 export function drawWater(ctx, cx, frame) {
-    const startX = SHORE_END - cx;
+    const startX = SHORE_END + 160; // water starts after shore
+    const endX = cx + W;  
+
     if (startX < W) {
         const g = ctx.createLinearGradient(0, WATER_Y, 0, H);
         g.addColorStop(0, P.waterTop);
@@ -68,9 +70,12 @@ export function drawWater(ctx, cx, frame) {
         ctx.fillRect(Math.floor(startX), WATER_Y, W - startX, H - WATER_Y);
 
         ctx.fillStyle = P.waterFoam;
-        for (let x = SHORE_END; x < W + cx; x += 20) {
+        for (let x = startX; x < W + endX; x += 10) {
+            
             const screenX = x - cx;
+
             const y = waveSurf(x, frame);
+
             rect(ctx, screenX, y, 15, 2, P.waterFoam);
         }
     }

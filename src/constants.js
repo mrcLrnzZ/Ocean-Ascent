@@ -3,9 +3,10 @@ export const H = window.innerHeight;
 
 export const GROUND_Y   = 550;   
 export const WATER_Y = 550;
-export const SHORE_END  = 740;   
 
-export const PIER_END_X = 680;
+
+export const SHORE_END  = 740;   
+export const PIER_END_X = 820;
 
 export const P = {
 
@@ -27,6 +28,6 @@ export const P = {
   // tubig Colors
   waterTop:  '#4090c8',  
   waterDeep: '#0051ff',  
-  waterFoam: '#a8d8f0'   
+  waterFoam: '#39bdff'   
 
 };
