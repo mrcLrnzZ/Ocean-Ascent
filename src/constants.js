@@ -5,13 +5,14 @@ export const GROUND_Y   = 550;
 export const WATER_Y = 550;
 export const SHORE_END  = 740;   
 
-export const PIER_END_X = 680;
+export const PIER_END_X = 850;
+export const GRAVITY = 0.10;
 
 export const P = {
 
   // Sky Gradient Colors
-  skyTop:    '#5bc8f5', 
-  skyBot:    '#8ad8f8',
+  skyTop:    '#007bff', 
+  skyBot:    '#98e2ff',
   
   // lugar Colors
   sandTop:   '#f0d080',

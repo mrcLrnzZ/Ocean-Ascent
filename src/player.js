@@ -1,4 +1,5 @@
 import { GROUND_Y, PIER_END_X } from './constants.js';
+import { Rod } from './fishing.js';
 
 export class Player {
     constructor() {
@@ -22,6 +23,8 @@ export class Player {
         this.frameTimer = 0;
         this.isMoving = false;
         this.lastState = false; // To track if we just changed from walking to idle
+
+        this.rod = new Rod(this);
     }
 
     update(dt, G) {
@@ -65,6 +68,7 @@ export class Player {
                 this.frameTimer = 0;
             }
         }
+        this.rod.update(G.keys);
     }
 
     draw(ctx, cx) {
@@ -95,5 +99,6 @@ export class Player {
         );
 
         ctx.restore();
+        this.rod.draw(ctx, cx); // draw rod & bait after player so they appear in front of the water and ground
     }
 }
