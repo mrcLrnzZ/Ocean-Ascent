@@ -1,5 +1,5 @@
 import { W, H } from './constants.js';
-import { drawSky, drawGround, drawWater } from './render_map.js';
+import { drawSky, drawGround, drawWater, drawObjects } from './render_map.js';
 import { Player } from './player.js';
 
 // 1. SETUP CANVAS
@@ -29,11 +29,11 @@ function loop() {
     
     // Draw Water BEFORE the Ground/Player so they sit on top of the deep blue
     drawWater(ctx, cameraX, frame);
-    
+     // Draw objects like the dock before the ground so they are under the player
     drawGround(ctx, cameraX); 
-    
     // Draw the Player last so they are in front of everything
     player.draw(ctx, cameraX);
+    drawObjects(ctx, cameraX);
     
     requestAnimationFrame(loop);
 }

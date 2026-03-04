@@ -2,11 +2,11 @@ export const W = window.innerWidth;
 export const H = window.innerHeight;
 
 export const GROUND_Y   = 550;   
-export const WATER_Y = 550;
+export const WATER_Y = 600;
 
 
 export const SHORE_END  = 740;   
-export const PIER_END_X = 820;
+export const PIER_END_X = 1300;
 
 export const P = {
 

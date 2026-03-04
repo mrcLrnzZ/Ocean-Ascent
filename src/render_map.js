@@ -7,6 +7,25 @@ sandImg.src = 'assets/sandtile.png';
 const soilImg = new Image();
 soilImg.src = 'assets/soiltile.png';
 
+const dockImg = new Image();
+dockImg.src = 'assets/wooddock.png';
+
+ const dock = {
+        x: 905,
+        y: 830 - 68, // dock height is 68px, so it “stands” on sand
+        scale: 7
+    }
+
+export function drawObjects(ctx, cx) {
+    ctx.imageSmoothingEnabled = false;
+    const drawX = dock.x - cx;
+    const drawY = dock.y - dockImg.height * dock.scale; // align bottom with ground
+    const drawW = dockImg.width * dock.scale;
+    const drawH = dockImg.height * dock.scale;
+
+    ctx.drawImage(dockImg, drawX, drawY, drawW, drawH);
+}
+
 function rect(ctx, x, y, w, h, c) {
     ctx.fillStyle = c;
     ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(w), Math.ceil(h));
@@ -76,7 +95,7 @@ export function drawWater(ctx, cx, frame) {
 
             const y = waveSurf(x, frame);
 
-            rect(ctx, screenX, y, 15, 2, P.waterFoam);
+            rect(ctx, screenX, y, 10, 40, P.waterFoam);
         }
     }
 }
