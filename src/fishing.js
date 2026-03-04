@@ -10,11 +10,12 @@ export class Rod {
         // Physics
         this.vx = 0;
         this.vy = 0;
-        this.angle = -Math.PI / 4; // initial angle
+        this.angle = -Math.PI / 4;
         this.power = 0;
         this.maxPower = 15;
         this.isCasting = false;
         this.isBaitInWater = false;
+        this.isSinking = false; // 🆕 sinking phase
 
         // Bait sprite
         this.baitImg = new Image();
@@ -24,11 +25,15 @@ export class Rod {
         // Reel-in
         this.reeling = false;
         this.reelTimer = 0;
-        this.reelDuration = 500; // frames until reel back (~2 sec at 60fps)
+        this.reelDuration = 500;
 
-        // Where the bait actually landed
+        // Where the bait actually landed / settled
         this.landedX = null;
         this.landedY = null;
+
+        // Sinking config
+        this.sinkSpeed = 0.8;      // pixels per frame downward
+        this.sinkDepth = 200;       // how many pixels below WATER_Y it sinks
     }
 
     update(keys) {
@@ -39,7 +44,6 @@ export class Rod {
 
             if (keys[' ']) this.power = Math.min(this.power + 0.3, this.maxPower);
 
-            // Release cast
             if (!keys[' ']) {
                 if (this.power > 0) {
                     this.isCasting = true;
@@ -49,34 +53,44 @@ export class Rod {
                     this.reelTimer = 0;
                     this.landedX = null;
                     this.landedY = null;
+                    this.isSinking = false;
                 }
             }
         }
 
         // 2️⃣ Update physics if casting
         if (this.isCasting && !this.reeling) {
-            this.vy += GRAVITY;
-            this.x += this.vx;
-            this.y += this.vy;
+            if (!this.isBaitInWater) {
+                // In-flight
+                this.vy += GRAVITY;
+                this.x += this.vx;
+                this.y += this.vy;
 
-            // Stop bait at water and save exact landing position
-            if (!this.isBaitInWater && this.y >= WATER_Y) {
-                this.y = WATER_Y;
-                this.vx = 0;
-                this.vy = 0;
-                this.isBaitInWater = true;
-                this.landedX = this.x; // ✅ save where it actually landed
-                this.landedY = this.y;
-            }
+                // Hit water surface — begin sinking phase
+                if (this.y >= WATER_Y) {
+                    this.y = WATER_Y;
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.isBaitInWater = true;
+                    this.isSinking = true;
+                    this.landedX = this.x; // lock X immediately on splash
+                }
+            } else if (this.isSinking) {
+                // Sink gradually downward
+                this.x = this.landedX;
+                this.y += this.sinkSpeed;
 
-            // Lock bait to landed position while waiting
-            if (this.isBaitInWater && this.landedX !== null) {
+                if (this.y >= WATER_Y + this.sinkDepth) {
+                    this.y = WATER_Y + this.sinkDepth;
+                    this.landedY = this.y; // ✅ final resting depth
+                    this.isSinking = false;
+                }
+            } else {
+                // Fully settled — lock in place
                 this.x = this.landedX;
                 this.y = this.landedY;
-            }
 
-            // Start automatic reeling after timer
-            if (this.isBaitInWater) {
+                // Count down to auto reel
                 this.reelTimer++;
                 if (this.reelTimer >= this.reelDuration) {
                     this.reeling = true;
@@ -117,13 +131,11 @@ export class Rod {
         ctx.beginPath();
         ctx.moveTo(this.player.x - cameraX + 24, this.player.y + 20);
 
-        if (this.isBaitInWater && !this.reeling && this.landedX !== null) {
-            // Draw line to exact landed position, not a hardcoded offset
-            ctx.lineTo(this.landedX - cameraX, this.landedY);
-        } else {
-            // In-flight or reeling: draw straight to current bait position
-            ctx.lineTo(screenX, screenY);
-        }
+        // if (this.isBaitInWater && !this.reeling && this.landedX !== null) {
+        //     ctx.lineTo(this.landedX - cameraX, WATER_Y); // line meets water surface
+        // } else {
+        // }
+        ctx.lineTo(screenX, screenY);
         ctx.stroke();
 
         // --- Angle indicator ---
@@ -149,7 +161,7 @@ export class Rod {
             ctx.fillRect(this.player.x - cameraX, this.player.y - 10, this.power * 4, 5);
         }
 
-        // --- Draw bait ---
+        // --- Draw bait (only visible above water or while sinking) ---
         if (this.baitImg.complete && this.baitImg.naturalWidth !== 0) {
             ctx.drawImage(
                 this.baitImg,
@@ -167,6 +179,7 @@ export class Rod {
     reset() {
         this.isCasting = false;
         this.isBaitInWater = false;
+        this.isSinking = false;
         this.vx = 0;
         this.vy = 0;
         this.x = this.player.x + 20;
