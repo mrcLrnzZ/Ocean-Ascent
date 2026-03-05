@@ -1,4 +1,5 @@
 import { GROUND_Y, PIER_END_X } from './constants.js';
+import { waveSurf } from './environment.js';
 
 export class Player {
     constructor() {
@@ -63,11 +64,12 @@ export class Player {
             // Keep player on boat
             this.x = Math.max(bounds.left, Math.min(this.x, bounds.right - this.frameW * this.scale));
 
-            // Adjust vertical position with boat tilt
+            // Adjust vertical position with boat tilt and floor offset + wave bouncing
             const playerRelCenter = this.x + (this.frameW * this.scale) / 2 - (boat.x + bounds.width / 2);
             const tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1;
             const yOffset = playerRelCenter * Math.sin(tiltAngle);
-            this.y = boat.y - (this.frameH * this.scale) + yOffset;
+            const floatingY = waveSurf(boat.x + bounds.width / 2, G.frame) - bounds.height * 0.8;
+            this.y = floatingY - (this.frameH * this.scale) + yOffset + boat.floorYOffset;
 
         } else {
             // Normal walking logic

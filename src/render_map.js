@@ -1,4 +1,4 @@
-import { P, W, H, GROUND_Y, SHORE_END, WATER_Y } from './constants.js';
+import { P, W, H, GROUND_Y, SHORE_END, WATER_Y, DEPTH_COLORS, MAPS } from './constants.js';
 import { waveSurf } from './environment.js';
 
 const sandImg = new Image();
@@ -16,7 +16,9 @@ const dock = {
     scale: 7
 }
 
-export function drawObjects(ctx, cx) {
+export function drawObjects(ctx, cx, currentMap) {
+    if (!MAPS[currentMap].hasDock) return;
+
     ctx.imageSmoothingEnabled = false;
     const drawX = dock.x - cx;
     const drawY = dock.y - dockImg.height * dock.scale; // align bottom with ground
@@ -39,7 +41,9 @@ export function drawSky(ctx) {
     ctx.fillRect(0, 0, W, H);
 }
 
-export function drawGround(ctx, cx = 0) {
+export function drawGround(ctx, cx = 0, currentMap = 0) {
+    if (!MAPS[currentMap].hasDock) return; // Only shore has ground right now
+
     const gx = -cx;
     const tileW = 302;
     const tileH = 68;
@@ -76,15 +80,19 @@ export function drawGround(ctx, cx = 0) {
     }
 }
 
-export function drawWater(ctx, cx, frame) {
-    const startX = SHORE_END + 110;
+export function drawWater(ctx, cx, frame, currentMap = 0) {
+    const startX = MAPS[currentMap].hasDock ? SHORE_END + 110 : 0;
     const endX = cx + W;
 
     if (startX < endX) {
         const screenStartX = Math.max(0, startX - cx);
         const g = ctx.createLinearGradient(0, WATER_Y, 0, H);
-        g.addColorStop(0, P.waterTop);
-        g.addColorStop(1, P.waterDeep);
+
+        const topColor = DEPTH_COLORS[MAPS[currentMap].minDepth] || P.waterTop;
+        const bottomColor = DEPTH_COLORS[MAPS[currentMap].maxDepth] || P.waterDeep;
+
+        g.addColorStop(0, topColor);
+        g.addColorStop(1, bottomColor);
 
         ctx.fillStyle = g;
         ctx.fillRect(Math.floor(screenStartX), WATER_Y, W - screenStartX, H - WATER_Y);

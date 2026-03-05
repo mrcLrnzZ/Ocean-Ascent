@@ -3,7 +3,7 @@ import { drawSky, drawGround, drawWater, drawObjects } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
-import { GROUND_Y } from './constants.js';
+import { GROUND_Y, MAPS, MAP_TRANSITION_X_RIGHT, MAP_TRANSITION_X_LEFT } from './constants.js';
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -19,6 +19,7 @@ const keys = {};
 let frame = 0;
 let cameraX = 0; // Needed for scrolling
 let uiOpen = false;
+let currentMap = 0;
 
 // Prices and Names
 const boatPrices = [0, 20, 50, 100];
@@ -111,10 +112,45 @@ window.closeUI = function () {
 function loop() {
     // A. Update logic
     frame++;
-    const G = { keys, state: 'shore' };
+    const G = { keys, state: 'shore', frame };
     player.update(1, G, boat);
     merchant.update();
     boat.update(G);
+
+    // Map Transition Logic
+    if (boat.state === 'sailing' || player.state === 'onBoat') {
+        if (boat.x > MAP_TRANSITION_X_RIGHT) {
+            if (currentMap < MAPS.length - 1) {
+                const nextMapReq = MAPS[currentMap + 1].requiredBoatLvl;
+                if (player.boatLevel >= nextMapReq) {
+                    currentMap++;
+                    const playerRel = player.x - boat.x;
+                    boat.x = MAP_TRANSITION_X_LEFT + 10; // spawn on left side
+                    player.x = boat.x + playerRel; // snap player exactly where they were
+                } else {
+                    boat.x = MAP_TRANSITION_X_RIGHT; // block
+                    boat.vx = 0;
+                    const notif = document.getElementById('notif');
+                    if (notif) {
+                        notif.textContent = `Need Level ${nextMapReq} Boat to sail further!`;
+                        notif.style.opacity = "1";
+                        setTimeout(() => notif.style.opacity = "0", 3000);
+                    }
+                }
+            } else {
+                boat.x = MAP_TRANSITION_X_RIGHT; // Edge of world
+                boat.vx = 0;
+            }
+        } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap > 0) {
+            currentMap--;
+            const playerRel = player.x - boat.x;
+            boat.x = MAP_TRANSITION_X_RIGHT - 50; // spawn on right side of prev map
+            player.x = boat.x + playerRel; // snap player exactly where they were
+        } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) { // Keep bounds for shore map
+            boat.x = MAP_TRANSITION_X_LEFT;
+            boat.vx = 0;
+        }
+    }
 
     // Interaction logic
     if ((keys['e'] || keys['E']) && !uiOpen) {
@@ -182,14 +218,17 @@ function loop() {
         ctx.clearRect(0, 0, W, H);
 
         drawSky(ctx);
-        drawGround(ctx, cameraX);
-        drawWater(ctx, cameraX, frame);
-        drawObjects(ctx, cameraX);
+        drawGround(ctx, cameraX, currentMap);
+        drawObjects(ctx, cameraX, currentMap);
+        drawWater(ctx, cameraX, frame, currentMap);
+        
 
-        merchant.draw(ctx, cameraX, player);
+        if (currentMap === 0) {
+            merchant.draw(ctx, cameraX, player);
+        }
         player.draw(ctx, cameraX);
         boat.draw(ctx, cameraX, frame, player);
-        
+
 
     } catch (e) {
         console.error("Rendering error:", e);
