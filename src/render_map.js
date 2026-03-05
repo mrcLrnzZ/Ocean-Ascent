@@ -46,7 +46,7 @@ export function drawGround(ctx, cx = 0, currentMap = 0) {
 
     const gx = -cx;
     const tileW = 302;
-    const tileH = 68;
+    const tileH = 63;
 
     // 1. Draw SAND (The top surface layer)
     if (sandImg.complete && sandImg.naturalWidth !== 0) {
