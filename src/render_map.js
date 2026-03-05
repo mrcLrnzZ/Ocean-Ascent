@@ -11,8 +11,8 @@ const dockImg = new Image();
 dockImg.src = 'assets/wooddock.png';
 
  const dock = {
-        x: 905,
-        y: 830 - 68, // dock height is 68px, so it “stands” on sand
+        x: 885,
+        y: 760, // dock height is 68px, so it “stands” on sand
         scale: 7
     }
 

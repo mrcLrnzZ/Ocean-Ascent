@@ -28,13 +28,14 @@ function loop() {
     drawSky(ctx);      
     
     // Draw Water BEFORE the Ground/Player so they sit on top of the deep blue
-    drawWater(ctx, cameraX, frame);
-     // Draw objects like the dock before the ground so they are under the player
-    drawGround(ctx, cameraX); 
+   
     // Draw the Player last so they are in front of everything
     player.draw(ctx, cameraX);
-    drawObjects(ctx, cameraX);
     
+    drawObjects(ctx, cameraX);
+     drawWater(ctx, cameraX, frame);
+     
+    drawGround(ctx, cameraX); 
     requestAnimationFrame(loop);
 }
 

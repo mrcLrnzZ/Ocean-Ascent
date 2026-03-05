@@ -14,10 +14,10 @@ export class Player {
         this.facing = 1; 
 
         this.walkImg = new Image();
-        this.walkImg.src = 'assets/Fishermanred_walk.png'; 
+        this.walkImg.src = 'assets/Fisherman_walkv2.png'; 
         
         this.idleImg = new Image();
-        this.idleImg.src = 'assets/Fisherman_idlered.png'; 
+        this.idleImg.src = 'assets/Fishermanred_idlev2.png'; 
 
         this.currentFrame = 0;
         this.frameTimer = 0;
@@ -28,7 +28,7 @@ export class Player {
     update(dt, G) {
         this.lastState = this.isMoving;
         this.isMoving = false;
-        const speed = 3;
+        const speed = 30;
 
         if (G.keys['ArrowRight'] || G.keys['d']) {
             this.vx = speed;
