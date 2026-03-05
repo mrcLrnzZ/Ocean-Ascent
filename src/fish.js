@@ -1,12 +1,10 @@
 // src/fish.js
 
-// Only src, frames count, and desired render scale needed per type.
-// frameW/frameH are derived automatically from the loaded image.
 const SPRITE_DATA = {
     small:  { src: 'assets/anchovyy.png',          frames: 4, renderScale: 0.2 },
     medium: { src: 'assets/doomsday-oarfishF.png', frames: 4, renderScale: 0.4 },
     rare:   { src: 'assets/swordfish.png',          frames: 4, renderScale: 0.5 },
-    boss: { src: 'assets/doomsday-oarfishF.png', frames: 6, renderScale: 10 },
+    boss:   { src: 'assets/doomsday-oarfish.png',            frames: 6, renderScale: 1}, 
 };
 
 export class Fish {
@@ -15,36 +13,41 @@ export class Fish {
         this.x = x;
         this.y = y;
 
+        // Movement
         this.speed = (Math.random() * 0.5) + 0.2;
         this.direction = Math.random() < 0.5 ? -1 : 1;
 
+        // Sprite info based on type
         const data = SPRITE_DATA[type] || SPRITE_DATA.small;
         this.frames      = data.frames;
         this.renderScale = data.renderScale;
 
-        // These are set once the image loads
+        // Frame dimensions will be set after image loads
         this.frameW  = null;
         this.frameH  = null;
         this.renderW = null;
         this.renderH = null;
 
-        this.frameIndex = Math.floor(Math.random() * this.frames);
-        this.frameTick  = 0;
-        this.frameRate  = 30;
+        // Randomize starting frame for animation
+        this.frameIndex = Math.floor(Math.random() * this.frames); // start at random frame
+        this.frameTick  = 0; // counts game ticks for frame switching
+        this.frameRate  = 30; // ticks per frame change (lower = faster animation)
 
         this.img = new Image();
         this.img.onload = () => {
-            // ✅ Derive frame size from actual image dimensions at load time
-            this.frameW  = this.img.naturalWidth / this.frames;
+            this.frameW  = this.img.naturalWidth / this.frames; // width of one frame
             this.frameH  = this.img.naturalHeight;
-            this.renderW = this.frameW * this.renderScale;
-            this.renderH = this.frameH * this.renderScale;
+            this.renderW = this.frameW * this.renderScale; // how wide it appears on screen
+            this.renderH = this.frameH * this.renderScale; // how tall it appears on screen
+        };
+        this.img.onerror = () => {
+            console.error(`Failed to load sprite for type "${type}": ${data.src}`);
         };
         this.img.src = data.src;
     }
 
     update() {
-        this.x += this.speed * this.direction;
+        this.x += this.speed * this.direction; // move left or right
 
         this.frameTick++;
         if (this.frameTick >= this.frameRate) {
@@ -58,26 +61,23 @@ export class Fish {
     }
 
     draw(ctx, cameraX = 0) {
-        // Skip until image and dimensions are ready
-        if (!this.img.complete || !this.frameW) {
-            return;
-        }
+        if (!this.img.complete || !this.frameW) return;
 
-        const screenX = this.x - cameraX;
+        const screenX = this.x - cameraX; // adjust for camera
         const screenY = this.y;
-        const sx = this.frameIndex * this.frameW;
+        const sx = this.frameIndex * this.frameW; // source x in sprite sheet
 
         ctx.save();
 
         if (this.direction < 0) {
-            ctx.translate(screenX, screenY);
+            ctx.translate(screenX, screenY); // move to fish position
             ctx.scale(-1, 1);
             ctx.drawImage(
                 this.img,
                 sx, 0, this.frameW, this.frameH,
                 -this.renderW / 2, -this.renderH / 2,
                 this.renderW, this.renderH
-            );
+            ); 
         } else {
             ctx.drawImage(
                 this.img,

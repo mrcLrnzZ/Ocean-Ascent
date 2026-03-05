@@ -10,10 +10,11 @@ export class FishManager {
 
     spawnInitialFish() {
         for (let i = 0; i < 10; i++) {
-            // ✅ Spawn near the visible area (around cameraX = 0 start)
             const x = Math.random() * 1200 + 100;
             const y = WATER_Y + Math.random() * 120 + 20;
-            const type = Math.random() < 0.7 ? "small" : "medium";
+
+            const roll = Math.random();
+            const type = roll < 0.6 ? 'small' : roll < 0.9 ? 'medium' : 'boss'; // 👈 added boss
             this.fishes.push(new Fish(type, x, y));
         }
     }
