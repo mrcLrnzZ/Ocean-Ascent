@@ -10,11 +10,11 @@ soilImg.src = 'assets/soiltile.png';
 const dockImg = new Image();
 dockImg.src = 'assets/wooddock.png';
 
- const dock = {
-        x: 885,
-        y: 760, // dock height is 68px, so it “stands” on sand
-        scale: 7
-    }
+const dock = {
+    x: 885,
+    y: 760, // dock height is 68px, so it “stands” on sand
+    scale: 7
+}
 
 export function drawObjects(ctx, cx) {
     ctx.imageSmoothingEnabled = false;
@@ -40,18 +40,18 @@ export function drawSky(ctx) {
 }
 
 export function drawGround(ctx, cx = 0) {
-    const gx = -cx; 
-    const tileW = 302; 
-    const tileH = 68; 
+    const gx = -cx;
+    const tileW = 302;
+    const tileH = 68;
 
     // 1. Draw SAND (The top surface layer)
     if (sandImg.complete && sandImg.naturalWidth !== 0) {
         for (let tx = 0; tx < SHORE_END; tx += tileW) {
             ctx.drawImage(
-                sandImg, 
-                Math.floor(gx + tx), 
-                GROUND_Y, 
-                tileW, 
+                sandImg,
+                Math.floor(gx + tx),
+                GROUND_Y,
+                tileW,
                 tileH
             );
         }
@@ -62,7 +62,7 @@ export function drawGround(ctx, cx = 0) {
         // Horizontal loop still needed to cover the width of the shore
         for (let tx = 0; tx < SHORE_END; tx += tileW) {
             ctx.drawImage(
-                soilImg, 
+                soilImg,
                 Math.floor(gx + tx), // X position
                 GROUND_Y + tileH,     // Y starts under the sand
                 tileW,                // Keep original width
@@ -77,24 +77,22 @@ export function drawGround(ctx, cx = 0) {
 }
 
 export function drawWater(ctx, cx, frame) {
-    const startX = SHORE_END + 160; // water starts after shore
-    const endX = cx + W;  
+    const startX = SHORE_END + 110;
+    const endX = cx + W;
 
-    if (startX < W) {
+    if (startX < endX) {
+        const screenStartX = Math.max(0, startX - cx);
         const g = ctx.createLinearGradient(0, WATER_Y, 0, H);
         g.addColorStop(0, P.waterTop);
         g.addColorStop(1, P.waterDeep);
-        
+
         ctx.fillStyle = g;
-        ctx.fillRect(Math.floor(startX), WATER_Y, W - startX, H - WATER_Y);
+        ctx.fillRect(Math.floor(screenStartX), WATER_Y, W - screenStartX, H - WATER_Y);
 
         ctx.fillStyle = P.waterFoam;
-        for (let x = startX; x < W + endX; x += 10) {
-            
+        for (let x = Math.max(startX, cx); x < endX; x += 10) {
             const screenX = x - cx;
-
             const y = waveSurf(x, frame);
-
             rect(ctx, screenX, y, 10, 40, P.waterFoam);
         }
     }

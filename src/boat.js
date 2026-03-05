@@ -1,0 +1,117 @@
+import { waveSurf } from './environment.js';
+import { W } from './constants.js';
+
+export class Boat {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.width = 80;
+        this.height = 40;
+        this.scale = 6;
+
+        this.img = new Image();
+        this.img.src = 'assets/boatlvl1.png';
+
+        this.isPurchased = false;
+        this.level = 0;
+        this.state = 'idle'; // 'idle', 'sailing', 'fishing'
+        this.vx = 0;
+        this.speed = 5;
+    }
+
+    setLevel(lvl) {
+        this.isPurchased = true;
+        this.level = lvl;
+        if (lvl === 1) this.img.src = 'assets/boatlvl1.png';
+        if (lvl === 2) this.img.src = 'assets/boatlvl2.png';
+        if (lvl === 3) this.img.src = 'assets/boatlvl3.png';
+    }
+
+    getBounds() {
+        const drawW = this.width * this.scale;
+        const drawH = this.height * this.scale;
+        return {
+            left: this.x,
+            right: this.x + drawW,
+            top: this.y,
+            bottom: this.y + drawH,
+            width: drawW,
+            height: drawH
+        };
+    }
+
+    update(G) {
+        if (!this.isPurchased) return;
+
+        if (this.state === 'sailing') {
+            if (G.keys['ArrowRight'] || G.keys['d']) {
+                this.vx = this.speed;
+            } else if (G.keys['ArrowLeft'] || G.keys['a']) {
+                this.vx = -this.speed;
+            } else {
+                this.vx = 0;
+            }
+            this.x += this.vx;
+            // Bound it to the water area (simplified)
+            this.x = Math.max(740, this.x);
+        } else {
+            this.vx = 0;
+        }
+    }
+
+    draw(ctx, cx, frame, player) {
+        if (!this.isPurchased) return;
+
+        const bounds = this.getBounds();
+        const screenX = this.x - cx;
+
+        // Float with the wave surf
+        const floatingY = waveSurf(this.x + bounds.width / 2, frame) - bounds.height * 0.8;
+
+        // Buoyancy tilt logic
+        let tiltAngle = 0;
+        if (player.state === 'onBoat') {
+            const playerRelCenter = player.x + (player.frameW * player.scale) / 2 - (this.x + bounds.width / 2);
+            tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1; // max ~0.1 rad
+        }
+
+        ctx.save();
+        ctx.translate(screenX + bounds.width / 2, floatingY + bounds.height);
+        ctx.rotate(tiltAngle);
+
+        if (!this.img.complete || this.img.naturalWidth === 0) {
+            ctx.fillStyle = "brown";
+            ctx.fillRect(-bounds.width / 2, -bounds.height, bounds.width, bounds.height);
+        } else {
+            ctx.drawImage(this.img, -bounds.width / 2, -bounds.height, bounds.width, bounds.height);
+        }
+        ctx.restore();
+
+        // Show interaction prompts if player is on boat OR near it at dock
+        if (player.state === 'onBoat') {
+            const playerRelX = player.x - this.x;
+            const zoneWidth = bounds.width / 3;
+
+            ctx.fillStyle = "white";
+            ctx.font = "bold 14px Arial";
+            ctx.textAlign = "center";
+
+            if (playerRelX < zoneWidth) {
+                // Left zone: Fishing
+                ctx.fillText("Press [E] to Fish", screenX + zoneWidth / 2, floatingY - 20);
+            } else if (playerRelX > bounds.width - zoneWidth) {
+                // Right zone: Navigation
+                const action = this.state === 'sailing' ? "Stop Sailing" : "Sail";
+                ctx.fillText(`Press [E] to ${action}`, screenX + bounds.width - zoneWidth / 2, floatingY - 20);
+            } else if (Math.abs(this.x - 950) < 100 && this.state === 'idle') {
+                ctx.fillText("Press [E] to Disembark", screenX + bounds.width / 2, floatingY - 20);
+            }
+        } else if (Math.abs(player.x - this.x) < 100 && player.state === 'walking') {
+            // Near boat at dock
+            ctx.fillStyle = "white";
+            ctx.font = "bold 14px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Press [E] to Board Boat", screenX + bounds.width / 2, floatingY - 20);
+        }
+    }
+}
