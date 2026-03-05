@@ -4,24 +4,23 @@ import { WATER_Y } from './constants.js';
 
 export class FishManager {
     constructor() {
-        this.fishes = [];
+        this.fishes = []; // container ng isda
         this.spawnInitialFish();
     }
 
     spawnInitialFish() {
         for (let i = 0; i < 10; i++) {
-            const x = Math.random() * 1200 + 100;
-            const y = WATER_Y + Math.random() * 120 + 20;
+            const x = Math.random() * 1200 + 100; // constraint saan pwedeng mag-spawn (hindi sa shore dapat)
+            const y = WATER_Y + Math.random() * 120 + 20; // random depth sa tubig
 
-            const roll = Math.random();
-            const type = roll < 0.6 ? 'small' : roll < 0.9 ? 'medium' : 'boss'; // 👈 added boss
+            const type = getRandomFishType();
             this.fishes.push(new Fish(type, x, y));
         }
     }
 
     update() {
-        for (let fish of this.fishes) {
-            fish.update();
+        for (const fish of this.fishes) {
+            fish.update(); // Fish.update() already guards against moving when caught
         }
     }
 
@@ -31,3 +30,24 @@ export class FishManager {
         }
     }
 }
+
+    // fish type probabilities
+    const fishTypes = [
+        { type: 'common',    prob: 0.4 },  // 40%
+        { type: 'uncommon',  prob: 0.3 },  // 30%
+        { type: 'rare',      prob: 0.15 }, // 15%
+        { type: 'epic',      prob: 0.1 },  // 10%
+        { type: 'legendary', prob: 0.05 }  // 5%
+    ];
+
+    function getRandomFishType() {
+        const roll = Math.random(); // 0–1
+        let cumulative = 0;
+
+        for (let f of fishTypes) {
+            cumulative += f.prob;
+            if (roll < cumulative) return f.type;
+        }
+
+        return fishTypes[0].type; // fallback to common
+    }

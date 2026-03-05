@@ -2,6 +2,7 @@ import { W, H } from './constants.js';
 import { drawSky, drawGround, drawWater } from './render_map.js';
 import { Player } from './player.js';
 import { FishManager } from './fish_manager.js';
+import { Rod } from './fishing.js';
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -10,8 +11,8 @@ canvas.width = W;
 canvas.height = H;
 
 // 2. INITIALIZE VARIABLES
-const player = new Player();
 const fishManager = new FishManager();
+const player = new Player(fishManager);
 const keys = {};
 let frame = 0;
 let cameraX = 0; // Needed for scrolling
@@ -23,24 +24,25 @@ window.addEventListener('keyup', e => keys[e.key] = false);
 // 4. THE SINGLE COMBINED GAME LOOP
 function loop() {
     // A. Update logic
-    frame++; 
-    const G = { keys, state: 'shore' }; 
+    frame++;
+    const G = { keys, state: 'shore' };
     player.update(1, G);
     fishManager.update();
-    
+
     // B. Clear and Draw
     ctx.clearRect(0, 0, W, H);
 
-    drawSky(ctx);      
-    
+    drawSky(ctx);
+
     // Draw Water BEFORE the Ground/Player so they sit on top of the deep blue
     drawWater(ctx, cameraX, frame);
     fishManager.draw(ctx, cameraX);
-    drawGround(ctx, cameraX); 
-    
+    // rod.draw(ctx, cameraX);
+    drawGround(ctx, cameraX);
+
     // Draw the Player last so they are in front of everything
     player.draw(ctx, cameraX);
-    
+
     requestAnimationFrame(loop);
 }
 

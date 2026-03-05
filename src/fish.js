@@ -1,10 +1,11 @@
 // src/fish.js
 
 const SPRITE_DATA = {
-    small:  { src: 'assets/anchovyy.png',          frames: 4, renderScale: 0.2 },
-    medium: { src: 'assets/doomsday-oarfishF.png', frames: 4, renderScale: 0.4 },
-    rare:   { src: 'assets/swordfish.png',          frames: 4, renderScale: 0.5 },
-    boss:   { src: 'assets/doomsday-oarfish.png',            frames: 6, renderScale: 1}, 
+    common:  { src: 'assets/anchovyy.png',          frames: 4, renderScale: 0.2 },
+    uncommon: { src: 'assets/swordfish.png', frames: 4, renderScale: 0.29 },
+    rare:   { src: 'assets/doomsday-oarfishF.png',          frames: 4, renderScale: 0.59 },
+    epic:   { src: 'assets/swordfish.png',            frames: 4, renderScale: 0.2},
+    legendary: { src: 'assets/swordfish.png',     frames: 4, renderScale: 0.2 }
 };
 
 export class Fish {
@@ -16,6 +17,9 @@ export class Fish {
         // Movement
         this.speed = (Math.random() * 0.5) + 0.2;
         this.direction = Math.random() < 0.5 ? -1 : 1;
+
+        this.caught = false;
+        this.inHitbox = false;
 
         // Sprite info based on type
         const data = SPRITE_DATA[type] || SPRITE_DATA.small;
@@ -47,6 +51,7 @@ export class Fish {
     }
 
     update() {
+        if (this.caught) return; // stop moving if caught
         this.x += this.speed * this.direction; // move left or right
 
         this.frameTick++;
@@ -77,7 +82,7 @@ export class Fish {
                 sx, 0, this.frameW, this.frameH,
                 -this.renderW / 2, -this.renderH / 2,
                 this.renderW, this.renderH
-            ); 
+            );
         } else {
             ctx.drawImage(
                 this.img,
@@ -86,7 +91,15 @@ export class Fish {
                 this.renderW, this.renderH
             );
         }
-
+        if (this.inHitbox && !this.caught) {
+            ctx.restore();
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255, 80, 80, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(screenX, screenY, (this.renderW || 20) / 2 + 4, 0, Math.PI * 2);
+            ctx.stroke();
+        }
         ctx.restore();
     }
 }

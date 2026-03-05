@@ -2,118 +2,154 @@
 import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END } from './constants.js';
 
 export class Rod {
-    constructor(player) {
+    constructor(player, fishManager) {
         this.player = player;
+        this.fishManager = fishManager;
+
         this.x = player.x;
         this.y = player.y;
-
-        // Physics
         this.vx = 0;
         this.vy = 0;
         this.angle = -Math.PI / 4;
         this.power = 0;
-        this.maxPower = 7.5; // taga control kung gaano kalakas yung bato
+        this.maxPower = 7.5;
         this.isCasting = false;
         this.isBaitInWater = false;
-        this.isSinking = false; // sinking phase
+        this.isSinking = false;
 
-        // Bait sprite
         this.baitImg = new Image();
         this.baitImg.src = 'assets/doomsday-oarfish.png';
         this.baitSize = 16;
 
-        // Reel-in
         this.reeling = false;
         this.reelTimer = 0;
-        this.reelDuration = 20;
+        this.reelDuration = 500;
 
-        // Where the bait actually landed / settled
         this.landedX = null;
         this.landedY = null;
 
-        // Sinking config
-        this.sinkSpeed = 0.8;      // pixels per frame downward
-        this.sinkDepth = SHORE_LINE_DEPTH; // how many pixels below WATER_Y it sinks
+        this.sinkSpeed = 0.8;
+        this.sinkDepth = SHORE_LINE_DEPTH;
 
+        this.baitRadius = 32;
+        this.caughtFish = null;
+
+        // Debounce 'e' so one press = one hook attempt
+        this.eWasUp = true;
+        this.hookFlash = 0;
     }
 
     update(keys) {
-        // 1️⃣ Adjust angle & power if not casting
-        if (!this.isCasting) {
-            if (keys['w'] || keys['ArrowUp']) this.angle -= 0.02;
-            if (keys['s'] || keys['ArrowDown']) this.angle += 0.02;
-
-            if (keys[' ']) this.power = Math.min(this.power + 0.3, this.maxPower);
-
-            if (!keys[' ']) {
-                if (this.power > 0) {
-
-                    const projectedX = this.player.x + Math.cos(this.angle) * this.power * 10;
-                if (projectedX <= SHORE_END) {
-                    // Don't allow cast — aiming at land
-                    this.power = 0;
-                    return;
-                }
-                    this.isCasting = true;
-                    this.vx = Math.cos(this.angle) * this.power;
-                    this.vy = Math.sin(this.angle) * this.power;
-                    this.power = 0;
-                    this.reelTimer = 0;
-                    this.landedX = null;
-                    this.landedY = null;
-                    this.isSinking = false;
-                }
+        // Track 'e' press edge (pressed this frame, not held)
+        const ePressedNow = keys['e'] && this.eWasUp;
+        this.eWasUp = !keys['e'];
+        // Clear inHitbox on all fish each frame so it doesn't stay stale
+        if (this.fishManager) {
+            for (const fish of this.fishManager.fishes) {
+                fish.inHitbox = false;
             }
         }
 
-        // 2️⃣ Update physics if casting
+        if (this.hookFlash > 0) this.hookFlash--;
+
+        // ---------- 1️⃣ Angle & power ----------
+        if (!this.isCasting) {
+            if (keys['w'] || keys['ArrowUp'])   this.angle -= 0.02;
+            if (keys['s'] || keys['ArrowDown'])  this.angle += 0.02;
+            if (keys[' ']) this.power = Math.min(this.power + 0.3, this.maxPower);
+
+            if (!keys[' '] && this.power > 0) {
+                const projectedX = this.player.x + Math.cos(this.angle) * this.power * 10;
+                if (projectedX <= SHORE_END) { this.power = 0; return; }
+
+                this.isCasting = true;
+                this.vx = Math.cos(this.angle) * this.power;
+                this.vy = Math.sin(this.angle) * this.power;
+                this.power = 0;
+                this.reelTimer = 0;
+                this.landedX = null;
+                this.landedY = null;
+                this.isSinking = false;
+                this.caughtFish = null;
+            }
+        }
+
+        // ---------- 2️⃣ Physics ----------
         if (this.isCasting && !this.reeling) {
             if (!this.isBaitInWater) {
-                // In-flight
                 this.vy += GRAVITY;
                 this.x += this.vx;
                 this.y += this.vy;
 
-                // Hit water surface — begin sinking phase
-                if (this.y >= WATER_Y && isOverWater(this.x)) {
+                if (this.y >= WATER_Y && this.x >= SHORE_END) {
                     this.y = WATER_Y;
                     this.vx = 0;
                     this.vy = 0;
                     this.isBaitInWater = true;
                     this.isSinking = true;
-                    this.landedX = this.x; // lock X immediately on splash
+                    this.landedX = this.x;
                 }
             } else if (this.isSinking) {
-                // Sink gradually downward
                 this.x = this.landedX;
                 this.y += this.sinkSpeed;
 
                 if (this.y >= WATER_Y + this.sinkDepth) {
                     this.y = WATER_Y + this.sinkDepth;
-                    this.landedY = this.y; // ✅ final resting depth
+                    this.landedY = this.y;
                     this.isSinking = false;
                 }
             } else {
-                // Fully settled — lock in place
+                // ---------- 3️⃣ Settled — check for hooks ----------
                 this.x = this.landedX;
                 this.y = this.landedY;
 
-                // Count down to auto reel
-                this.reelTimer++;
-                if (this.reelTimer >= this.reelDuration) {
-                    this.reeling = true;
+                if (!this.caughtFish) {
+                    for (const fish of this.fishManager.fishes) {
+                        if (fish.caught) continue; // already hooked by something else
+                        const dist = Math.hypot(fish.x - this.x, fish.y - this.y);
+                        fish.inHitbox = dist <= this.baitRadius;
+
+                        // ✅ Use edge-triggered press, not held key
+                        if (fish.inHitbox && ePressedNow) {
+                            fish.caught = true;
+                            this.caughtFish = fish;
+                            this.reeling = true; // ✅ start reeling immediately on hook
+                            this.hookFlash = 90;
+                            break;
+                        }
+                    }
+                }
+
+                // Auto-reel after timeout (only if nothing hooked)
+                if (!this.caughtFish) {
+                    this.reelTimer++;
+                    if (this.reelTimer >= this.reelDuration) {
+                        this.reeling = true;
+                    }
                 }
             }
         }
 
-        // 3️⃣ Reel-in animation
+        // ---------- 4️⃣ Reel-in ----------
         if (this.reeling) {
-            const dx = (this.player.x + 20 - this.x);
-            const dy = (this.player.y - this.y);
-            const dist = Math.hypot(dx, dy);
+            // Drag caught fish with bait
+            if (this.caughtFish) {
+                this.caughtFish.x = this.x;
+                this.caughtFish.y = this.y;
+            }
 
+            const dx = this.player.x + 20 - this.x;
+            const dy = this.player.y - this.y;
+            const dist = Math.hypot(dx, dy);
             const reelSpeed = 2;
+
             if (dist < reelSpeed) {
+                if (this.caughtFish) {
+                    // ✅ Remove caught fish from the pool on arrival
+                    this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
+                    console.log(`Landed a ${this.caughtFish.type}!`);
+                    this.caughtFish = null;
+                }
                 this.reset();
             } else {
                 const angle = Math.atan2(dy, dx);
@@ -122,7 +158,7 @@ export class Rod {
             }
         }
 
-        // 4️⃣ Keep bait near player before casting
+        // ---------- 5️⃣ Keep bait at player when idle ----------
         if (!this.isCasting && !this.reeling) {
             this.x = this.player.x + 20;
             this.y = this.player.y;
@@ -133,25 +169,19 @@ export class Rod {
         const screenX = this.x - cameraX;
         const screenY = this.y;
 
-        // --- Rod line ---
+        // Rod line
         ctx.strokeStyle = '#000';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(this.player.x - cameraX + 24, this.player.y + 20);
-
-        // if (this.isBaitInWater && !this.reeling && this.landedX !== null) {
-        //     ctx.lineTo(this.landedX - cameraX, WATER_Y); // line meets water surface
-        // } else {
-        // }
         ctx.lineTo(screenX, screenY);
         ctx.stroke();
 
-        // --- Angle indicator ---
+        // Angle indicator
         if (!this.isCasting) {
             const previewLength = 50 + this.power * 2;
             const px = this.player.x + 24 + Math.cos(this.angle) * previewLength - cameraX;
             const py = this.player.y + 20 + Math.sin(this.angle) * previewLength;
-
             ctx.strokeStyle = 'rgba(0,0,255,0.6)';
             ctx.setLineDash([5, 3]);
             ctx.beginPath();
@@ -161,7 +191,7 @@ export class Rod {
             ctx.setLineDash([]);
         }
 
-        // --- Power meter ---
+        // Power meter
         if (!this.isCasting) {
             ctx.fillStyle = 'gray';
             ctx.fillRect(this.player.x - cameraX, this.player.y - 10, this.maxPower * 4, 5);
@@ -169,18 +199,71 @@ export class Rod {
             ctx.fillRect(this.player.x - cameraX, this.player.y - 10, this.power * 4, 5);
         }
 
-        // --- Draw bait (only visible above water or while sinking) ---
-        if (this.baitImg.complete && this.baitImg.naturalWidth !== 0) {
-            ctx.drawImage(
-                this.baitImg,
-                screenX - this.baitSize / 2,
-                screenY - this.baitSize / 2,
-                this.baitSize,
-                this.baitSize
-            );
-        } else {
-            ctx.fillStyle = 'red';
-            ctx.fillRect(screenX - this.baitSize / 2, screenY - this.baitSize / 2, this.baitSize, this.baitSize);
+        const fishNearby = this.fishManager?.fishes.some(f => f.inHitbox);
+        ctx.save();
+        if (fishNearby && !this.caughtFish) {
+                    // Pulse the bait size when fish is in range
+                    const pulse = 1 + 0.2 * Math.sin(Date.now() / 100);
+                    const size = this.baitSize * pulse;
+                    if (this.baitImg.complete && this.baitImg.naturalWidth !== 0) {
+                        ctx.drawImage(this.baitImg,
+                            screenX - size / 2, screenY - size / 2, size, size);
+                    }
+                    // "Press E" prompt
+                    ctx.fillStyle = 'white';
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 3;
+                    ctx.font = 'bold 13px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.strokeText('[E] Hook!', screenX, screenY - 20);
+                    ctx.fillText('[E] Hook!', screenX, screenY - 20);
+                } else {
+                  // Bait
+                  if (this.baitImg.complete && this.baitImg.naturalWidth !== 0) {
+                    ctx.drawImage(this.baitImg,
+                      screenX - this.baitSize / 2, screenY - this.baitSize / 2,
+                      this.baitSize, this.baitSize);
+                    } else {
+                      ctx.fillStyle = 'red';
+                      ctx.fillRect(screenX - this.baitSize / 2, screenY - this.baitSize / 2,
+                        this.baitSize, this.baitSize);
+                      }
+                }
+                ctx.restore();
+        // Hitbox
+        ctx.strokeStyle = fishNearby ? 'rgba(255,80,80,0.7)' : 'rgba(255,255,0,0.3)';
+        ctx.lineWidth = fishNearby ? 2 : 1;
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, this.baitRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        if (this.hookFlash > 0) {
+          const alpha = Math.min(1, this.hookFlash / 20); // fade out
+          const playerScreenX = this.player.x - cameraX;
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.font = 'bold 22px monospace';
+          ctx.textAlign = 'center';
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 4;
+          ctx.fillStyle = '#FFD700';
+          ctx.strokeText('HOOKED!', playerScreenX, this.player.y - 30);
+          ctx.fillText('HOOKED!', playerScreenX, this.player.y - 30);
+          ctx.restore();
+      }
+      // Caught fish type label while reeling
+        if (this.caughtFish && this.reeling) {
+            const playerScreenX = this.player.x - cameraX;
+            ctx.save();
+            ctx.font = 'bold 13px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 3;
+            const label = `Reeling: ${this.caughtFish.type}...`;
+            ctx.strokeText(label, playerScreenX, this.player.y - 12);
+            ctx.fillText(label, playerScreenX, this.player.y - 12);
+            ctx.restore();
         }
     }
 
@@ -198,8 +281,6 @@ export class Rod {
         this.reelTimer = 0;
         this.landedX = null;
         this.landedY = null;
+        this.caughtFish = null;
     }
-}
-function isOverWater(x) {
-    return x >= SHORE_END;
 }
