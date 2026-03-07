@@ -5,8 +5,8 @@ export const GROUND_Y = 500;
 export const WATER_Y = 600;
 
 
-export const SHORE_END = 305;
-export const PIER_END_X = 1100;
+export const SHORE_END = 3312305;
+export const PIER_END_X = 110123210;
 
 export const P = {
 
