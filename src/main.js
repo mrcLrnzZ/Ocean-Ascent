@@ -2,8 +2,6 @@ import { W, H } from './constants.js';
 import { drawSky, drawDock, drawBackground, drawGround, drawWater, drawSoilOverlap, drawTransition } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant } from './merchant.js';
-import { FishManager } from './fish_manager.js'; 
-import { Rod } from './fishing.js';
 import { Boat } from './boat.js';
 import { GROUND_Y, MAPS, MAP_TRANSITION_X_RIGHT, MAP_TRANSITION_X_LEFT } from './constants.js';
 
@@ -13,8 +11,7 @@ const ctx = canvas.getContext('2d');
 canvas.width = W;
 canvas.height = H;
 
-const fishManager = new FishManager(); 
-const player = new Player(fishManager); 
+const player = new Player();
 const merchant = new Merchant(540, GROUND_Y);
 const boat = new Boat(950, 650); // Position it relative to the dock
 
@@ -272,7 +269,6 @@ function loop() {
         drawBackground(ctx, cameraX, currentMap);
         drawGround(ctx, cameraX, currentMap, frame);
         drawWater(ctx, cameraX, frame, currentMap);
-      fishManager.draw(ctx, cameraX);
         drawSoilOverlap(ctx, cameraX, currentMap);
         drawDock(ctx, cameraX, currentMap);
         if (currentMap === 0) {
