@@ -9,12 +9,12 @@ export class FishManager {
     }
 
     spawnInitialFish() {
-        for (let i = 0; i < 10; i++) {
-            const x = Math.random() * 1200 + 100; // constraint saan pwedeng mag-spawn (hindi sa shore dapat)
-            const y = WATER_Y + Math.random() * 120 + 20; // random depth sa tubig
+        for (let i = 0; i < 50; i++) {
+            const x = Math.random() * 1200 + 700; // constraint saan pwedeng mag-spawn (hindi sa shore dapat)
+            const y = WATER_Y + Math.random() * 120 + 60; // random depth sa tubig
 
             const type = getRandomFishType();
-            this.fishes.push(new Fish(type, x, y));
+            this.fishes.push(new Fish(type, x, y)); // kumukuha sa fish.js constructor then stores sa array
         }
     }
 
@@ -44,8 +44,8 @@ export class FishManager {
         const roll = Math.random(); // 0–1
         let cumulative = 0;
 
-        for (let f of fishTypes) {
-            cumulative += f.prob;
+        for (let f of fishTypes) { 
+            cumulative += f.prob; // 
             if (roll < cumulative) return f.type;
         }
 

@@ -1,8 +1,8 @@
-import { W, H } from './constants.js';
-import { drawSky, drawGround, drawWater } from './render_map.js';
-import { Player } from './player.js';
-import { FishManager } from './fish_manager.js';
-import { Rod } from './fishing.js';
+import { W, H } from './constants.js'; // screen size
+import { drawSky, drawGround, drawWater } from './render_map.js'; // background rendering
+import { Player } from './player.js'; // player logic (movement, drawing, etc.)
+import { FishManager } from './fish_manager.js'; // manages all fish (spawning, updating, drawing)
+import { Rod } from './fishing.js'; // fishing rod / bait system (casting, reeling, hitbox, etc.)
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -11,8 +11,8 @@ canvas.width = W;
 canvas.height = H;
 
 // 2. INITIALIZE VARIABLES
-const fishManager = new FishManager();
-const player = new Player(fishManager);
+const fishManager = new FishManager(); 
+const player = new Player(fishManager); // player.js now has access to the fish system.
 const keys = {};
 let frame = 0;
 let cameraX = 0; // Needed for scrolling
@@ -26,7 +26,7 @@ function loop() {
     // A. Update logic
     frame++;
     const G = { keys, state: 'shore' };
-    player.update(1, G);
+    player.update(1, G); // pass input state to player for movement and casting
     fishManager.update();
 
     // B. Clear and Draw

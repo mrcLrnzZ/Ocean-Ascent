@@ -60,7 +60,7 @@ export class Fish {
             this.frameIndex = (this.frameIndex + 1) % this.frames;
         }
 
-        if (Math.random() < 0.005) {
+        if (Math.random() < 0.005) { 
             this.direction *= -1;
         }
     }

@@ -63,8 +63,8 @@ export class Rod {
                 if (projectedX <= SHORE_END) { this.power = 0; return; }
 
                 this.isCasting = true;
-                this.vx = Math.cos(this.angle) * this.power;
-                this.vy = Math.sin(this.angle) * this.power;
+                this.vx = Math.cos(this.angle) * this.power; // initial velocity based on angle and power
+                this.vy = Math.sin(this.angle) * this.power; // negative because screen y+ is down, but we want positive to go up
                 this.power = 0;
                 this.reelTimer = 0;
                 this.landedX = null;
@@ -113,8 +113,8 @@ export class Rod {
                         if (fish.inHitbox && ePressedNow) {
                             fish.caught = true;
                             this.caughtFish = fish;
-                            this.reeling = true; // ✅ start reeling immediately on hook
-                            this.hookFlash = 90;
+                            this.reeling = true; //  start reeling immediately on hook
+                            this.hookFlash = 120;
                             break;
                         }
                     }
@@ -141,7 +141,7 @@ export class Rod {
             const dx = this.player.x + 20 - this.x;
             const dy = this.player.y - this.y;
             const dist = Math.hypot(dx, dy);
-            const reelSpeed = 2;
+            const reelSpeed = 5; 
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
@@ -170,7 +170,7 @@ export class Rod {
         const screenY = this.y;
 
         // Rod line
-        ctx.strokeStyle = '#000';
+        ctx.strokeStyle = '#ff0000';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(this.player.x - cameraX + 24, this.player.y + 20);

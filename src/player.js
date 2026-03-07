@@ -24,7 +24,7 @@ export class Player {
         this.isMoving = false;
         this.lastState = false; // To track if we just changed from walking to idle
 
-        this.rod = new Rod(this, fishManager);
+        this.rod = new Rod(this, fishManager); // Pass player reference to rod so it can access player position for casting
     }
 
     update(dt, G) {
@@ -68,7 +68,7 @@ export class Player {
                 this.frameTimer = 0;
             }
         }
-        this.rod.update(G.keys);
+        this.rod.update(G.keys); // Update the rod with current input state
     }
 
     draw(ctx, cx) {

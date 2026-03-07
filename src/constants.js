@@ -4,7 +4,7 @@ export const H = window.innerHeight;
 export const GROUND_Y   = 550; // ground level coordinate
 export const WATER_Y = 550; // water surface coordinate
 export const SHORE_END  = 740; // where the sand ends and water begins
-export const SHORE_LINE_DEPTH = 50; // how far below water the bait sinks before settling
+export const SHORE_LINE_DEPTH = 100; // how far below water the bait sinks before settling
 
 export const PIER_END_X = 850;
 export const GRAVITY = 0.10;
