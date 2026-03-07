@@ -1,5 +1,5 @@
 import { W, H } from './constants.js';
-import { drawSky, drawGround, drawWater, drawObjects } from './render_map.js';
+import { drawSky, drawDock, drawBackground, drawGround, drawWater, drawSoilOverlap, drawTransition } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
@@ -20,6 +20,17 @@ let frame = 0;
 let cameraX = 0; // Needed for scrolling
 let uiOpen = false;
 let currentMap = 0;
+
+const transition = {
+    active: false,
+    progress: 0,
+    direction: 1, // 1 for fading in, -1 for fading out
+    sweepDir: 1,  // 1 for right->left, -1 for left->right
+    speed: 0.02,
+    pendingMapChange: null,
+    pendingPlayerX: null,
+    pendingBoatX: null
+};
 
 // Prices and Names
 const boatPrices = [0, 20, 50, 100];
@@ -112,21 +123,52 @@ window.closeUI = function () {
 function loop() {
     // A. Update logic
     frame++;
-    const G = { keys, state: 'shore', frame };
+    const G = { keys: transition.active ? {} : keys, state: 'shore', frame }; // Ignore keys if transitioning
     player.update(1, G, boat);
     merchant.update();
     boat.update(G);
 
-    // Map Transition Logic
-    if (boat.state === 'sailing' || player.state === 'onBoat') {
+    // Transition State Update
+    if (transition.active) {
+        transition.progress += transition.speed * transition.direction;
+
+        // Peak of transition - swap maps
+        if (transition.progress >= 1 && transition.direction === 1) {
+            transition.direction = -1; // start fading out
+            transition.progress = 1;
+
+            if (transition.pendingMapChange !== null) {
+                currentMap = transition.pendingMapChange;
+                boat.x = transition.pendingBoatX;
+                player.x = transition.pendingPlayerX;
+                transition.pendingMapChange = null;
+            }
+        }
+
+        // End of transition
+        if (transition.progress <= 0 && transition.direction === -1) {
+            transition.active = false;
+            transition.progress = 0;
+            transition.direction = 1;
+        }
+    }
+
+    // Map Transition Logic Trigger
+    if ((boat.state === 'sailing' || player.state === 'onBoat') && !transition.active) {
         if (boat.x > MAP_TRANSITION_X_RIGHT) {
             if (currentMap < MAPS.length - 1) {
                 const nextMapReq = MAPS[currentMap + 1].requiredBoatLvl;
                 if (player.boatLevel >= nextMapReq) {
-                    currentMap++;
+                    // Trigger Transition Right
+                    transition.active = true;
+                    transition.direction = 1;
+                    transition.sweepDir = 1;
+                    transition.pendingMapChange = currentMap + 1;
                     const playerRel = player.x - boat.x;
-                    boat.x = MAP_TRANSITION_X_LEFT + 10; // spawn on left side
-                    player.x = boat.x + playerRel; // snap player exactly where they were
+                    transition.pendingBoatX = MAP_TRANSITION_X_LEFT + 10;
+                    transition.pendingPlayerX = transition.pendingBoatX + playerRel;
+
+                    boat.vx = 0; // stop moving visually during transition begin
                 } else {
                     boat.x = MAP_TRANSITION_X_RIGHT; // block
                     boat.vx = 0;
@@ -142,10 +184,16 @@ function loop() {
                 boat.vx = 0;
             }
         } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap > 0) {
-            currentMap--;
+            // Trigger Transition Left
+            transition.active = true;
+            transition.direction = 1;
+            transition.sweepDir = -1;
+            transition.pendingMapChange = currentMap - 1;
             const playerRel = player.x - boat.x;
-            boat.x = MAP_TRANSITION_X_RIGHT - 50; // spawn on right side of prev map
-            player.x = boat.x + playerRel; // snap player exactly where they were
+            transition.pendingBoatX = MAP_TRANSITION_X_RIGHT - 50;
+            transition.pendingPlayerX = transition.pendingBoatX + playerRel;
+
+            boat.vx = 0;
         } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) { // Keep bounds for shore map
             boat.x = MAP_TRANSITION_X_LEFT;
             boat.vx = 0;
@@ -218,17 +266,22 @@ function loop() {
         ctx.clearRect(0, 0, W, H);
 
         drawSky(ctx);
-        drawGround(ctx, cameraX, currentMap);
-        drawObjects(ctx, cameraX, currentMap);
+        drawBackground(ctx, cameraX, currentMap);
+        drawGround(ctx, cameraX, currentMap, frame);
         drawWater(ctx, cameraX, frame, currentMap);
-        
-
+        drawSoilOverlap(ctx, cameraX, currentMap);
+        drawDock(ctx, cameraX, currentMap);
         if (currentMap === 0) {
             merchant.draw(ctx, cameraX, player);
         }
         player.draw(ctx, cameraX);
+
         boat.draw(ctx, cameraX, frame, player);
 
+        // Draw transition effect covering the screen
+        if (transition.active) {
+            drawTransition(ctx, transition.progress, transition.direction, transition.sweepDir);
+        }
 
     } catch (e) {
         console.error("Rendering error:", e);

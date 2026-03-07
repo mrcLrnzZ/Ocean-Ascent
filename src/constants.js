@@ -1,12 +1,12 @@
-export const W = window.innerWidth;
-export const H = window.innerHeight;
+export const W = 1920; // Fixed logical width
+export const H = 900; // Fixed logical height
 
-export const GROUND_Y = 550;
-export const WATER_Y = 650;
+export const GROUND_Y = 500;
+export const WATER_Y = 600;
 
 
-export const SHORE_END = 795;
-export const PIER_END_X = 1275;
+export const SHORE_END = 305;
+export const PIER_END_X = 1100;
 
 export const P = {
 
@@ -26,9 +26,9 @@ export const P = {
   dirtMid: '#6a4828',
 
   // tubig Colors
-  waterTop: '#4090c8',
-  waterDeep: '#0051ff',
-  waterFoam: '#39bdff'
+  waterTop: '#4090c880',
+  waterDeep: '#0051ff80',
+  waterFoam: '#39bdff80'
 
 };
 
@@ -37,11 +37,11 @@ export const MAP_TRANSITION_X_RIGHT = 3000;
 export const MAP_TRANSITION_X_LEFT = 740;
 
 export const DEPTH_COLORS = {
-  1: '#4090c8', // Top Level 1
-  2: '#0051ff', // Deep Shore
-  3: '#0033aa', // Mid Deep
-  4: '#001a66', // Very Deep
-  5: '#000033'  // Abyss
+  1: '#4090c880', // Top Level 1
+  2: '#0051ff80', // Deep Shore
+  3: '#0033aa80', // Mid Deep
+  4: '#001a6680', // Very Deep
+  5: '#00003380'  // Abyss
 };
 
 export const MAPS = [
