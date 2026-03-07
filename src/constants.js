@@ -12,7 +12,7 @@ export const P = {
 
   // Sky Gradient Colors
   skyTop: '#5bc8f5',
-  skyBot: '#8ad8f8',
+  skyBot: '#0a65c7',
 
   // lugar Colors
   sandTop: '#f0d080',
@@ -32,21 +32,31 @@ export const P = {
 
 };
 
+// Level Distance Configuration
+export const SHORE_LEVEL_LENGTH = 10000;
+export const LEVEL_1_LENGTH = 2000;
+export const LEVEL_2_LENGTH = 3000;
+export const LEVEL_3_LENGTH = 4000;
+
 // MAP SYSTEM CONFIG
-export const MAP_TRANSITION_X_RIGHT = 3000;
 export const MAP_TRANSITION_X_LEFT = 740;
 
+export const DEPTH_LEVEL_HEIGHT = 1500; // Customizable depth of each band in pixels
+
+export const DEPTH_LINE_COLOR = '#ffffff40'; // Color of the dotted depth boundary lines
+
 export const DEPTH_COLORS = {
-  1: '#4090c880', // Top Level 1
-  2: '#0051ff80', // Deep Shore
-  3: '#0033aa80', // Mid Deep
-  4: '#001a6680', // Very Deep
-  5: '#00003380'  // Abyss
+  1: '#0a65c780', // Surface Level
+  2: '#0051ff', // Depth 1
+  3: '#0033aa', // Depth 2
+  4: '#001a66', // Depth 3
+  5: '#000033', // Depth 4
+  6: '#000000'  // Depth 5 (Abyss)
 };
 
 export const MAPS = [
-  { id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 2, hasDock: true },
-  { id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 3, hasDock: false },
-  { id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 4, hasDock: false },
-  { id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 5, hasDock: false }
+  { id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 6, hasDock: true, length: SHORE_LEVEL_LENGTH },
+  { id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 6, hasDock: false, length: LEVEL_1_LENGTH },
+  { id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 6, hasDock: false, length: LEVEL_2_LENGTH },
+  { id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 6, hasDock: false, length: LEVEL_3_LENGTH }
 ];

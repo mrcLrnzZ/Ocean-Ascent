@@ -1,9 +1,9 @@
 import { W, H } from './constants.js';
-import { drawSky, drawDock, drawBackground, drawGround, drawWater, drawSoilOverlap, drawTransition } from './render_map.js';
+import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, drawWaterForeground, drawSoilOverlap, drawTransition } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
-import { GROUND_Y, MAPS, MAP_TRANSITION_X_RIGHT, MAP_TRANSITION_X_LEFT } from './constants.js';
+import { GROUND_Y, WATER_Y, MAPS, MAP_TRANSITION_X_LEFT } from './constants.js';
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -18,6 +18,7 @@ const boat = new Boat(950, 650); // Position it relative to the dock
 const keys = {};
 let frame = 0;
 let cameraX = 0; // Needed for scrolling
+let cameraY = 0; // Added for vertical scrolling (debug camera)
 let uiOpen = false;
 let currentMap = 0;
 
@@ -52,6 +53,23 @@ window.addEventListener('keydown', e => {
     if (!uiOpen) keys[e.key] = true;
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
+
+// Debug Camera logic
+const debugCam = {
+    enabled: false,
+    x: 0,
+    y: 0,
+    speed: 15
+};
+
+document.getElementById('debug-btn').addEventListener('click', (e) => {
+    debugCam.enabled = !debugCam.enabled;
+    e.target.textContent = `Debug Cam: ${debugCam.enabled ? 'ON' : 'OFF'}`;
+    if (debugCam.enabled) {
+        debugCam.x = cameraX;
+        debugCam.y = cameraY;
+    }
+});
 
 function openMerchantUI() {
     uiOpen = true;
@@ -155,7 +173,9 @@ function loop() {
 
     // Map Transition Logic Trigger
     if ((boat.state === 'sailing' || player.state === 'onBoat') && !transition.active) {
-        if (boat.x > MAP_TRANSITION_X_RIGHT) {
+        const currentMapLength = MAPS[currentMap].length;
+
+        if (boat.x > currentMapLength) {
             if (currentMap < MAPS.length - 1) {
                 const nextMapReq = MAPS[currentMap + 1].requiredBoatLvl;
                 if (player.boatLevel >= nextMapReq) {
@@ -170,7 +190,7 @@ function loop() {
 
                     boat.vx = 0; // stop moving visually during transition begin
                 } else {
-                    boat.x = MAP_TRANSITION_X_RIGHT; // block
+                    boat.x = currentMapLength; // block
                     boat.vx = 0;
                     const notif = document.getElementById('notif');
                     if (notif) {
@@ -180,7 +200,7 @@ function loop() {
                     }
                 }
             } else {
-                boat.x = MAP_TRANSITION_X_RIGHT; // Edge of world
+                boat.x = currentMapLength; // Edge of world
                 boat.vx = 0;
             }
         } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap > 0) {
@@ -190,7 +210,7 @@ function loop() {
             transition.sweepDir = -1;
             transition.pendingMapChange = currentMap - 1;
             const playerRel = player.x - boat.x;
-            transition.pendingBoatX = MAP_TRANSITION_X_RIGHT - 50;
+            transition.pendingBoatX = MAPS[currentMap - 1].length - 50;
             transition.pendingPlayerX = transition.pendingBoatX + playerRel;
 
             boat.vx = 0;
@@ -254,29 +274,69 @@ function loop() {
         keys['E'] = false;
     }
 
-    // Camera logic: Follow player or boat
-    if (player.state === 'onBoat') {
-        cameraX = boat.x - W / 2 + (boat.width * boat.scale) / 2;
+    // Depth Meter Logic
+    const depthMeter = document.getElementById('sea-depth-meter');
+    if (depthMeter) {
+        // Only show if we're near or under water (WATER_Y = 600, screen center approx cameraY + H/2)
+        const cameraCenterY = cameraY + (H / 2);
+        if (cameraCenterY >= WATER_Y) {
+            depthMeter.style.display = 'block';
+            // Convert pixels to meters (e.g., 20px = 1m)
+            const metersDeep = Math.floor((cameraCenterY - WATER_Y) / 20);
+
+            // Determine level (DEPTH_LEVEL_HEIGHT = 1500)
+            const levelNum = Math.min(5, Math.floor((cameraCenterY - WATER_Y) / 1500) + 1);
+
+            depthMeter.textContent = `Depth: ${metersDeep}m (Level ${levelNum})`;
+        } else {
+            depthMeter.style.display = 'none';
+        }
+    }
+
+    // Camera logic: Follow player or boat or debug
+    if (debugCam.enabled) {
+        // Free cam movement
+        if (keys['w'] || keys['ArrowUp']) debugCam.y -= debugCam.speed;
+        if (keys['s'] || keys['ArrowDown']) debugCam.y += debugCam.speed;
+        if (keys['a'] || keys['ArrowLeft']) debugCam.x -= debugCam.speed;
+        if (keys['d'] || keys['ArrowRight']) debugCam.x += debugCam.speed;
+        cameraX = debugCam.x;
+        cameraY = debugCam.y;
     } else {
-        cameraX = Math.max(0, player.x - W / 2);
+        if (player.state === 'onBoat') {
+            cameraX = boat.x - W / 2 + (boat.width * boat.scale) / 2;
+        } else {
+            cameraX = Math.max(0, player.x - W / 2);
+        }
+        // Smoothly return Y to default 0
+        cameraY += (0 - cameraY) * 0.1;
     }
 
     // B. Clear and Draw
     try {
         ctx.clearRect(0, 0, W, H);
 
+        ctx.save();
+        ctx.translate(0, -Math.floor(cameraY));
+
         drawSky(ctx);
+        drawWaterBackground(ctx, cameraX, currentMap); // 1. Solid back water color
         drawBackground(ctx, cameraX, currentMap);
         drawGround(ctx, cameraX, currentMap, frame);
-        drawWater(ctx, cameraX, frame, currentMap);
-        drawSoilOverlap(ctx, cameraX, currentMap);
+
+
+
         drawDock(ctx, cameraX, currentMap);
         if (currentMap === 0) {
             merchant.draw(ctx, cameraX, player);
         }
         player.draw(ctx, cameraX);
 
-        boat.draw(ctx, cameraX, frame, player);
+        boat.draw(ctx, cameraX, frame, player); // 2. Sprites and objects
+
+        drawWaterForeground(ctx, cameraX, frame, currentMap); // 3. Transparent water gradient over top
+        drawSoilOverlap(ctx, cameraX, currentMap);
+        ctx.restore();
 
         // Draw transition effect covering the screen
         if (transition.active) {
