@@ -1,9 +1,11 @@
-import { W, H } from './constants.js';
+// src/main.js
+import { W, H, GROUND_Y, MAPS, MAP_TRANSITION_X_RIGHT, MAP_TRANSITION_X_LEFT } from './constants.js';
 import { drawSky, drawDock, drawBackground, drawGround, drawWater, drawSoilOverlap, drawTransition } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
-import { GROUND_Y, MAPS, MAP_TRANSITION_X_RIGHT, MAP_TRANSITION_X_LEFT } from './constants.js';
+import { FishManager } from './fish_manager.js';
+import { Rod } from './fishing.js';
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -11,28 +13,31 @@ const ctx = canvas.getContext('2d');
 canvas.width = W;
 canvas.height = H;
 
-const player = new Player();
+// 2. INITIALIZE GAME OBJECTS
+const fishManager = new FishManager();
+const player = new Player(fishManager); // pass fishManager to player
+const rod = new Rod(player, fishManager); // rod system
 const merchant = new Merchant(540, GROUND_Y);
-const boat = new Boat(950, 650); // Position it relative to the dock
+const boat = new Boat(950, 650); // docked boat
 
 const keys = {};
 let frame = 0;
-let cameraX = 0; // Needed for scrolling
+let cameraX = 0;
 let uiOpen = false;
 let currentMap = 0;
 
 const transition = {
     active: false,
     progress: 0,
-    direction: 1, // 1 for fading in, -1 for fading out
-    sweepDir: 1,  // 1 for right->left, -1 for left->right
+    direction: 1,
+    sweepDir: 1,
     speed: 0.02,
     pendingMapChange: null,
     pendingPlayerX: null,
     pendingBoatX: null
 };
 
-// Prices and Names
+// HUD Data
 const boatPrices = [0, 20, 50, 100];
 const rodPrices = [0, 0, 50, 150, 400, 800];
 const rodNames = ["", "Bamboo Rod", "Fiberglass Rod", "Graphite Rod", "Carbon Rod", "Master Rod"];
@@ -40,24 +45,20 @@ const rodNames = ["", "Bamboo Rod", "Fiberglass Rod", "Graphite Rod", "Carbon Ro
 function updateHUD() {
     document.getElementById('h-money').textContent = `$${player.money}`;
     document.getElementById('h-rod').textContent = rodNames[player.rodLevel];
-    if (player.boatLevel === 0) {
-        document.getElementById('h-boat').textContent = "None";
-    } else {
-        document.getElementById('h-boat').textContent = `Level ${player.boatLevel} Boat`;
-    }
+    document.getElementById('h-boat').textContent = player.boatLevel === 0 ? "None" : `Level ${player.boatLevel} Boat`;
 }
 updateHUD();
 
+// 3. INPUT LISTENERS
 window.addEventListener('keydown', e => {
     if (!uiOpen) keys[e.key] = true;
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
 
+// 4. MERCHANT UI FUNCTIONS
 function openMerchantUI() {
     uiOpen = true;
-    keys['e'] = false; keys['E'] = false;
-    keys['ArrowLeft'] = false; keys['ArrowRight'] = false; keys['a'] = false; keys['d'] = false;
-
+    for (let k of ['e','E','ArrowLeft','ArrowRight','a','d']) keys[k] = false;
     const popup = document.getElementById('popup');
     let html = `<h2>Merchant</h2>`;
 
@@ -69,9 +70,7 @@ function openMerchantUI() {
             Level ${nextBoat} Boat - $${price}
             <button onclick="buyBoat(${nextBoat}, ${price})" class="gold">Buy</button>
         </div>`;
-    } else {
-        html += `<div class="row">Boat: Fully Upgraded!</div>`;
-    }
+    } else html += `<div class="row">Boat: Fully Upgraded!</div>`;
 
     // Rod Upgrades
     if (player.rodLevel < 5) {
@@ -82,59 +81,58 @@ function openMerchantUI() {
             ${name} - $${price}
             <button onclick="buyRod(${nextRod}, ${price})" class="gold">Buy</button>
         </div>`;
-    } else {
-        html += `<div class="row">Rod: Fully Upgraded!</div>`;
-    }
+    } else html += `<div class="row">Rod: Fully Upgraded!</div>`;
 
     html += `<button onclick="closeUI()" style="margin-top:15px">Close</button>`;
-
     popup.innerHTML = html;
     popup.style.display = 'block';
 }
 
-window.buyBoat = function (level, price) {
+window.buyBoat = function(level, price) {
     if (player.money >= price) {
         player.money -= price;
         player.boatLevel = level;
         boat.setLevel(level);
         updateHUD();
-        openMerchantUI(); // refresh
-    } else {
-        alert("Not enough money!");
-    }
+        openMerchantUI();
+    } else alert("Not enough money!");
 }
 
-window.buyRod = function (level, price) {
+window.buyRod = function(level, price) {
     if (player.money >= price) {
         player.money -= price;
         player.rodLevel = level;
+        rod.maxPower = 5 + level * 1.5; // scale rod power by level
         updateHUD();
-        openMerchantUI(); // refresh
-    } else {
-        alert("Not enough money!");
-    }
+        openMerchantUI();
+    } else alert("Not enough money!");
 }
 
-window.closeUI = function () {
+window.closeUI = function() {
     document.getElementById('popup').style.display = 'none';
-    setTimeout(() => { uiOpen = false; }, 100);
+    setTimeout(() => uiOpen = false, 100);
 }
 
+// 5. MAIN LOOP
 function loop() {
-    // A. Update logic
     frame++;
-    const G = { keys: transition.active ? {} : keys, state: 'shore', frame }; // Ignore keys if transitioning
-    player.update(1, G, boat);
+
+    // Game state object
+    const G = { keys: transition.active ? {} : keys, state: player.state || 'walking', frame };
+
+    // --- UPDATE LOGIC ---
+    player.update(1, G, boat, fishManager); // player handles movement + rod
+    rod.update(keys);                        // rod mechanics
+    fishManager.update();                    // all fish update
     merchant.update();
     boat.update(G);
 
-    // Transition State Update
+    // --- MAP TRANSITIONS ---
     if (transition.active) {
         transition.progress += transition.speed * transition.direction;
 
-        // Peak of transition - swap maps
         if (transition.progress >= 1 && transition.direction === 1) {
-            transition.direction = -1; // start fading out
+            transition.direction = -1;
             transition.progress = 1;
 
             if (transition.pendingMapChange !== null) {
@@ -144,8 +142,6 @@ function loop() {
                 transition.pendingMapChange = null;
             }
         }
-
-        // End of transition
         if (transition.progress <= 0 && transition.direction === -1) {
             transition.active = false;
             transition.progress = 0;
@@ -153,13 +149,12 @@ function loop() {
         }
     }
 
-    // Map Transition Logic Trigger
+    // --- MAP BOUNDARIES & TRIGGER ---
     if ((boat.state === 'sailing' || player.state === 'onBoat') && !transition.active) {
         if (boat.x > MAP_TRANSITION_X_RIGHT) {
             if (currentMap < MAPS.length - 1) {
                 const nextMapReq = MAPS[currentMap + 1].requiredBoatLvl;
                 if (player.boatLevel >= nextMapReq) {
-                    // Trigger Transition Right
                     transition.active = true;
                     transition.direction = 1;
                     transition.sweepDir = 1;
@@ -167,10 +162,9 @@ function loop() {
                     const playerRel = player.x - boat.x;
                     transition.pendingBoatX = MAP_TRANSITION_X_LEFT + 10;
                     transition.pendingPlayerX = transition.pendingBoatX + playerRel;
-
-                    boat.vx = 0; // stop moving visually during transition begin
+                    boat.vx = 0;
                 } else {
-                    boat.x = MAP_TRANSITION_X_RIGHT; // block
+                    boat.x = MAP_TRANSITION_X_RIGHT;
                     boat.vx = 0;
                     const notif = document.getElementById('notif');
                     if (notif) {
@@ -179,12 +173,8 @@ function loop() {
                         setTimeout(() => notif.style.opacity = "0", 3000);
                     }
                 }
-            } else {
-                boat.x = MAP_TRANSITION_X_RIGHT; // Edge of world
-                boat.vx = 0;
-            }
+            } else boat.x = MAP_TRANSITION_X_RIGHT;
         } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap > 0) {
-            // Trigger Transition Left
             transition.active = true;
             transition.direction = 1;
             transition.sweepDir = -1;
@@ -192,34 +182,27 @@ function loop() {
             const playerRel = player.x - boat.x;
             transition.pendingBoatX = MAP_TRANSITION_X_RIGHT - 50;
             transition.pendingPlayerX = transition.pendingBoatX + playerRel;
-
             boat.vx = 0;
-        } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) { // Keep bounds for shore map
+        } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) {
             boat.x = MAP_TRANSITION_X_LEFT;
             boat.vx = 0;
         }
     }
 
-    // Interaction logic
+    // --- INTERACTIONS ---
     if ((keys['e'] || keys['E']) && !uiOpen) {
-        // Defensive check for state
         if (!player.state) player.state = 'walking';
 
         if (player.state === 'walking') {
-            if (merchant.isNear(player)) {
-                openMerchantUI();
-            } else if (boat.isPurchased && Math.abs(player.x - boat.x) < 200) {
-                console.log("Boarding boat...");
+            if (merchant.isNear(player)) openMerchantUI();
+            else if (boat.isPurchased && Math.abs(player.x - boat.x) < 200) {
                 player.state = 'onBoat';
-                player.x = boat.x + (boat.width * boat.scale) / 2;
-
+                player.x = boat.x + (boat.width * boat.scale)/2;
                 const notif = document.getElementById('notif');
                 if (notif) {
                     notif.textContent = "You are on the boat. Press E at ends to Fish/Sail.";
                     notif.style.opacity = "1";
-                    setTimeout(() => {
-                        if (notif) notif.style.opacity = "0";
-                    }, 3000);
+                    setTimeout(() => notif.style.opacity = "0", 3000);
                 }
             }
         } else if (player.state === 'onBoat') {
@@ -227,73 +210,47 @@ function loop() {
             const playerRelX = player.x - boat.x;
             const zoneWidth = bounds.width / 3;
 
-            if (playerRelX < zoneWidth) {
-                // Fishing
-                boat.state = boat.state === 'fishing' ? 'idle' : 'fishing';
-                console.log("Fishing state:", boat.state);
-            } else if (playerRelX > bounds.width - zoneWidth) {
-                // Navigation
-                boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
-                console.log("Sailing state:", boat.state);
-            } else if (Math.abs(boat.x - 950) < 100 && boat.state === 'idle') {
-                // Disembark
+            if (playerRelX < zoneWidth) boat.state = boat.state === 'fishing' ? 'idle' : 'fishing';
+            else if (playerRelX > bounds.width - zoneWidth) boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
+            else if (Math.abs(boat.x - 950) < 100 && boat.state === 'idle') {
                 player.state = 'walking';
-                player.x = 1000; // Place back on dock
+                player.x = 1000;
                 const notif = document.getElementById('notif');
                 if (notif) {
                     notif.textContent = "Disembarked boat.";
                     notif.style.opacity = "1";
-                    setTimeout(() => {
-                        if (notif) notif.style.opacity = "0";
-                    }, 3000);
+                    setTimeout(() => notif.style.opacity = "0", 3000);
                 }
             }
         }
-        // Basic debounce: clear key
-        keys['e'] = false;
-        keys['E'] = false;
+
+        keys['e'] = false; keys['E'] = false;
     }
 
-    // Camera logic: Follow player or boat
-    if (player.state === 'onBoat') {
-        cameraX = boat.x - W / 2 + (boat.width * boat.scale) / 2;
-    } else {
-        cameraX = Math.max(0, player.x - W / 2);
-    }
+    // --- CAMERA ---
+    if (player.state === 'onBoat') cameraX = boat.x - W/2 + (boat.width*boat.scale)/2;
+    else cameraX = Math.max(0, player.x - W/2);
 
-    // B. Clear and Draw
-    try {
-        ctx.clearRect(0, 0, W, H);
+    // --- RENDER ---
+    ctx.clearRect(0, 0, W, H);
 
-        drawSky(ctx);
-        drawBackground(ctx, cameraX, currentMap);
-        drawGround(ctx, cameraX, currentMap, frame);
-        drawWater(ctx, cameraX, frame, currentMap);
-        drawSoilOverlap(ctx, cameraX, currentMap);
-        drawDock(ctx, cameraX, currentMap);
-        if (currentMap === 0) {
-            merchant.draw(ctx, cameraX, player);
-        }
-        player.draw(ctx, cameraX);
+    drawSky(ctx);
+    drawBackground(ctx, cameraX, currentMap);
+    drawGround(ctx, cameraX, currentMap, frame);
+    drawWater(ctx, cameraX, frame, currentMap);
+    drawSoilOverlap(ctx, cameraX, currentMap);
+    drawDock(ctx, cameraX, currentMap);
 
-        boat.draw(ctx, cameraX, frame, player);
+    merchant.draw(ctx, cameraX, player);
+    fishManager.draw(ctx, cameraX);  // your fish
+    rod.draw(ctx, cameraX);          // your rod
+    player.draw(ctx, cameraX);
+    boat.draw(ctx, cameraX, frame, player);
 
-        // Draw transition effect covering the screen
-        if (transition.active) {
-            drawTransition(ctx, transition.progress, transition.direction, transition.sweepDir);
-        }
+    if (transition.active) drawTransition(ctx, transition.progress, transition.direction, transition.sweepDir);
 
-    } catch (e) {
-        console.error("Rendering error:", e);
-    }
-
-    if (!uiOpen) {
-        requestAnimationFrame(loop);
-    } else {
-        // Just draw statically if UI is open
-        requestAnimationFrame(loop);
-    }
+    requestAnimationFrame(loop);
 }
 
-// 5. START THE GAME
+// 6. START GAME
 loop();
