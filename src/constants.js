@@ -7,6 +7,8 @@ export const WATER_Y = 600;
 
 export const SHORE_END = 305;
 export const PIER_END_X = 1100;
+export const SHORE_LINE_DEPTH = 100; // max depth for shore fish
+export const GRAVITY = 0.5;
 
 export const P = {
 

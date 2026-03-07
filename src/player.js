@@ -1,8 +1,11 @@
+// src/player.js
 import { GROUND_Y, PIER_END_X } from './constants.js';
 import { waveSurf } from './environment.js';
+import { Rod } from './fishing.js';
 
 export class Player {
-    constructor() {
+    constructor(fishManager) {
+        // --- Graphics ---
         this.scale = 1.5;
         this.frameW = 90;
         this.frameH = 90;
@@ -11,12 +14,10 @@ export class Player {
         this.y = GROUND_Y - (this.frameH * this.scale);
 
         this.vx = 0;
-
         this.facing = 1;
 
         this.walkImg = new Image();
         this.walkImg.src = 'assets/Fisherman_walkv2.png';
-
         this.idleImg = new Image();
         this.idleImg.src = 'assets/Fishermanred_idlev2.png';
 
@@ -25,56 +26,57 @@ export class Player {
         this.isMoving = false;
         this.lastState = false;
 
+        // --- Game state ---
         this.state = 'walking'; // 'walking', 'onBoat'
-
-        // Progression logic
         this.money = 1000;
-        this.boatLevel = 0; // 0 = none, 1 = lvl1, 2 = lvl2, 3 = lvl3
-        this.rodLevel = 1;  // 1 to 5
+        this.boatLevel = 0;
+        this.rodLevel = 1;
+
+        // --- Fishing ---
+        this.rod = new Rod(this, fishManager);
     }
 
-    update(dt, G, boat) {
+    update(dt, G, boat, fishManager) {
         this.lastState = this.isMoving;
         this.isMoving = false;
 
+        const speed = 3;
+
         if (this.state === 'onBoat' && boat) {
-            // Player movement restricted to boat width
             const bounds = boat.getBounds();
-            const playerSpeed = 3;
 
             if (boat.state === 'sailing') {
                 this.vx = 0;
                 this.isMoving = false;
-                this.x += boat.vx; // player moves exactly with the boat
+                this.x += boat.vx; // move with boat
             } else {
                 if (G.keys['ArrowRight'] || G.keys['d']) {
-                    this.vx = playerSpeed;
+                    this.vx = speed;
                     this.facing = 1;
                     this.isMoving = true;
                 } else if (G.keys['ArrowLeft'] || G.keys['a']) {
-                    this.vx = -playerSpeed;
+                    this.vx = -speed;
                     this.facing = -1;
                     this.isMoving = true;
-                } else {
-                    this.vx = 0;
-                }
+                } else this.vx = 0;
+
                 this.x += (this.vx + boat.vx) * dt;
             }
 
             // Keep player on boat
             this.x = Math.max(bounds.left, Math.min(this.x, bounds.right - this.frameW * this.scale));
 
-            // Adjust vertical position with boat tilt and floor offset + wave bouncing
-            const playerRelCenter = this.x + (this.frameW * this.scale) / 2 - (boat.x + bounds.width / 2);
-            const tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1;
+            // Vertical position with waves & tilt
+            const playerRelCenter = this.x + (this.frameW * this.scale)/2 - (boat.x + bounds.width/2);
+            const tiltAngle = (playerRelCenter / (bounds.width/2)) * 0.1;
             const yOffset = playerRelCenter * Math.sin(tiltAngle);
-            const floatingY = waveSurf(boat.x + bounds.width / 2, G.frame) - bounds.height * 0.8;
+            const floatingY = waveSurf(boat.x + bounds.width/2, G.frame) - bounds.height*0.8;
             this.y = floatingY - (this.frameH * this.scale) + yOffset + boat.floorYOffset;
 
+            // Dynamic rod sink depth for boat
+            this.rod.sinkDepth = 200 + 100 * (boat.level-1); // example: deeper with upgraded boat
         } else {
-            // Normal walking logic
-            const speed = 30;
-
+            // Walking logic
             if (G.keys['ArrowRight'] || G.keys['d']) {
                 this.vx = speed;
                 this.facing = 1;
@@ -83,63 +85,64 @@ export class Player {
                 this.vx = -speed;
                 this.facing = -1;
                 this.isMoving = true;
-            } else {
-                this.vx = 0;
-            }
+            } else this.vx = 0;
 
             this.x += this.vx * dt;
             this.x = Math.max(0, Math.min(this.x, PIER_END_X));
-
             this.y = GROUND_Y - (this.frameH * this.scale);
+
+            // Shore rod depth
+            this.rod.sinkDepth = 100;
         }
 
+        // Reset frame on state change
         if (this.lastState !== this.isMoving) {
             this.currentFrame = 0;
             this.frameTimer = 0;
         }
 
         this.frameTimer++;
-
         if (this.isMoving) {
             if (this.frameTimer >= 7) {
-                this.currentFrame = (this.currentFrame + 1) % 6; // 6-frame walk
+                this.currentFrame = (this.currentFrame + 1) % 6;
                 this.frameTimer = 0;
             }
         } else {
             if (this.frameTimer >= 12) {
-                this.currentFrame = (this.currentFrame + 1) % 4; // 4-frame idle
+                this.currentFrame = (this.currentFrame + 1) % 4;
                 this.frameTimer = 0;
             }
         }
+
+        // Update rod every frame
+        this.rod.update(G.keys);
     }
 
     draw(ctx, cx) {
         const activeImg = this.isMoving ? this.walkImg : this.idleImg;
-
         if (!activeImg.complete || activeImg.naturalWidth === 0) {
-            ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-            ctx.fillRect(this.x - cx, this.y, this.frameW * this.scale, this.frameH * this.scale);
+            ctx.fillStyle = "rgba(255,0,0,0.5)";
+            ctx.fillRect(this.x - cx, this.y, this.frameW*this.scale, this.frameH*this.scale);
             return;
         }
 
         const screenX = this.x - cx;
-        const drawW = this.frameW * this.scale;
-        const drawH = this.frameH * this.scale;
+        const drawW = this.frameW*this.scale;
+        const drawH = this.frameH*this.scale;
 
         ctx.save();
-
-        ctx.translate(Math.floor(screenX + drawW / 2), Math.floor(this.y));
-
+        ctx.translate(Math.floor(screenX + drawW/2), Math.floor(this.y));
         ctx.scale(this.facing, 1);
-
         ctx.drawImage(
             activeImg,
-            Math.floor(this.currentFrame * this.frameW), 0,
+            Math.floor(this.currentFrame*this.frameW), 0,
             this.frameW, this.frameH,
-            Math.floor(-drawW / 2), 0,
+            Math.floor(-drawW/2), 0,
             drawW, drawH
         );
-
         ctx.restore();
+
+        // Draw rod & bait in front of player
+        this.rod.draw(ctx, cx);
     }
 }
