@@ -1,6 +1,5 @@
 import { GROUND_Y, PIER_END_X } from './constants.js';
 import { waveSurf } from './environment.js';
-      import { Rod } from './fishing.js';
 
 export class Player {
     constructor() {
@@ -25,7 +24,7 @@ export class Player {
         this.frameTimer = 0;
         this.isMoving = false;
         this.lastState = false;
-       this.rod = new Rod(this, fishManager);
+
         this.state = 'walking'; // 'walking', 'onBoat'
 
         // Progression logic
@@ -112,7 +111,6 @@ export class Player {
                 this.frameTimer = 0;
             }
         }
-        this.rod.update(G.keys); // Update the rod with current input state
     }
 
     draw(ctx, cx) {
@@ -143,6 +141,5 @@ export class Player {
         );
 
         ctx.restore();
-        this.rod.draw(ctx, cx); // draw rod & bait after player so they appear in front of the water and ground
     }
 }
