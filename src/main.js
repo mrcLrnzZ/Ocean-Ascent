@@ -1,9 +1,10 @@
-// src/main.js
 import { W, H, GROUND_Y, MAPS, MAP_TRANSITION_X_RIGHT, MAP_TRANSITION_X_LEFT } from './constants.js';
-import { drawSky, drawDock, drawBackground, drawGround, drawWater, drawSoilOverlap, drawTransition } from './render_map.js';
+import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, drawWaterForeground, drawSoilOverlap, drawTransition } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
+import { GROUND_Y, WATER_Y, MAPS, MAP_TRANSITION_X_LEFT } from './constants.js';
+import { debugCam, toggleDebugCam } from './debugcam.js';
 import { FishManager } from './fish_manager.js';
 
 // 1. SETUP CANVAS
@@ -16,11 +17,11 @@ canvas.height = H;
 const fishManager = new FishManager();
 const player = new Player(fishManager); // pass fishManager to player
 const merchant = new Merchant(540, GROUND_Y);
-const boat = new Boat(950, 650); // docked boat
-
+const boat = new Boat(950, 650);
 const keys = {};
 let frame = 0;
 let cameraX = 0;
+let cameraY = 0;
 let uiOpen = false;
 let currentMap = 0;
 
@@ -53,7 +54,12 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
 
-// 4. MERCHANT UI FUNCTIONS (aolid si leader maw maw)
+
+
+// Debug Camera logic
+document.getElementById('debug-btn').addEventListener('click', () => {
+    toggleDebugCam(cameraX, cameraY);
+});
 function openMerchantUI() {
     uiOpen = true;
     for (let k of ['e','E','ArrowLeft','ArrowRight','a','d']) keys[k] = false;
@@ -149,7 +155,9 @@ function loop() {
 
     // --- MAP BOUNDARIES & TRIGGER ---
     if ((boat.state === 'sailing' || player.state === 'onBoat') && !transition.active) {
-        if (boat.x > MAP_TRANSITION_X_RIGHT) {
+        const currentMapLength = MAPS[currentMap].length;
+
+        if (boat.x > currentMapLength) {
             if (currentMap < MAPS.length - 1) {
                 const nextMapReq = MAPS[currentMap + 1].requiredBoatLvl;
                 if (player.boatLevel >= nextMapReq) {
@@ -162,7 +170,7 @@ function loop() {
                     transition.pendingPlayerX = transition.pendingBoatX + playerRel;
                     boat.vx = 0;
                 } else {
-                    boat.x = MAP_TRANSITION_X_RIGHT;
+                    boat.x = currentMapLength; // block
                     boat.vx = 0;
                     const notif = document.getElementById('notif');
                     if (notif) {
@@ -171,14 +179,17 @@ function loop() {
                         setTimeout(() => notif.style.opacity = "0", 3000);
                     }
                 }
-            } else boat.x = MAP_TRANSITION_X_RIGHT;
+            } else {
+                boat.x = currentMapLength; // Edge of world
+                boat.vx = 0;
+            }
         } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap > 0) {
             transition.active = true;
             transition.direction = 1;
             transition.sweepDir = -1;
             transition.pendingMapChange = currentMap - 1;
             const playerRel = player.x - boat.x;
-            transition.pendingBoatX = MAP_TRANSITION_X_RIGHT - 50;
+            transition.pendingBoatX = MAPS[currentMap - 1].length - 50;
             transition.pendingPlayerX = transition.pendingBoatX + playerRel;
             boat.vx = 0;
         } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) {
@@ -222,32 +233,80 @@ function loop() {
             }
         }
 
-        keys['e'] = false; keys['E'] = false;
+    // Depth Meter Logic
+    const depthMeter = document.getElementById('sea-depth-meter');
+    if (depthMeter) {
+        // Only show if we're near or under water (WATER_Y = 600, screen center approx cameraY + H/2)
+        const cameraCenterY = cameraY + (H / 2);
+        if (cameraCenterY >= WATER_Y) {
+            depthMeter.style.display = 'block';
+            // Convert pixels to meters (e.g., 20px = 1m)
+            const metersDeep = Math.floor((cameraCenterY - WATER_Y) / 20);
+
+            // Determine level (DEPTH_LEVEL_HEIGHT = 1500)
+            const levelNum = Math.min(5, Math.floor((cameraCenterY - WATER_Y) / 1500) + 1);
+
+            depthMeter.textContent = `Depth: ${metersDeep}m (Level ${levelNum})`;
+        } else {
+            depthMeter.style.display = 'none';
+        }
     }
 
-    // --- CAMERA ---
-    if (player.state === 'onBoat') cameraX = boat.x - W/2 + (boat.width*boat.scale)/2;
-    else cameraX = Math.max(0, player.x - W/2);
+    // Camera logic: Follow player or boat or debug
+    if (debugCam.enabled) {
+        // Free cam movement
+        if (keys['w'] || keys['ArrowUp']) debugCam.y -= debugCam.speed;
+        if (keys['s'] || keys['ArrowDown']) debugCam.y += debugCam.speed;
+        if (keys['a'] || keys['ArrowLeft']) debugCam.x -= debugCam.speed;
+        if (keys['d'] || keys['ArrowRight']) debugCam.x += debugCam.speed;
+        cameraX = debugCam.x;
+        cameraY = debugCam.y;
+    } else {
+        if (player.state === 'onBoat') {
+            cameraX = boat.x - W / 2 + (boat.width * boat.scale) / 2;
+        } else {
+            cameraX = Math.max(0, player.x - W / 2);
+        }
+        // Smoothly return Y to default 0
+        cameraY += (0 - cameraY) * 0.1;
+    }
 
-    // --- RENDER ---
-    ctx.clearRect(0, 0, W, H);
+    // B. Clear and Draw
+    try {
+        ctx.clearRect(0, 0, W, H);
 
-    drawSky(ctx);
-    drawBackground(ctx, cameraX, currentMap);
-    drawGround(ctx, cameraX, currentMap, frame);
-    drawWater(ctx, cameraX, frame, currentMap);
-    drawSoilOverlap(ctx, cameraX, currentMap);
-    drawDock(ctx, cameraX, currentMap);
+        ctx.save();
+        ctx.translate(0, -Math.floor(cameraY));
+
+        drawSky(ctx);
+        drawWaterBackground(ctx, cameraX, currentMap);
+        drawBackground(ctx, cameraX, currentMap);
+        drawGround(ctx, cameraX, currentMap, frame);
+
+        if (currentMap === 0) {
+            merchant.draw(ctx, cameraX, player);
+        }
+        player.draw(ctx, cameraX);
+        drawDock(ctx, cameraX, currentMap);
+        boat.draw(ctx, cameraX, frame, player);
+        drawWaterForeground(ctx, cameraX, frame, currentMap);
+        drawSoilOverlap(ctx, cameraX, currentMap);
+        ctx.restore();
+
+        if (transition.active) {
+            drawTransition(ctx, transition.progress, transition.direction, transition.sweepDir);
+        }
 
     merchant.draw(ctx, cameraX, player);
     fishManager.draw(ctx, cameraX);  // the fih
     player.draw(ctx, cameraX);
     boat.draw(ctx, cameraX, frame, player);
 
-    if (transition.active) drawTransition(ctx, transition.progress, transition.direction, transition.sweepDir);
-
-    requestAnimationFrame(loop);
+    if (!uiOpen) {
+        requestAnimationFrame(loop);
+    } else {
+        requestAnimationFrame(loop);
+    }
 }
 
-// 6. START GAME
 loop();
