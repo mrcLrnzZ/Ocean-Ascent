@@ -1,10 +1,11 @@
-import { W, H } from './constants.js';
+import { W, H, GROUND_Y, MAPS, MAP_TRANSITION_X_RIGHT, MAP_TRANSITION_X_LEFT } from './constants.js';
 import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, drawWaterForeground, drawSoilOverlap, drawTransition } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
 import { GROUND_Y, WATER_Y, MAPS, MAP_TRANSITION_X_LEFT } from './constants.js';
 import { debugCam, toggleDebugCam } from './debugcam.js';
+import { FishManager } from './fish_manager.js';
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -12,7 +13,9 @@ const ctx = canvas.getContext('2d');
 canvas.width = W;
 canvas.height = H;
 
-const player = new Player();
+// 2. INITIALIZE GAME OBJECTS
+const fishManager = new FishManager();
+const player = new Player(fishManager); // pass fishManager to player
 const merchant = new Merchant(540, GROUND_Y);
 const boat = new Boat(950, 650);
 const keys = {};
@@ -33,7 +36,7 @@ const transition = {
     pendingBoatX: null
 };
 
-// Prices and Names
+// HUD Data
 const boatPrices = [0, 20, 50, 100];
 const rodPrices = [0, 0, 50, 150, 400, 800];
 const rodNames = ["", "Bamboo Rod", "Fiberglass Rod", "Graphite Rod", "Carbon Rod", "Master Rod"];
@@ -41,14 +44,11 @@ const rodNames = ["", "Bamboo Rod", "Fiberglass Rod", "Graphite Rod", "Carbon Ro
 function updateHUD() {
     document.getElementById('h-money').textContent = `$${player.money}`;
     document.getElementById('h-rod').textContent = rodNames[player.rodLevel];
-    if (player.boatLevel === 0) {
-        document.getElementById('h-boat').textContent = "None";
-    } else {
-        document.getElementById('h-boat').textContent = `Level ${player.boatLevel} Boat`;
-    }
+    document.getElementById('h-boat').textContent = player.boatLevel === 0 ? "None" : `Level ${player.boatLevel} Boat`;
 }
 updateHUD();
 
+// 3. INPUT LISTENERS
 window.addEventListener('keydown', e => {
     if (!uiOpen) keys[e.key] = true;
 });
@@ -62,9 +62,7 @@ document.getElementById('debug-btn').addEventListener('click', () => {
 });
 function openMerchantUI() {
     uiOpen = true;
-    keys['e'] = false; keys['E'] = false;
-    keys['ArrowLeft'] = false; keys['ArrowRight'] = false; keys['a'] = false; keys['d'] = false;
-
+    for (let k of ['e','E','ArrowLeft','ArrowRight','a','d']) keys[k] = false;
     const popup = document.getElementById('popup');
     let html = `<h2>Merchant</h2>`;
 
@@ -76,9 +74,7 @@ function openMerchantUI() {
             Level ${nextBoat} Boat - $${price}
             <button onclick="buyBoat(${nextBoat}, ${price})" class="gold">Buy</button>
         </div>`;
-    } else {
-        html += `<div class="row">Boat: Fully Upgraded!</div>`;
-    }
+    } else html += `<div class="row">Boat: Fully Upgraded!</div>`;
 
     // Rod Upgrades
     if (player.rodLevel < 5) {
@@ -89,59 +85,58 @@ function openMerchantUI() {
             ${name} - $${price}
             <button onclick="buyRod(${nextRod}, ${price})" class="gold">Buy</button>
         </div>`;
-    } else {
-        html += `<div class="row">Rod: Fully Upgraded!</div>`;
-    }
+    } else html += `<div class="row">Rod: Fully Upgraded!</div>`;
 
     html += `<button onclick="closeUI()" style="margin-top:15px">Close</button>`;
-
     popup.innerHTML = html;
     popup.style.display = 'block';
 }
 
-window.buyBoat = function (level, price) {
+window.buyBoat = function(level, price) {
     if (player.money >= price) {
         player.money -= price;
         player.boatLevel = level;
         boat.setLevel(level);
+        boat.isPurchased = true;
         updateHUD();
-        openMerchantUI(); // refresh
-    } else {
-        alert("Not enough money!");
-    }
+        openMerchantUI();
+    } else alert("Not enough money!");
 }
 
-window.buyRod = function (level, price) {
+window.buyRod = function(level, price) {
     if (player.money >= price) {
         player.money -= price;
         player.rodLevel = level;
+        player.rod.maxPower = 5 + level * 3.5; // pampalakas ng bato based sa level
         updateHUD();
-        openMerchantUI(); // refresh
-    } else {
-        alert("Not enough money!");
-    }
+        openMerchantUI();
+    } else alert("Not enough money!");
 }
 
-window.closeUI = function () {
+window.closeUI = function() {
     document.getElementById('popup').style.display = 'none';
-    setTimeout(() => { uiOpen = false; }, 100);
+    setTimeout(() => uiOpen = false, 100);
 }
 
+// 5. MAIN LOOP
 function loop() {
-    // A. Update logic
     frame++;
-    const G = { keys: transition.active ? {} : keys, state: 'shore', frame }; // Ignore keys if transitioning
-    player.update(1, G, boat);
+
+    // Game state object
+    const G = { keys: transition.active ? {} : keys, state: player.state || 'walking', frame };
+
+    // --- UPDATE LOGIC ---
+    player.update(1, G, boat, fishManager); // player handles movement + rod
+    fishManager.update();                    // all fish update
     merchant.update();
     boat.update(G);
 
-    // Transition State Update
+    // --- MAP TRANSITIONS ---
     if (transition.active) {
         transition.progress += transition.speed * transition.direction;
 
-        // Peak of transition - swap maps
         if (transition.progress >= 1 && transition.direction === 1) {
-            transition.direction = -1; // start fading out
+            transition.direction = -1;
             transition.progress = 1;
 
             if (transition.pendingMapChange !== null) {
@@ -151,8 +146,6 @@ function loop() {
                 transition.pendingMapChange = null;
             }
         }
-
-        // End of transition
         if (transition.progress <= 0 && transition.direction === -1) {
             transition.active = false;
             transition.progress = 0;
@@ -160,7 +153,7 @@ function loop() {
         }
     }
 
-    // Map Transition Logic Trigger
+    // --- MAP BOUNDARIES & TRIGGER ---
     if ((boat.state === 'sailing' || player.state === 'onBoat') && !transition.active) {
         const currentMapLength = MAPS[currentMap].length;
 
@@ -168,7 +161,6 @@ function loop() {
             if (currentMap < MAPS.length - 1) {
                 const nextMapReq = MAPS[currentMap + 1].requiredBoatLvl;
                 if (player.boatLevel >= nextMapReq) {
-                    // Trigger Transition Right
                     transition.active = true;
                     transition.direction = 1;
                     transition.sweepDir = 1;
@@ -176,8 +168,7 @@ function loop() {
                     const playerRel = player.x - boat.x;
                     transition.pendingBoatX = MAP_TRANSITION_X_LEFT + 10;
                     transition.pendingPlayerX = transition.pendingBoatX + playerRel;
-
-                    boat.vx = 0; // stop moving visually during transition begin
+                    boat.vx = 0;
                 } else {
                     boat.x = currentMapLength; // block
                     boat.vx = 0;
@@ -193,7 +184,6 @@ function loop() {
                 boat.vx = 0;
             }
         } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap > 0) {
-            // Trigger Transition Left
             transition.active = true;
             transition.direction = 1;
             transition.sweepDir = -1;
@@ -201,34 +191,27 @@ function loop() {
             const playerRel = player.x - boat.x;
             transition.pendingBoatX = MAPS[currentMap - 1].length - 50;
             transition.pendingPlayerX = transition.pendingBoatX + playerRel;
-
             boat.vx = 0;
-        } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) { // Keep bounds for shore map
+        } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) {
             boat.x = MAP_TRANSITION_X_LEFT;
             boat.vx = 0;
         }
     }
 
-    // Interaction logic
+    // --- INTERACTIONS ---
     if ((keys['e'] || keys['E']) && !uiOpen) {
-        // Defensive check for state
         if (!player.state) player.state = 'walking';
 
         if (player.state === 'walking') {
-            if (merchant.isNear(player)) {
-                openMerchantUI();
-            } else if (boat.isPurchased && Math.abs(player.x - boat.x) < 200) {
-                console.log("Boarding boat...");
+            if (merchant.isNear(player)) openMerchantUI();
+            else if (boat.isPurchased && Math.abs(player.x - boat.x) < 200) {
                 player.state = 'onBoat';
-                player.x = boat.x + (boat.width * boat.scale) / 2;
-
+                player.x = boat.x + (boat.width * boat.scale)/2;
                 const notif = document.getElementById('notif');
                 if (notif) {
                     notif.textContent = "You are on the boat. Press E at ends to Fish/Sail.";
                     notif.style.opacity = "1";
-                    setTimeout(() => {
-                        if (notif) notif.style.opacity = "0";
-                    }, 3000);
+                    setTimeout(() => notif.style.opacity = "0", 3000);
                 }
             }
         } else if (player.state === 'onBoat') {
@@ -236,32 +219,19 @@ function loop() {
             const playerRelX = player.x - boat.x;
             const zoneWidth = bounds.width / 3;
 
-            if (playerRelX < zoneWidth) {
-                // Fishing
-                boat.state = boat.state === 'fishing' ? 'idle' : 'fishing';
-                console.log("Fishing state:", boat.state);
-            } else if (playerRelX > bounds.width - zoneWidth) {
-                // Navigation
-                boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
-                console.log("Sailing state:", boat.state);
-            } else if (Math.abs(boat.x - 950) < 100 && boat.state === 'idle') {
-                // Disembark
+            if (playerRelX < zoneWidth) boat.state = boat.state === 'fishing' ? 'idle' : 'fishing';
+            else if (playerRelX > bounds.width - zoneWidth) boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
+            else if (Math.abs(boat.x - 950) < 100 && boat.state === 'idle') {
                 player.state = 'walking';
-                player.x = 1000; // Place back on dock
+                player.x = 1000;
                 const notif = document.getElementById('notif');
                 if (notif) {
                     notif.textContent = "Disembarked boat.";
                     notif.style.opacity = "1";
-                    setTimeout(() => {
-                        if (notif) notif.style.opacity = "0";
-                    }, 3000);
+                    setTimeout(() => notif.style.opacity = "0", 3000);
                 }
             }
         }
-        // Basic debounce: clear key
-        keys['e'] = false;
-        keys['E'] = false;
-    }
 
     // Depth Meter Logic
     const depthMeter = document.getElementById('sea-depth-meter');
@@ -327,9 +297,10 @@ function loop() {
             drawTransition(ctx, transition.progress, transition.direction, transition.sweepDir);
         }
 
-    } catch (e) {
-        console.error("Rendering error:", e);
-    }
+    merchant.draw(ctx, cameraX, player);
+    fishManager.draw(ctx, cameraX);  // the fih
+    player.draw(ctx, cameraX);
+    boat.draw(ctx, cameraX, frame, player);
 
     if (!uiOpen) {
         requestAnimationFrame(loop);
