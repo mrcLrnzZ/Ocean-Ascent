@@ -10,9 +10,11 @@ export class Rod {
         this.y = player.y;
         this.vx = 0;
         this.vy = 0;
+
         this.angle = -Math.PI / 4;
         this.power = 0;
         this.maxPower = 7.5;
+        // state variables
         this.isCasting = false;
         this.isBaitInWater = false;
         this.isSinking = false;
@@ -24,11 +26,13 @@ export class Rod {
         this.reeling = false;
         this.reelTimer = 0;
         this.reelDuration = 500;
-
+        // landing variables
         this.landedX = null;
         this.landedY = null;
         this.sinkSpeed = 0.8;
         this.sinkDepth = SHORE_LINE_DEPTH;
+        this.depthOffset = 0;
+        this.maxDepthOffset = 0;
 
         this.baitRadius = 32;
         this.caughtFish = null;
@@ -38,8 +42,8 @@ export class Rod {
     }
 
     update(keys) {
-        const ePressedNow = keys['e'] && this.eWasUp;
-        this.eWasUp = !keys['e'];
+        const ePressedNow = keys['f'] && this.eWasUp;
+        this.eWasUp = !keys['f'];
 
         if (this.fishManager) {
             for (const fish of this.fishManager.fishes) fish.inHitbox = false;
@@ -48,8 +52,8 @@ export class Rod {
         if (this.hookFlash > 0) this.hookFlash--;
 
         // Determine rod origin (player or boat)
-        let originX = this.player.x + 20;
-        let originY = this.player.y;
+        let originX = this.player.x + 20; // default origin
+        let originY = this.player.y + 30; // adjusted for rod height
         if (this.player.state === 'onBoat' && this.player.boatRef) {
             originX = this.player.boatRef.x + (this.player.x - this.player.boatRef.x) + 20;
             originY = this.player.y; // y adjusted by player.js for tilt
@@ -74,6 +78,7 @@ export class Rod {
                 this.landedY = null;
                 this.isSinking = false;
                 this.caughtFish = null;
+                this.depthOffset = 0;
                 this.sinkDepth = (this.player.state === 'onBoat') ? 200 + 100*(this.player.boatLevel-1) : SHORE_LINE_DEPTH;
             }
         }
@@ -91,18 +96,43 @@ export class Rod {
                     this.isBaitInWater = true;
                     this.isSinking = true;
                     this.landedX = this.x;
+                    this.depthOffset = 0;
                 }
             } else if (this.isSinking) {
                 this.x = this.landedX;
-                this.y += this.sinkSpeed;
-                if (this.y >= WATER_Y + this.sinkDepth) {
-                    this.y = WATER_Y + this.sinkDepth;
-                    this.landedY = this.y;
+                this.depthOffset += this.sinkSpeed;
+
+                if (this.depthOffset >= this.sinkDepth) {
+                    this.depthOffset = this.sinkDepth; // 
                     this.isSinking = false;
                 }
+
+                this.y = WATER_Y + this.depthOffset; // 
+                this.landedY = this.y;  
+
             } else {
                 this.x = this.landedX;
-                this.y = this.landedY;
+                this.sinkDepth = (this.player.state === 'onBoat')
+                    ? 200 + 100 * (this.player.boatLevel - 1)
+                    : SHORE_LINE_DEPTH;
+
+                // Maximum depth depends on boat / shore
+                this.maxDepthOffset = this.sinkDepth;
+
+                // Vertical bait control
+                const depthSpeed = 1.5;
+
+                if (keys['ArrowUp']) {
+                    this.depthOffset = Math.max(0, this.depthOffset - depthSpeed);
+                }
+
+                if (keys['ArrowDown']) {
+                    this.depthOffset = Math.min(this.maxDepthOffset, this.depthOffset + depthSpeed);
+                }
+
+                // Apply depth
+                this.y = WATER_Y + this.depthOffset;
+                this.landedY = this.y;
 
                 if (!this.caughtFish) {
                     for (const fish of this.fishManager.fishes) {
@@ -167,7 +197,7 @@ export class Rod {
         ctx.strokeStyle = '#ff0000';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(this.player.x - cameraX + 24, this.player.y + 20);
+        ctx.moveTo(this.player.x - cameraX + 24, this.player.y + 30);
         ctx.lineTo(screenX, screenY);
         ctx.stroke();
 
@@ -206,8 +236,8 @@ export class Rod {
             ctx.lineWidth = 3;
             ctx.font = 'bold 13px monospace';
             ctx.textAlign = 'center';
-            ctx.strokeText('[E] Hook!', screenX, screenY - 20);
-            ctx.fillText('[E] Hook!', screenX, screenY - 20);
+            ctx.strokeText('[F] Hook!', screenX, screenY - 100);
+            ctx.fillText('[F] Hook!', screenX, screenY - 100);
         } else {
             if (this.baitImg.complete && this.baitImg.naturalWidth !== 0) {
                 ctx.drawImage(this.baitImg, screenX - this.baitSize/2, screenY - this.baitSize/2, this.baitSize, this.baitSize);
@@ -271,5 +301,6 @@ export class Rod {
         this.landedX = null;
         this.landedY = null;
         this.caughtFish = null;
+        this.depthOffset = 0;
     }
 }

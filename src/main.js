@@ -5,7 +5,6 @@ import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
 import { FishManager } from './fish_manager.js';
-import { Rod } from './fishing.js';
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -16,7 +15,6 @@ canvas.height = H;
 // 2. INITIALIZE GAME OBJECTS
 const fishManager = new FishManager();
 const player = new Player(fishManager); // pass fishManager to player
-const rod = new Rod(player, fishManager); // rod system
 const merchant = new Merchant(540, GROUND_Y);
 const boat = new Boat(950, 650); // docked boat
 
@@ -55,7 +53,7 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
 
-// 4. MERCHANT UI FUNCTIONS
+// 4. MERCHANT UI FUNCTIONS (aolid si leader maw maw)
 function openMerchantUI() {
     uiOpen = true;
     for (let k of ['e','E','ArrowLeft','ArrowRight','a','d']) keys[k] = false;
@@ -93,6 +91,7 @@ window.buyBoat = function(level, price) {
         player.money -= price;
         player.boatLevel = level;
         boat.setLevel(level);
+        boat.isPurchased = true;
         updateHUD();
         openMerchantUI();
     } else alert("Not enough money!");
@@ -102,7 +101,7 @@ window.buyRod = function(level, price) {
     if (player.money >= price) {
         player.money -= price;
         player.rodLevel = level;
-        rod.maxPower = 5 + level * 1.5; // scale rod power by level
+        player.rod.maxPower = 5 + level * 3.5; // pampalakas ng bato based sa level
         updateHUD();
         openMerchantUI();
     } else alert("Not enough money!");
@@ -122,7 +121,6 @@ function loop() {
 
     // --- UPDATE LOGIC ---
     player.update(1, G, boat, fishManager); // player handles movement + rod
-    rod.update(keys);                        // rod mechanics
     fishManager.update();                    // all fish update
     merchant.update();
     boat.update(G);
@@ -242,8 +240,7 @@ function loop() {
     drawDock(ctx, cameraX, currentMap);
 
     merchant.draw(ctx, cameraX, player);
-    fishManager.draw(ctx, cameraX);  // your fish
-    rod.draw(ctx, cameraX);          // your rod
+    fishManager.draw(ctx, cameraX);  // the fih
     player.draw(ctx, cameraX);
     boat.draw(ctx, cameraX, frame, player);
 
