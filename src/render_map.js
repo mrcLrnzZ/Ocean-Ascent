@@ -1,8 +1,28 @@
 import { P, W, H, GROUND_Y, SHORE_END, WATER_Y, DEPTH_COLORS, DEPTH_LEVEL_HEIGHT, DEPTH_LINE_COLOR, MAPS } from './constants.js';
 import { waveSurf } from './environment.js';
 
+const bgImageCache = {};
+
+function getCachedImage(src) {
+    if (!bgImageCache[src]) {
+        const img = new Image();
+        img.src = src;
+        bgImageCache[src] = img;
+    }
+    return bgImageCache[src];
+}
+
 const shoreImg = new Image();
 shoreImg.src = 'assets/newmap.png';
+
+
+
+const soilOverlapImg = new Image();
+soilOverlapImg.src = 'assets/soiloverlay.png';
+
+const dockImg = new Image();
+dockImg.src = 'assets/dock.png';
+
 const shore = {
     x: 0,
     y: 900,
@@ -10,31 +30,16 @@ const shore = {
     animSpeed: 10
 };
 
-const pFarMountainImg = new Image();
-pFarMountainImg.src = 'assets/parallax_farmountainv2.png';
-
-const pMountainImg = new Image();
-pMountainImg.src = 'assets/parallax_mountainv2.png';
-
-const pSeaImg = new Image();
-pSeaImg.src = 'assets/parallax_seav2.png';
-
 export const parallax = {
-    y: 750, // adjust this Y position if needed
+    y: 750,
     scale: 4
 };
-
-const soilOverlapImg = new Image();
-soilOverlapImg.src = 'assets/soiloverlay.png';
 
 export const soilOverlap = {
     x: 0,
     y: 900,
     scale: 5
 };
-
-const dockImg = new Image();
-dockImg.src = 'assets/dock.png';
 
 export const dock = {
     x: 540,
@@ -48,7 +53,6 @@ export function drawDock(ctx, cx, currentMap) {
 
     const gx = -cx;
 
-    // Draw the new compact dock image
     ctx.imageSmoothingEnabled = false;
     const drawX = dock.x + gx;
     const drawY = dock.y - 31 * dock.scale;
@@ -66,7 +70,6 @@ export function drawSoilOverlap(ctx, cx, currentMap) {
 
     const gx = -cx;
 
-    // Draw the new compact soil overlap image
     ctx.imageSmoothingEnabled = false;
     const drawX = soilOverlap.x + gx;
     const drawY = soilOverlap.y - 150 * soilOverlap.scale;
@@ -78,15 +81,12 @@ export function drawSoilOverlap(ctx, cx, currentMap) {
     }
 }
 
-// drawObjects removed since woodDock is gone
-
 function rect(ctx, x, y, w, h, c) {
     ctx.fillStyle = c;
     ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(w), Math.ceil(h));
 }
 
 export function drawSky(ctx) {
-    // Draw extra top padding in case user looks up
     ctx.fillStyle = P.skyTop;
     ctx.fillRect(0, -2000, W, 2000);
 
@@ -98,15 +98,13 @@ export function drawSky(ctx) {
 }
 
 export function drawBackground(ctx, cx = 0, currentMap = 0) {
-    if (!MAPS[currentMap].hasDock) return;
-
     ctx.imageSmoothingEnabled = false;
 
     const drawY = parallax.y - 150 * parallax.scale;
     const drawW = 600 * parallax.scale;
     const drawH = 150 * parallax.scale;
 
-    // Helper to draw a tiled parallax layer
+    //parallax layer Helperr
     function drawLayer(img, speed) {
         if (!img.complete || img.naturalWidth === 0) return;
 
@@ -114,25 +112,30 @@ export function drawBackground(ctx, cx = 0, currentMap = 0) {
         let offset = (cx * speed) % drawW;
         let startX = -offset;
 
-        // Tile the image as many times as needed to fill the screen width
         while (startX < W) {
             ctx.drawImage(img, startX, drawY, drawW, drawH);
             startX += drawW;
         }
     }
 
+    // Get dynamic backgrounds for the current map
+    const bgs = MAPS[currentMap].backgrounds || [];
+    const speeds = [0.1, 0.3, 0.6]; // Slow, Medium, Fast
+
     // Draw from farthest (slowest) to nearest (fastest)
-    drawLayer(pFarMountainImg, 0.1);
-    drawLayer(pMountainImg, 0.3);
-    drawLayer(pSeaImg, 0.6);
+    bgs.forEach((src, index) => {
+        const img = getCachedImage(src);
+        const speed = speeds[index] || speeds[speeds.length - 1];
+        drawLayer(img, speed);
+    });
 }
+
 
 export function drawGround(ctx, cx = 0, currentMap = 0, frame = 0) {
     if (!MAPS[currentMap].hasDock) return;
 
     const gx = -cx;
 
-    // Draw the animated shore sprite
     ctx.imageSmoothingEnabled = false;
     const drawX = shore.x + gx;
     const drawY = shore.y - 150 * shore.scale;
@@ -150,7 +153,6 @@ export function drawGround(ctx, cx = 0, currentMap = 0, frame = 0) {
             drawX, drawY, drawW, drawH
         );
     } else {
-        // Fallback solid color
         ctx.fillStyle = P.dirtMid;
         ctx.fillRect(gx, GROUND_Y, SHORE_END, H - GROUND_Y);
     }
@@ -166,7 +168,7 @@ export function drawWaterBackground(ctx, cx, currentMap = 0) {
         const minDepth = MAPS[currentMap].minDepth || 1;
         const maxDepth = MAPS[currentMap].maxDepth || minDepth;
         const totalLayers = maxDepth - minDepth + 1;
-        const layerHeight = DEPTH_LEVEL_HEIGHT; // Pulled from constants.js
+        const layerHeight = DEPTH_LEVEL_HEIGHT;
         const maxWaterH = totalLayers * layerHeight;
 
         // Draw a solid background so the transparent surface level doesn't show essentially empty canvas
@@ -185,7 +187,7 @@ export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
         const minDepth = MAPS[currentMap].minDepth || 1;
         const maxDepth = MAPS[currentMap].maxDepth || minDepth;
         const totalLayers = maxDepth - minDepth + 1;
-        const layerHeight = DEPTH_LEVEL_HEIGHT; // Pulled from constants.js
+        const layerHeight = DEPTH_LEVEL_HEIGHT;
         const maxWaterH = totalLayers * layerHeight;
 
         const g = ctx.createLinearGradient(0, WATER_Y, 0, WATER_Y + maxWaterH);
@@ -213,9 +215,9 @@ export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
         ctx.save();
         ctx.strokeStyle = DEPTH_LINE_COLOR;
         ctx.lineWidth = 4;
-        ctx.setLineDash([20, 20]); // Create a striped/dotted dash effect
+        ctx.setLineDash([20, 20]);
+        ctx.lineDashOffset = cx;
         ctx.beginPath();
-        // Since the UI tracks 5 depth layers, guarantee we always draw the 5 lines separating them
         for (let i = 1; i <= 5; i++) {
             const lineY = WATER_Y + (i * layerHeight);
             ctx.moveTo(Math.floor(screenStartX), lineY);

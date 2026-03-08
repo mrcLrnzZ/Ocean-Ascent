@@ -2,6 +2,7 @@ import { GROUND_Y, PIER_END_X } from './constants.js';
 import { waveSurf } from './environment.js';
 
 export class Player {
+    
     constructor() {
         this.scale = 1.5;
         this.frameW = 90;

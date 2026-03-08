@@ -55,8 +55,20 @@ export const DEPTH_COLORS = {
 };
 
 export const MAPS = [
-  { id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 6, hasDock: true, length: SHORE_LEVEL_LENGTH },
-  { id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 6, hasDock: false, length: LEVEL_1_LENGTH },
-  { id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 6, hasDock: false, length: LEVEL_2_LENGTH },
-  { id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 6, hasDock: false, length: LEVEL_3_LENGTH }
+  {
+    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 6, hasDock: true, length: SHORE_LEVEL_LENGTH,
+    backgrounds: ['assets/parallax_farmountainv2.png', 'assets/parallax_mountainv2.png', 'assets/parallax_seav2.png']
+  },
+  {
+    id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 6, hasDock: false, length: LEVEL_1_LENGTH,
+    backgrounds: ['assets/parallax_farmountainv2.png', 'assets/parallax_mountainv2.png', 'assets/parallax_seav2.png']
+  },
+  {
+    id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 6, hasDock: false, length: LEVEL_2_LENGTH,
+    backgrounds: ['assets/parallax_farmountainv2.png', 'assets/parallax_mountainv2.png', 'assets/parallax_seav2.png']
+  },
+  {
+    id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 6, hasDock: false, length: LEVEL_3_LENGTH,
+    backgrounds: ['assets/parallax_farmountainv2.png', 'assets/parallax_mountainv2.png', 'assets/parallax_seav2.png']
+  }
 ];

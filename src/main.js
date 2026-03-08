@@ -4,6 +4,7 @@ import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
 import { GROUND_Y, WATER_Y, MAPS, MAP_TRANSITION_X_LEFT } from './constants.js';
+import { debugCam, toggleDebugCam } from './debugcam.js';
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -13,20 +14,19 @@ canvas.height = H;
 
 const player = new Player();
 const merchant = new Merchant(540, GROUND_Y);
-const boat = new Boat(950, 650); // Position it relative to the dock
-
+const boat = new Boat(950, 650);
 const keys = {};
 let frame = 0;
-let cameraX = 0; // Needed for scrolling
-let cameraY = 0; // Added for vertical scrolling (debug camera)
+let cameraX = 0;
+let cameraY = 0;
 let uiOpen = false;
 let currentMap = 0;
 
 const transition = {
     active: false,
     progress: 0,
-    direction: 1, // 1 for fading in, -1 for fading out
-    sweepDir: 1,  // 1 for right->left, -1 for left->right
+    direction: 1,
+    sweepDir: 1,
     speed: 0.02,
     pendingMapChange: null,
     pendingPlayerX: null,
@@ -54,23 +54,12 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
 
+
+
 // Debug Camera logic
-const debugCam = {
-    enabled: false,
-    x: 0,
-    y: 0,
-    speed: 15
-};
-
-document.getElementById('debug-btn').addEventListener('click', (e) => {
-    debugCam.enabled = !debugCam.enabled;
-    e.target.textContent = `Debug Cam: ${debugCam.enabled ? 'ON' : 'OFF'}`;
-    if (debugCam.enabled) {
-        debugCam.x = cameraX;
-        debugCam.y = cameraY;
-    }
+document.getElementById('debug-btn').addEventListener('click', () => {
+    toggleDebugCam(cameraX, cameraY);
 });
-
 function openMerchantUI() {
     uiOpen = true;
     keys['e'] = false; keys['E'] = false;
@@ -320,25 +309,20 @@ function loop() {
         ctx.translate(0, -Math.floor(cameraY));
 
         drawSky(ctx);
-        drawWaterBackground(ctx, cameraX, currentMap); // 1. Solid back water color
+        drawWaterBackground(ctx, cameraX, currentMap);
         drawBackground(ctx, cameraX, currentMap);
         drawGround(ctx, cameraX, currentMap, frame);
 
-
-
-        drawDock(ctx, cameraX, currentMap);
         if (currentMap === 0) {
             merchant.draw(ctx, cameraX, player);
         }
         player.draw(ctx, cameraX);
-
-        boat.draw(ctx, cameraX, frame, player); // 2. Sprites and objects
-
-        drawWaterForeground(ctx, cameraX, frame, currentMap); // 3. Transparent water gradient over top
+        drawDock(ctx, cameraX, currentMap);
+        boat.draw(ctx, cameraX, frame, player);
+        drawWaterForeground(ctx, cameraX, frame, currentMap);
         drawSoilOverlap(ctx, cameraX, currentMap);
         ctx.restore();
 
-        // Draw transition effect covering the screen
         if (transition.active) {
             drawTransition(ctx, transition.progress, transition.direction, transition.sweepDir);
         }
@@ -350,10 +334,8 @@ function loop() {
     if (!uiOpen) {
         requestAnimationFrame(loop);
     } else {
-        // Just draw statically if UI is open
         requestAnimationFrame(loop);
     }
 }
 
-// 5. START THE GAME
 loop();

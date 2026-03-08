@@ -55,7 +55,7 @@ export class Merchant {
             ctx.fillStyle = "white";
             ctx.font = "bold 16px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("Press [E] to Trade", screenX + drawW / 2, this.y - 20);
+            ctx.fillText("Press [E] to Trade", screenX + drawW / 2, this.y - 120);
 
             // Subtle floating effect for prompt
             const bounce = Math.sin(Date.now() * 0.005) * 5;
