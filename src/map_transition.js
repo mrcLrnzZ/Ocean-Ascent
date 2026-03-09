@@ -1,0 +1,86 @@
+// src/map_transition.js
+import { MAPS, MAP_TRANSITION_X_LEFT } from './constants.js';
+
+export class MapTransitionManager {
+    constructor() {
+        this.active = false;
+        this.progress = 0;
+        this.direction = 1;
+        this.sweepDir = 1;
+        this.speed = 0.02;
+        this.pendingMapChange = null;
+        this.pendingPlayerX = null;
+        this.pendingBoatX = null;
+    }
+
+    updateTransition(currentMap, boat, player) {
+        if (!this.active) return currentMap;
+
+        let newMap = currentMap;
+        this.progress += this.speed * this.direction;
+
+        if (this.progress >= 1 && this.direction === 1) {
+            this.direction = -1;
+            this.progress = 1;
+
+            if (this.pendingMapChange !== null) {
+                newMap = this.pendingMapChange;
+                boat.x = this.pendingBoatX;
+                player.x = this.pendingPlayerX;
+                this.pendingMapChange = null;
+            }
+        }
+        if (this.progress <= 0 && this.direction === -1) {
+            this.active = false;
+            this.progress = 0;
+            this.direction = 1;
+        }
+
+        return newMap;
+    }
+
+    checkBoundaries(currentMap, boat, player, uiManager) {
+        if ((boat.state !== 'sailing' && player.state !== 'onBoat') || this.active) return;
+
+        const currentMapLength = MAPS[currentMap].length;
+
+        if (boat.x > currentMapLength) {
+            if (currentMap < MAPS.length - 1) {
+                const nextMapReq = MAPS[currentMap + 1].requiredBoatLvl;
+                if (player.boatLevel >= nextMapReq) {
+                    this.active = true;
+                    this.direction = 1;
+                    this.sweepDir = 1;
+                    this.pendingMapChange = currentMap + 1;
+                    const playerRel = player.x - boat.x;
+                    this.pendingBoatX = MAP_TRANSITION_X_LEFT + 10;
+                    this.pendingPlayerX = this.pendingBoatX + playerRel;
+                    boat.vx = 0;
+                } else {
+                    boat.x = currentMapLength; // block
+                    boat.vx = 0;
+                    if (uiManager) {
+                        uiManager.showNotification(`Need Level ${nextMapReq} Boat to sail further!`);
+                    }
+                }
+            } else {
+                boat.x = currentMapLength; // Edge of world
+                boat.vx = 0;
+            }
+        } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap > 0) {
+            this.active = true;
+            this.direction = 1;
+            this.sweepDir = -1;
+            this.pendingMapChange = currentMap - 1;
+            const playerRel = player.x - boat.x;
+            this.pendingBoatX = MAPS[currentMap - 1].length - 50;
+            this.pendingPlayerX = this.pendingBoatX + playerRel;
+            boat.vx = 0;
+        } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) {
+            boat.x = MAP_TRANSITION_X_LEFT;
+            boat.vx = 0;
+        }
+    }
+}
+
+export const transitionManager = new MapTransitionManager();

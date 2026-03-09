@@ -1,11 +1,11 @@
 // src/fish.js
 
 const SPRITE_DATA = {
-    common:  { src: 'assets/anchovyy.png',          frames: 4, renderScale: 0.2, name: 'Anchovy' },
+    common: { src: 'assets/anchovyy.png', frames: 4, renderScale: 0.2, name: 'Anchovy' },
     uncommon: { src: 'assets/swordfish.png', frames: 4, renderScale: 0.29, name: 'Swordfish' },
-    rare:   { src: 'assets/doomsday-oarfishF.png',          frames: 4, renderScale: 0.59, name: 'Doomsday Oarfish' },
-    epic:   { src: 'assets/swordfish.png',            frames: 4, renderScale: 0.2, name: 'Epic Fish' },
-    legendary: { src: 'assets/swordfish.png',     frames: 4, renderScale: 0.2, name: 'Legendary Fish' }
+    rare: { src: 'assets/doomsday-oarfishF.png', frames: 4, renderScale: 0.59, name: 'Doomsday Oarfish' },
+    epic: { src: 'assets/swordfish.png', frames: 4, renderScale: 0.2, name: 'Epic Fish' },
+    legendary: { src: 'assets/swordfish.png', frames: 4, renderScale: 0.2, name: 'Legendary Fish' }
 };
 
 export class Fish {
@@ -23,25 +23,25 @@ export class Fish {
 
         // Sprite info based on type
         const data = SPRITE_DATA[type] || SPRITE_DATA.small;
-        this.frames      = data.frames;
+        this.frames = data.frames;
         this.renderScale = data.renderScale;
-        this.name        = data.name;
+        this.name = data.name;
 
         // Frame dimensions will be set after image loads
-        this.frameW  = null;
-        this.frameH  = null;
+        this.frameW = null;
+        this.frameH = null;
         this.renderW = null;
         this.renderH = null;
 
         // Randomize starting frame for animation
         this.frameIndex = Math.floor(Math.random() * this.frames); // start at random frame
-        this.frameTick  = 0; // counts game ticks for frame switching
-        this.frameRate  = 30; // ticks per frame change (lower = faster animation)
+        this.frameTick = 0; // counts game ticks for frame switching
+        this.frameRate = 30; // ticks per frame change (lower = faster animation)
 
         this.img = new Image();
         this.img.onload = () => {
-            this.frameW  = this.img.naturalWidth / this.frames; // width of one frame
-            this.frameH  = this.img.naturalHeight;
+            this.frameW = this.img.naturalWidth / this.frames; // width of one frame
+            this.frameH = this.img.naturalHeight;
             this.renderW = this.frameW * this.renderScale; // how wide it appears on screen
             this.renderH = this.frameH * this.renderScale; // how tall it appears on screen
         };
@@ -53,6 +53,14 @@ export class Fish {
 
     update() {
         if (this.caught) return; // stop moving if caught
+
+        // Prevent fish from swimming into the physical soil overlap
+        // The soil block visually occupies X <= 1250 and Y <= 900
+        if (this.x <= 850 && this.y <= 900) {
+            this.x = 851; // push out horizontally
+            this.direction = 1; // force them to swim right
+        }
+
         this.x += this.speed * this.direction; // move left or right
 
         this.frameTick++;
@@ -61,7 +69,7 @@ export class Fish {
             this.frameIndex = (this.frameIndex + 1) % this.frames;
         }
 
-        if (Math.random() < 0.005) { 
+        if (Math.random() < 0.005) {
             this.direction *= -1;
         }
     }

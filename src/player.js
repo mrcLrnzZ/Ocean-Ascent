@@ -40,7 +40,7 @@ export class Player {
         this.lastState = this.isMoving;
         this.isMoving = false;
 
-        const speed = 3;
+        const speed = 30;
 
         if (this.state === 'onBoat' && boat) {
             const bounds = boat.getBounds();
