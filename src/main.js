@@ -79,7 +79,17 @@ function loop() {
             const playerRelCenterX = (player.x + 64) - boat.x; // Use player center (~128px width, center is +64)
             const zoneWidth = bounds.width / 3;
 
-            if (playerRelCenterX < zoneWidth) boat.state = boat.state === 'fishing' ? 'idle' : 'fishing';
+            if (playerRelCenterX < zoneWidth) {
+                if (boat.state === 'fishing') {
+                    if (!player.rod.isCasting && !player.rod.reeling) {
+                        boat.state = 'idle';
+                    } else {
+                        uiManager.showNotification("Reel in your line before leaving!");
+                    }
+                } else {
+                    boat.state = 'fishing';
+                }
+            }
             else if (playerRelCenterX > bounds.width - zoneWidth) boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
             else if (Math.abs(boat.x - 950) < 100 && boat.state === 'idle') {
                 player.state = 'walking';
@@ -114,18 +124,18 @@ function loop() {
         }
         fishManager.draw(ctx, cameraX);  // the fish
 
-        if(player.state == 'onBoat'){
-             
+        if (player.state == 'onBoat') {
+
             drawDock(ctx, cameraX, currentMap);
             player.draw(ctx, cameraX);
-          
-            
-        } else{
-              player.draw(ctx, cameraX);
-             drawDock(ctx, cameraX, currentMap);
-          
-      
-        
+
+
+        } else {
+            player.draw(ctx, cameraX);
+            drawDock(ctx, cameraX, currentMap);
+
+
+
         }
         boat.draw(ctx, cameraX, frame, player);
         drawWaterForeground(ctx, cameraX, frame, currentMap);

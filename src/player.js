@@ -52,12 +52,15 @@ export class Player {
         const speed = 30;
 
         if (this.state === 'onBoat' && boat) {
+            this.boatRef = boat;
             const bounds = boat.getBounds();
 
-            if (boat.state === 'sailing') {
+            if (boat.state === 'sailing' || boat.state === 'fishing') {
                 this.vx = 0;
                 this.isMoving = false;
-                this.x += boat.vx; // move with boat
+                if (boat.state === 'sailing') {
+                    this.x += boat.vx; // move with boat
+                }
             } else {
                 if (G.keys['ArrowRight'] || G.keys['d']) {
                     this.vx = speed;
@@ -85,6 +88,7 @@ export class Player {
             // Dynamic rod sink depth for boat
             this.rod.sinkDepth = 200 + 100 * (boat.level - 1); // example: deeper with upgraded boat
         } else {
+            this.boatRef = null;
             // Walking logic
             if (G.keys['ArrowRight'] || G.keys['d']) {
                 this.vx = speed;

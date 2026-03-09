@@ -89,7 +89,7 @@ export const PARALLAX_LAYERS = {
   ],
   1: [ // Map 1
     { y: -10, width: 1900, height: 1500, scale: 0.5, speed: 0.1 },
-    { y: -30, width: 1900, height: 1500, scale: 0.5, speed: 0.3 },
+    { y: -30, width: 1900, height: 1600, scale: 0.5, speed: 0.3 },
     { y: 30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],

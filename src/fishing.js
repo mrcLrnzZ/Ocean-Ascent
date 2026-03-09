@@ -29,6 +29,7 @@ export class Rod {
         this.reelDuration = 500;
         // landing variables
         this.landedX = null;
+        this.landedXOffset = 0;
         this.landedY = null;
         this.sinkSpeed = 0.8;
         this.sinkDepth = SHORE_LINE_DEPTH;
@@ -66,6 +67,8 @@ export class Rod {
             originX = this.player.boatRef.x + (this.player.x - this.player.boatRef.x) + 20;
             originY = this.player.y; // y adjusted by player.js for tilt
         }
+        this.originX = originX;
+        this.originY = originY;
 
         // ---------- Casting ----------
         if (!this.isCasting) {
@@ -73,6 +76,8 @@ export class Rod {
             if (this.player.state === 'onBoat' && this.player.boatRef) {
                 if (this.player.boatRef.state !== 'fishing') {
                     this.power = 0; // Prevent power charging
+                    this.x = originX;
+                    this.y = originY;
                     return;         // Exit completely
                 }
             }
@@ -91,6 +96,7 @@ export class Rod {
                 this.power = 0;
                 this.reelTimer = 0;
                 this.landedX = null;
+                this.landedXOffset = 0;
                 this.landedY = null;
                 this.isSinking = false;
                 this.caughtFish = null;
@@ -117,6 +123,7 @@ export class Rod {
                     this.isBaitInWater = true;
                     this.isSinking = true;
                     this.landedX = this.x;
+                    this.landedXOffset = this.x - originX;
                     this.depthOffset = 0;
                 }
             } else if (this.isSinking) {
@@ -125,7 +132,7 @@ export class Rod {
                     return;
                 }
 
-                this.x = this.landedX;
+                this.x = originX + this.landedXOffset;
                 this.depthOffset += this.sinkSpeed;
 
                 // Max depth based on rod level
@@ -157,7 +164,7 @@ export class Rod {
                 }
 
             } else {
-                this.x = this.landedX;
+                this.x = originX + this.landedXOffset;
 
                 // Max depth based on rod level
                 this.maxDepthOffset = getDepthEndLine(Math.min(6, this.player.rodLevel)) - WATER_Y;
@@ -296,8 +303,8 @@ export class Rod {
         ctx.strokeStyle = '#e0e0e0';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        const rodTipX = this.player.x - cameraX + 24;
-        const rodTipY = this.player.y + 30;
+        const rodTipX = this.originX ? this.originX - cameraX : this.player.x - cameraX + 24;
+        const rodTipY = this.originY ? this.originY : this.player.y + 30;
         ctx.moveTo(rodTipX, rodTipY);
 
         let sag = 0;
@@ -310,12 +317,12 @@ export class Rod {
         // Preview angle
         if (!this.isCasting) {
             const previewLength = 50 + this.power * 2;
-            const px = this.player.x + 24 + Math.cos(this.angle) * previewLength - cameraX;
-            const py = this.player.y + 20 + Math.sin(this.angle) * previewLength;
+            const px = rodTipX + Math.cos(this.angle) * previewLength;
+            const py = rodTipY + Math.sin(this.angle) * previewLength;
             ctx.strokeStyle = 'rgba(229, 255, 0, 0.6)';
             ctx.setLineDash([5, 3]);
             ctx.beginPath();
-            ctx.moveTo(this.player.x - cameraX + 24, this.player.y + 20);
+            ctx.moveTo(rodTipX, rodTipY);
             ctx.lineTo(px, py);
             ctx.stroke();
             ctx.setLineDash([]);
@@ -439,6 +446,7 @@ export class Rod {
         this.catchProgress = 0;
         this.reelTimer = 0;
         this.landedX = null;
+        this.landedXOffset = 0;
         this.landedY = null;
         this.caughtFish = null;
         this.depthOffset = 0;
