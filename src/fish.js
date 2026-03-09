@@ -8,18 +8,18 @@ export const SPRITE_DATA = {
 
     // Level 2: Mid-Shallows
     tuna: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.2, name: 'Tuna', rarity: 'uncommon', desc: 'A fast, torpedo-shaped predator built for speed and endurance.' },
-    swordfish: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.29, name: 'Swordfish', rarity: 'uncommon', desc: 'Recognized by its elongated, sword-like bill used to slash at prey.' },
-    mahi_mahi: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.25, name: 'Mahi Mahi', rarity: 'uncommon', desc: 'Also known as the dolphinfish, it dazzles with vibrant green and golden hues.' },
+    swordfish: { src: 'assets/choifish.png', almanacSrc: 'assets/almanachoifish.png', frames: 6, renderScale: 0.29, name: 'Choifish', rarity: 'uncommon', desc: 'A graceful fish known for its flowing fins and vibrant colors. Often seen gliding peacefully through clear waters.' },
+    mahi_mahi: { src: 'assets/devilfish.png', almanacSrc: 'assets/almanacdevilfish.png', frames: 6, renderScale: 0.25, name: 'DevilFish', rarity: 'uncommon', desc: 'A fast and agile ocean fish, known for its acrobatic leaps and energetic movements in open waters.' },
 
     // Level 3: Deep
     cod: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.3, name: 'Cod', rarity: 'rare', desc: 'A heavy-bodied fish that prefers colder, deeper waters.' },
-    pufferfish: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.2, name: 'Pufferfish', rarity: 'rare', desc: 'Inflates into a spiky ball when threatened. Highly toxic if prepared incorrectly.' },
+    pufferfish: { src: 'assets/flowerhead.png', almanacSrc: 'assets/almanacflowerhead.png', frames: 6, renderScale: 0.2, name: 'FlowerHorn', rarity: 'rare', desc: 'A rare fish with a head shaped like blooming petals. Its vibrant colors and elegant movement make it a beautiful sight in calm waters.' },
     sunfish: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.4, name: 'Sunfish', rarity: 'rare', desc: 'A bizarre, flattened giant that often basks sideways near the surface, but dives deep for jellyfish.' },
 
     // Level 4: Trench
-    oarfish: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.59, name: 'Doomsday Oarfish', rarity: 'epic', desc: 'A long, ribbon-like creature. Often mistaken for a sea serpent by sailors.' },
-    anglerfish: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.3, name: 'Anglerfish', rarity: 'epic', desc: 'Uses a bioluminescent lure sprouting from its head to attract prey in the pitch black.' },
-    coelacanth: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.35, name: 'Coelacanth', rarity: 'epic', desc: 'A living fossil with lobed fins, thought to be extinct for millions of years.' },
+    oarfish: { src: 'assets/halfmoon.png', almanacSrc: 'assets/almanacHalfmoon.png', frames: 6, renderScale: 0.59, name: 'Halfmoon', rarity: 'epic', desc: 'A rare deep-sea fish with a glowing crescent tail that resembles a half moon. Known to appear only in calm waters at night, making it a prized catch among legendary anglers.' },
+    anglerfish: { src: 'assets/veailtail.png', almanacSrc: 'assets/almanacveailtail.png', frames: 6, renderScale: 0.3, name: 'Veiltail', rarity: 'epic', desc: 'A mysterious deep-sea fish with a flowing veil-like tail. Its glowing lure attracts curious prey in the darkest depths of the ocean.' },
+    coelacanth: { src: 'assets/anglerfish.png', almanacSrc: 'assets/almanacAnglerfish.png', frames: 6, renderScale: 0.35, name: 'Angler', rarity: 'epic', desc: 'A deep-sea predator known for the glowing lure that dangles from its head, attracting prey in the dark abyss.' },
 
     // Level 5 & 6: Abyss
     reaper: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.7, name: 'Reaper Leviathan', rarity: 'legendary', desc: 'A terrifying apex predator with mandibles designed to crush reinforced hulls.' },
