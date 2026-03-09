@@ -1,4 +1,5 @@
 // src/ui.js
+import { SPRITE_DATA } from './fish.js';
 
 export const boatPrices = [0, 20, 50, 100];
 export const rodPrices = [0, 0, 50, 150, 400, 800];
@@ -12,6 +13,9 @@ export class UIManager {
         window.buyBoat = this.buyBoat.bind(this);
         window.buyRod = this.buyRod.bind(this);
         window.closeUI = this.closeUI.bind(this);
+        window.closeAlmanacUI = this.closeAlmanacUI.bind(this);
+        window.changeAlmanacPage = this.changeAlmanacPage.bind(this);
+        this.almanacPage = 0;
     }
 
     // Dependencies injected to prevent heavy coupling
@@ -20,6 +24,11 @@ export class UIManager {
         this.boat = boatRef;
         this.onUpdateHUD = updateHUDCallback;
         this.updateHUD(); // initial render
+
+        // Almanac listener
+        document.getElementById('almanac-btn').addEventListener('click', () => {
+            if (!this.isOpen) this.openAlmanacUI();
+        });
     }
 
     updateHUD() {
@@ -27,6 +36,15 @@ export class UIManager {
         document.getElementById('h-money').textContent = `$${this.player.money}`;
         document.getElementById('h-rod').textContent = rodNames[this.player.rodLevel];
         document.getElementById('h-boat').textContent = this.player.boatLevel === 0 ? "None" : `Level ${this.player.boatLevel} Boat`;
+
+        // Calculate total catches from inventory
+        let totalCaught = 0;
+        if (this.player.inventory) {
+            for (let count of Object.values(this.player.inventory)) {
+                totalCaught += count;
+            }
+        }
+        document.getElementById('h-catch').textContent = `${totalCaught} fish`;
     }
 
     openMerchantUI(keys) {
@@ -100,6 +118,61 @@ export class UIManager {
 
     closeUI() {
         document.getElementById('popup').style.display = 'none';
+        setTimeout(() => this.isOpen = false, 100);
+    }
+
+    openAlmanacUI() {
+        this.isOpen = true;
+        this.almanacPage = 0;
+        document.getElementById('almanac-popup').style.display = 'flex';
+        this.renderAlmanacPage();
+    }
+
+    changeAlmanacPage(dir) {
+        let maxPage = 4; // 15 fishes / 3 per page = 5 pages
+        this.almanacPage += dir;
+        if (this.almanacPage < 0) this.almanacPage = 0;
+        if (this.almanacPage > maxPage) this.almanacPage = maxPage;
+        this.renderAlmanacPage();
+    }
+
+    renderAlmanacPage() {
+        const grid = document.getElementById('almanac-grid');
+        grid.innerHTML = ''; // clear previous
+
+        const fishKeys = Object.keys(SPRITE_DATA);
+        const startIndex = this.almanacPage * 3;
+        const pageFishes = fishKeys.slice(startIndex, startIndex + 3);
+
+        pageFishes.forEach((fishId, index) => {
+            const data = SPRITE_DATA[fishId];
+            const count = this.player.inventory[fishId] || 0;
+            const hasCaught = count > 0;
+            const isReversed = index === 1; // 2nd row is reversed
+
+            const row = document.createElement('div');
+            row.className = `almanac-row ${hasCaught ? data.rarity : 'unknown'} ${isReversed ? 'reverse' : ''}`;
+
+            row.innerHTML = `
+                <div class="almanac-img-col">
+                    <img src="${data.almanacSrc}" alt="${hasCaught ? data.name : 'Unknown'}">
+                    <div class="fish-count">Caught: ${count}</div>
+                </div>
+                <div class="almanac-desc-col">
+                    <div class="fish-name">${hasCaught ? data.name : '???'}</div>
+                    <div class="fish-desc">${hasCaught ? data.desc : 'Unknown species. Catch it to reveal its secrets.'}</div>
+                </div>
+            `;
+
+            grid.appendChild(row);
+        });
+
+        const pageDisplay = document.getElementById('almanac-page-num');
+        if (pageDisplay) pageDisplay.innerText = `${this.almanacPage + 1} / 5`;
+    }
+
+    closeAlmanacUI() {
+        document.getElementById('almanac-popup').style.display = 'none';
         setTimeout(() => this.isOpen = false, 100);
     }
 

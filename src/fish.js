@@ -1,11 +1,30 @@
 // src/fish.js
 
-const SPRITE_DATA = {
-    common: { src: 'assets/anchovyy.png', frames: 4, renderScale: 0.2, name: 'Anchovy' },
-    uncommon: { src: 'assets/swordfish.png', frames: 4, renderScale: 0.29, name: 'Swordfish' },
-    rare: { src: 'assets/doomsday-oarfishF.png', frames: 4, renderScale: 0.59, name: 'Doomsday Oarfish' },
-    epic: { src: 'assets/swordfish.png', frames: 4, renderScale: 0.2, name: 'Epic Fish' },
-    legendary: { src: 'assets/swordfish.png', frames: 4, renderScale: 0.2, name: 'Legendary Fish' }
+export const SPRITE_DATA = {
+    // Level 1: Surface
+    anchovy: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.2, name: 'Anchovy', rarity: 'common', desc: 'A tiny, silvery fish found swimming in large schools near the surface.' },
+    sardine: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.22, name: 'Sardine', rarity: 'common', desc: 'Slightly larger than an anchovy, these quick fish are a staple food for many ocean predators.' },
+    clownfish: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.18, name: 'Clownfish', rarity: 'common', desc: 'Bright orange with white stripes. Rarely strays far from the safety of its home.' },
+
+    // Level 2: Mid-Shallows
+    tuna: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.2, name: 'Tuna', rarity: 'uncommon', desc: 'A fast, torpedo-shaped predator built for speed and endurance.' },
+    swordfish: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.29, name: 'Swordfish', rarity: 'uncommon', desc: 'Recognized by its elongated, sword-like bill used to slash at prey.' },
+    mahi_mahi: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.25, name: 'Mahi Mahi', rarity: 'uncommon', desc: 'Also known as the dolphinfish, it dazzles with vibrant green and golden hues.' },
+
+    // Level 3: Deep
+    cod: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.3, name: 'Cod', rarity: 'rare', desc: 'A heavy-bodied fish that prefers colder, deeper waters.' },
+    pufferfish: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.2, name: 'Pufferfish', rarity: 'rare', desc: 'Inflates into a spiky ball when threatened. Highly toxic if prepared incorrectly.' },
+    sunfish: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.4, name: 'Sunfish', rarity: 'rare', desc: 'A bizarre, flattened giant that often basks sideways near the surface, but dives deep for jellyfish.' },
+
+    // Level 4: Trench
+    oarfish: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.59, name: 'Doomsday Oarfish', rarity: 'epic', desc: 'A long, ribbon-like creature. Often mistaken for a sea serpent by sailors.' },
+    anglerfish: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.3, name: 'Anglerfish', rarity: 'epic', desc: 'Uses a bioluminescent lure sprouting from its head to attract prey in the pitch black.' },
+    coelacanth: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.35, name: 'Coelacanth', rarity: 'epic', desc: 'A living fossil with lobed fins, thought to be extinct for millions of years.' },
+
+    // Level 5 & 6: Abyss
+    reaper: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.7, name: 'Reaper Leviathan', rarity: 'legendary', desc: 'A terrifying apex predator with mandibles designed to crush reinforced hulls.' },
+    megalodon: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.8, name: 'Megalodon', rarity: 'legendary', desc: 'An ancient, massive shark. Only the bravest or most foolish would try to catch one.' },
+    kraken: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.9, name: 'Kraken', rarity: 'legendary', desc: 'A mythic cephalopod of unimaginable size. Its tentacles can drag ships into the abyss.' }
 };
 
 export class Fish {
@@ -22,7 +41,7 @@ export class Fish {
         this.inHitbox = false;
 
         // Sprite info based on type
-        const data = SPRITE_DATA[type] || SPRITE_DATA.small;
+        const data = SPRITE_DATA[type] || SPRITE_DATA.anchovy;
         this.frames = data.frames;
         this.renderScale = data.renderScale;
         this.name = data.name;

@@ -1,5 +1,6 @@
 // src/fishing.js
 import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END, getDepthEndLine } from './constants.js';
+import { SPRITE_DATA } from './fish.js';
 
 export class Rod {
     constructor(player, fishManager) {
@@ -208,7 +209,7 @@ export class Rod {
             let requiredTaps = 2; // default for common
             let escapeChance = 0; // chance to escape per frame
 
-            switch (this.caughtFish.type) {
+            switch (SPRITE_DATA[this.caughtFish.type].rarity) {
                 case 'common': requiredTaps = 2; escapeChance = 0.000; break;
                 case 'uncommon': requiredTaps = 4; escapeChance = 0.000; break;
                 case 'rare': requiredTaps = 8; escapeChance = 0.0005; break; // ~6% per second
@@ -253,8 +254,23 @@ export class Rod {
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
+                    // Log catch to Player Inventory
+                    const fishId = this.caughtFish.type;
+                    if (this.player.inventory[fishId] !== undefined) {
+                        this.player.inventory[fishId] += 1;
+                    }
+
                     this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
                     console.log(`Landed a ${this.caughtFish.type}!`);
+
+                    // Update caught notification ui
+                    // uiManager.showNotification(`Caught a ${this.caughtFish.name}!`); // you can enable this later
+
+                    // Update HUD to reflect new total catch count
+                    import('./ui.js').then(module => {
+                        module.uiManager.updateHUD();
+                    });
+
                     this.caughtFish = null;
                 }
                 this.reset();

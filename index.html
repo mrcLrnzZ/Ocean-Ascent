@@ -61,6 +61,23 @@
         <div id="notif"></div>
         <div id="popup"></div>
 
+        <!-- Almanac UI -->
+        <div id="almanac-popup" class="almanac-container" style="display: none;">
+            <div class="almanac-header">
+                <h2>Almanac</h2>
+                <button onclick="closeAlmanacUI()" class="close-btn">✖</button>
+            </div>
+
+            <!-- Items rendered here by JS -->
+            <div id="almanac-grid" class="almanac-grid"></div>
+
+            <div class="almanac-footer">
+                <button onclick="changeAlmanacPage(-1)" class="page-btn">◀ Prev</button>
+                <span id="almanac-page-num">1 / 5</span>
+                <button onclick="changeAlmanacPage(1)" class="page-btn">Next ▶</button>
+            </div>
+        </div>
+
         <div id="zone-warn">
             <h3>⚠ Danger Zone!</h3>
             <p id="zone-warn-msg"></p>

@@ -36,13 +36,13 @@ export class FishManager {
             const x = Math.random() * 650 + 550;
             // Spawn them slightly below the water surface
             const y = WATER_Y + Math.random() * 80 + 30;
-            this.fishes.push(new Fish('common', x, y)); // 'common' is Anchovy
+            this.fishes.push(new Fish('anchovy', x, y));
         }
     }
 
     update() {
         for (const fish of this.fishes) {
-            fish.update(); 
+            fish.update();
         }
     }
 
@@ -54,35 +54,43 @@ export class FishManager {
 }
 
 const levelDistributions = {
-    1: [
-        { type: 'common', prob: 100 },
-        { type: 'uncommon', prob: 0.30 },
-        { type: 'rare', prob: 0.10 }
+    1: [ // Surface
+        { type: 'anchovy', prob: 0.50 },
+        { type: 'sardine', prob: 0.35 },
+        { type: 'clownfish', prob: 0.15 }
     ],
-    2: [
-        { type: 'common', prob: 0.30 },
-        { type: 'uncommon', prob: 0.40 },
-        { type: 'rare', prob: 0.20 },
-        { type: 'epic', prob: 0.10 }
+    2: [ // Mid-Shallows
+        { type: 'sardine', prob: 0.20 },
+        { type: 'clownfish', prob: 0.20 },
+        { type: 'tuna', prob: 0.30 },
+        { type: 'swordfish', prob: 0.20 },
+        { type: 'mahi_mahi', prob: 0.10 }
     ],
-    3: [
-        { type: 'uncommon', prob: 0.30 },
-        { type: 'rare', prob: 0.40 },
-        { type: 'epic', prob: 0.25 },
-        { type: 'legendary', prob: 0.05 }
+    3: [ // Deep
+        { type: 'tuna', prob: 0.20 },
+        { type: 'swordfish', prob: 0.20 },
+        { type: 'cod', prob: 0.30 },
+        { type: 'pufferfish', prob: 0.20 },
+        { type: 'sunfish', prob: 0.10 }
     ],
-    4: [
-        { type: 'rare', prob: 0.30 },
-        { type: 'epic', prob: 0.50 },
-        { type: 'legendary', prob: 0.20 }
+    4: [ // Trench
+        { type: 'cod', prob: 0.20 },
+        { type: 'pufferfish', prob: 0.20 },
+        { type: 'sunfish', prob: 0.20 },
+        { type: 'oarfish', prob: 0.20 },
+        { type: 'anglerfish', prob: 0.15 },
+        { type: 'coelacanth', prob: 0.05 }
     ],
-    5: [
-        { type: 'rare', prob: 0.10 },
-        { type: 'epic', prob: 0.50 },
-        { type: 'legendary', prob: 0.40 }
+    5: [ // Abyss 1
+        { type: 'anglerfish', prob: 0.20 },
+        { type: 'coelacanth', prob: 0.30 },
+        { type: 'reaper', prob: 0.30 },
+        { type: 'megalodon', prob: 0.20 }
     ],
-    6: [
-        { type: 'legendary', prob: 1.00 }
+    6: [ // Abyss 2
+        { type: 'reaper', prob: 0.20 },
+        { type: 'megalodon', prob: 0.40 },
+        { type: 'kraken', prob: 0.40 }
     ]
 };
 

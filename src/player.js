@@ -34,6 +34,15 @@ export class Player {
 
         // --- Fishing ---
         this.rod = new Rod(this, fishManager);
+
+        // --- Inventory ---
+        this.inventory = {
+            anchovy: 0, sardine: 0, clownfish: 0,
+            tuna: 0, swordfish: 0, mahi_mahi: 0,
+            cod: 0, pufferfish: 0, sunfish: 0,
+            oarfish: 0, anglerfish: 0, coelacanth: 0,
+            reaper: 0, megalodon: 0, kraken: 0
+        };
     }
 
     update(dt, G, boat, fishManager) {
@@ -67,14 +76,14 @@ export class Player {
             this.x = Math.max(bounds.left, Math.min(this.x, bounds.right - this.frameW * this.scale));
 
             // Vertical position with waves & tilt
-            const playerRelCenter = this.x + (this.frameW * this.scale)/2 - (boat.x + bounds.width/2);
-            const tiltAngle = (playerRelCenter / (bounds.width/2)) * 0.1;
+            const playerRelCenter = this.x + (this.frameW * this.scale) / 2 - (boat.x + bounds.width / 2);
+            const tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1;
             const yOffset = playerRelCenter * Math.sin(tiltAngle);
-            const floatingY = waveSurf(boat.x + bounds.width/2, G.frame) - bounds.height*0.8;
+            const floatingY = waveSurf(boat.x + bounds.width / 2, G.frame) - bounds.height * 0.8;
             this.y = floatingY - (this.frameH * this.scale) + yOffset + boat.floorYOffset;
 
             // Dynamic rod sink depth for boat
-            this.rod.sinkDepth = 200 + 100 * (boat.level-1); // example: deeper with upgraded boat
+            this.rod.sinkDepth = 200 + 100 * (boat.level - 1); // example: deeper with upgraded boat
         } else {
             // Walking logic
             if (G.keys['ArrowRight'] || G.keys['d']) {
@@ -122,22 +131,22 @@ export class Player {
         const activeImg = this.isMoving ? this.walkImg : this.idleImg;
         if (!activeImg.complete || activeImg.naturalWidth === 0) {
             ctx.fillStyle = "rgba(255,0,0,0.5)";
-            ctx.fillRect(this.x - cx, this.y, this.frameW*this.scale, this.frameH*this.scale);
+            ctx.fillRect(this.x - cx, this.y, this.frameW * this.scale, this.frameH * this.scale);
             return;
         }
 
         const screenX = this.x - cx;
-        const drawW = this.frameW*this.scale;
-        const drawH = this.frameH*this.scale;
+        const drawW = this.frameW * this.scale;
+        const drawH = this.frameH * this.scale;
 
         ctx.save();
-        ctx.translate(Math.floor(screenX + drawW/2), Math.floor(this.y));
+        ctx.translate(Math.floor(screenX + drawW / 2), Math.floor(this.y));
         ctx.scale(this.facing, 1);
         ctx.drawImage(
             activeImg,
-            Math.floor(this.currentFrame*this.frameW), 0,
+            Math.floor(this.currentFrame * this.frameW), 0,
             this.frameW, this.frameH,
-            Math.floor(-drawW/2), 0,
+            Math.floor(-drawW / 2), 0,
             drawW, drawH
         );
         ctx.restore();
