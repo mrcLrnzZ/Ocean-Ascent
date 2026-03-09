@@ -116,7 +116,7 @@ export const MAPS = [
   {
     id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 6, hasDock: false, length: LEVEL_1_LENGTH,
    
-    backgrounds: ['assets/forest_sky.png', 'assets/forest_mountain.png', 'assets/forest_back.png', 'assets/parallax_seav2.png']
+    backgrounds: [ 'assets/forest_mountain.png', 'assets/forest_back.png', 'assets/parallax_seav2.png']
   },
   {
     id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 6, hasDock: false, length: LEVEL_2_LENGTH,

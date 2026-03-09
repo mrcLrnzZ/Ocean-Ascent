@@ -308,10 +308,20 @@ export class Rod {
         ctx.moveTo(rodTipX, rodTipY);
 
         let sag = 0;
-        if (!this.reeling && this.isCasting) {
-            sag = Math.min(100, Math.abs(rodTipX - screenX) * 0.3);
+        if (this.reeling || this.struggling) {
+            // High tension, line is perfectly straight
+            sag = 0;
+        } else if (this.isCasting && !this.isBaitInWater) {
+            // Throwing arc, slack trails behind and sags
+            sag = Math.min(120, Math.abs(rodTipX - screenX) * 0.25);
+        } else if (this.isCasting && this.isBaitInWater) {
+            // Resting in water, normal gravity sag
+            sag = Math.min(50, Math.abs(rodTipX - screenX) * 0.15);
         }
-        ctx.quadraticCurveTo((rodTipX + screenX) / 2, Math.min(rodTipY, screenY) + sag, screenX, screenY);
+
+        const cpX = (rodTipX + screenX) / 2;
+        const cpY = ((rodTipY + screenY) / 2) + sag;
+        ctx.quadraticCurveTo(cpX, cpY, screenX, screenY);
         ctx.stroke();
 
         // Preview angle
