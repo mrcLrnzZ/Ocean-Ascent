@@ -1,5 +1,6 @@
 // src/ui.js
 import { SPRITE_DATA } from './fish.js';
+import { audio } from './main.js';
 
 export const boatPrices = [0, 20, 50, 100];
 export const rodPrices = [0, 0, 50, 150, 400, 800];
@@ -89,6 +90,7 @@ export class UIManager {
 
     buyBoat(level, price) {
         if (this.player && this.player.money >= price) {
+            audio.play('buy');
             this.player.money -= price;
             this.player.boatLevel = level;
             if (this.boat) {
@@ -105,6 +107,7 @@ export class UIManager {
 
     buyRod(level, price) {
         if (this.player && this.player.money >= price) {
+            audio.play('buy');
             this.player.money -= price;
             this.player.rodLevel = level;
             this.player.rod.maxPower = 5 + level * 3.5; // pampalakas ng bato based sa level
@@ -119,6 +122,7 @@ export class UIManager {
     closeUI() {
         document.getElementById('popup').style.display = 'none';
         setTimeout(() => this.isOpen = false, 100);
+        audio.play('click');
     }
 
     openAlmanacUI() {
@@ -126,6 +130,7 @@ export class UIManager {
         this.almanacPage = 0;
         document.getElementById('almanac-popup').style.display = 'flex';
         this.renderAlmanacPage();
+        audio.play('click');
     }
 
     changeAlmanacPage(dir) {
@@ -134,6 +139,7 @@ export class UIManager {
         if (this.almanacPage < 0) this.almanacPage = 0;
         if (this.almanacPage > maxPage) this.almanacPage = maxPage;
         this.renderAlmanacPage();
+        audio.play('nextpage');
     }
 
     renderAlmanacPage() {
@@ -174,6 +180,7 @@ export class UIManager {
     closeAlmanacUI() {
         document.getElementById('almanac-popup').style.display = 'none';
         setTimeout(() => this.isOpen = false, 100);
+        audio.play('click');
     }
 
     updateDepthMeter(cameraCenterY, waterY, getDepthEndLineFunc) {

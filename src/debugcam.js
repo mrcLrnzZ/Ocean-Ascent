@@ -1,3 +1,4 @@
+import {audio} from './main.js';
 export const debugCam = {
     enabled: false,
     x: 0,
@@ -6,6 +7,7 @@ export const debugCam = {
 };
 
 export function toggleDebugCam(cameraX, cameraY) {
+    audio.play('click');
     debugCam.enabled = !debugCam.enabled;
     const btn = document.getElementById('debug-btn');
     if (btn) {
