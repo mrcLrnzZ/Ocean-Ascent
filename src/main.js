@@ -1,5 +1,5 @@
 
-import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, drawWaterForeground, drawSoilOverlap, drawTransition } from './render_map.js';
+import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, drawWaterForeground, drawTransition, drawDeepSoil } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant } from './merchant.js';
 import { Boat } from './boat.js';
@@ -139,7 +139,7 @@ function loop() {
         }
         boat.draw(ctx, cameraX, frame, player);
         drawWaterForeground(ctx, cameraX, frame, currentMap);
-        drawSoilOverlap(ctx, cameraX, currentMap);
+        drawDeepSoil(ctx, cameraX, currentMap);
         ctx.restore();
 
         if (transitionManager.active) {

@@ -1,4 +1,5 @@
 // src/fish.js
+import { getDeepSoilY, getDeepSoilX } from './constants.js';
 
 export const SPRITE_DATA = {
     // Level 1: Surface
@@ -73,11 +74,12 @@ export class Fish {
     update() {
         if (this.caught) return; // stop moving if caught
 
-        // Prevent fish from swimming into the physical soil overlap
-        // The soil block visually occupies X <= 1250 and Y <= 900
-        if (this.x <= 850 && this.y <= 900) {
-            this.x = 851; // push out horizontally
+        // Prevent fish from swimming into the deep soil slope
+        const groundY = getDeepSoilY(this.x);
+        if (this.y >= groundY) {
+            // Push out horizontally
             this.direction = 1; // force them to swim right
+            this.x = getDeepSoilX(this.y) + 1;
         }
 
         this.x += this.speed * this.direction; // move left or right

@@ -1,5 +1,5 @@
 // src/fishing.js
-import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END, getDepthEndLine } from './constants.js';
+import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END, getDepthEndLine, getDeepSoilY } from './constants.js';
 import { SPRITE_DATA } from './fish.js';
 
 export class Rod {
@@ -155,6 +155,15 @@ export class Rod {
                 this.depthOffset = Math.max(0, Math.min(this.maxDepthOffset, this.depthOffset));
 
                 this.y = WATER_Y + this.depthOffset;
+
+                // Deep soil slope bound
+                const groundY = getDeepSoilY(this.x);
+                if (this.y >= groundY) {
+                    this.y = groundY;
+                    this.depthOffset = this.y - WATER_Y;
+                    this.isSinking = false; // hit the ground, stop sinking
+                }
+
                 this.landedY = this.y;
 
                 // If auto-sinking reached limit, gracefully stop sinking state
@@ -184,6 +193,14 @@ export class Rod {
 
                 // Apply depth
                 this.y = WATER_Y + this.depthOffset;
+
+                // Deep soil slope bound
+                const groundY = getDeepSoilY(this.x);
+                if (this.y >= groundY) {
+                    this.y = groundY;
+                    this.depthOffset = this.y - WATER_Y;
+                }
+
                 this.landedY = this.y;
 
                 if (!this.caughtFish) {

@@ -1,5 +1,5 @@
-export const W = 1920; 
-export const H = 900; 
+export const W = innerWidth;
+export const H = innerHeight;
 
 export const GROUND_Y = 500;
 export const WATER_Y = 600;
@@ -66,6 +66,36 @@ export function getDepthEndLine(level) {
   return endY;
 }
 
+const DEEP_SOIL_PROFILE = [[0, 580], [50, 580], [100, 585], [150, 590], [200, 590], [250, 590], [300, 600], [350, 600], [400, 605], [450, 620], [500, 655], [550, 685], [600, 710], [650, 745], [700, 780], [750, 800], [800, 815], [850, 825], [900, 835], [950, 850], [1000, 865], [1050, 880], [1100, 900], [1150, 915], [1200, 935], [1250, 950], [1300, 965], [1350, 980], [1400, 990], [1450, 1000], [1500, 1015], [1550, 1050], [1600, 1110], [1650, 1200], [1700, 1760], [1745, 2800]];
+
+export function getDeepSoilY(x) {
+  if (x <= 0) return 580;
+  if (x >= 1745) return 2800;
+  for (let i = 0; i < DEEP_SOIL_PROFILE.length - 1; i++) {
+    const p1 = DEEP_SOIL_PROFILE[i];
+    const p2 = DEEP_SOIL_PROFILE[i + 1];
+    if (x >= p1[0] && x <= p2[0]) {
+      const t = (x - p1[0]) / (p2[0] - p1[0]);
+      return p1[1] + t * (p2[1] - p1[1]);
+    }
+  }
+  return 2800;
+}
+
+export function getDeepSoilX(y) {
+  if (y <= 580) return 0;
+  if (y >= 2800) return 1745;
+  for (let i = 0; i < DEEP_SOIL_PROFILE.length - 1; i++) {
+    const p1 = DEEP_SOIL_PROFILE[i];
+    const p2 = DEEP_SOIL_PROFILE[i + 1];
+    if (y >= p1[1] && y <= p2[1] && p1[1] !== p2[1]) {
+      const t = (y - p1[1]) / (p2[1] - p1[1]);
+      return p1[0] + t * (p2[0] - p1[0]);
+    }
+  }
+  return 1745;
+}
+
 export const DEPTH_LINE_COLOR = '#ffffff40';
 
 export const DEPTH_COLORS = {
@@ -110,13 +140,13 @@ export const PARALLAX_LAYERS = {
 export const MAPS = [
   {
     id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 6, hasDock: true, length: SHORE_LEVEL_LENGTH,
-    
+
     backgrounds: ['assets/sky_clouds.png', 'assets/sky_back_mountain.png', 'assets/sky_front_mountain.png', 'assets/parallax_seav2.png']
   },
   {
     id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 6, hasDock: false, length: LEVEL_1_LENGTH,
-   
-    backgrounds: [ 'assets/forest_mountain.png', 'assets/forest_back.png', 'assets/parallax_seav2.png']
+
+    backgrounds: ['assets/forest_mountain.png', 'assets/forest_back.png', 'assets/parallax_seav2.png']
   },
   {
     id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 6, hasDock: false, length: LEVEL_2_LENGTH,

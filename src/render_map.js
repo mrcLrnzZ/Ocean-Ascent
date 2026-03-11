@@ -13,28 +13,22 @@ function getCachedImage(src) {
 }
 
 const shoreImg = new Image();
-shoreImg.src = 'assets/newmap.png';
+shoreImg.src = 'assets/longshore.png';
 
 
-
-const soilOverlapImg = new Image();
-soilOverlapImg.src = 'assets/soiloverlay.png';
+const deepsoilImg = new Image();
+deepsoilImg.src = 'assets/deepsoiloverlay.png'
 
 const dockImg = new Image();
 dockImg.src = 'assets/dock.png';
 
 const shore = {
     x: 0,
-    y: 900,
+    y: 1025,
     scale: 5,
     animSpeed: 10
 };
 
-export const soilOverlap = {
-    x: 0,
-    y: 900,
-    scale: 5
-};
 
 export const dock = {
     x: 540,
@@ -42,6 +36,11 @@ export const dock = {
     scale: 5
 };
 
+export const deepsoil = {
+    x: 0,
+    y: 2900,
+    scale: 5
+}
 
 export function drawDock(ctx, cx, currentMap) {
     if (!MAPS[currentMap].hasDock) return;
@@ -59,22 +58,22 @@ export function drawDock(ctx, cx, currentMap) {
     }
 }
 
-
-export function drawSoilOverlap(ctx, cx, currentMap) {
+export function drawDeepSoil(ctx, cx, currentMap) {
     if (!MAPS[currentMap].hasDock) return;
 
     const gx = -cx;
 
     ctx.imageSmoothingEnabled = false;
-    const drawX = soilOverlap.x + gx;
-    const drawY = soilOverlap.y - 150 * soilOverlap.scale;
-    const drawW = 250 * soilOverlap.scale;
-    const drawH = 150 * soilOverlap.scale;
+    const drawX = deepsoil.x + gx;
+    const drawY = deepsoil.y - 550 * deepsoil.scale;
+    const drawW = 350 * deepsoil.scale;
+    const drawH = 550 * deepsoil.scale;
 
-    if (soilOverlapImg.complete && soilOverlapImg.naturalWidth !== 0) {
-        ctx.drawImage(soilOverlapImg, drawX, drawY, drawW, drawH);
+    if (deepsoilImg.complete && deepsoilImg.naturalWidth !== 0) {
+        ctx.drawImage(deepsoilImg, drawX, drawY, drawW, drawH);
     }
 }
+
 
 function rect(ctx, x, y, w, h, c) {
     ctx.fillStyle = c;
@@ -136,14 +135,14 @@ export function drawGround(ctx, cx = 0, currentMap = 0, frame = 0) {
 
     ctx.imageSmoothingEnabled = false;
     const drawX = shore.x + gx;
-    const drawY = shore.y - 150 * shore.scale;
-    const drawW = 250 * shore.scale;
-    const drawH = 150 * shore.scale;
+    const drawY = shore.y - 175 * shore.scale;
+    const drawW = 300 * shore.scale;
+    const drawH = 175 * shore.scale;
 
     if (shoreImg.complete && shoreImg.naturalWidth !== 0) {
         const frameIndex = Math.floor(frame / shore.animSpeed) % 4;
-        const frameWidth = 1000 / 4;
-        const frameHeight = 150;
+        const frameWidth = 1200 / 4;
+        const frameHeight = 175;
 
         ctx.drawImage(
             shoreImg,
