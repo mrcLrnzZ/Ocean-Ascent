@@ -1,6 +1,6 @@
 // src/fish_manager.js
 import { Fish } from './fish.js';
-import { WATER_Y, getDepthStartLine, getDepthEndLine } from './constants.js';
+import { WATER_Y, getDepthStartLine, getDepthEndLine, getDeepSoilX } from './constants.js';
 
 export class FishManager {
     constructor() {
@@ -9,22 +9,23 @@ export class FishManager {
     }
 
     spawnInitialFish() {
-        const totalLevels = 6;
+        const totalLevels = 5;
         const fishPerLevel = 30; // Amount of fish to spawn per level
 
         for (let level = 1; level <= totalLevels; level++) {
             for (let i = 0; i < fishPerLevel; i++) {
-                // X spawns randomly across the playable area
-                const x = Math.random() * 4000 + 700;
-
                 // Y spawns within the boundaries of the current depth level
-                // Example: Level 1 is WATER_Y to WATER_Y + 1500
                 const minLevelY = getDepthStartLine(level);
                 const maxLevelY = getDepthEndLine(level);
                 const layerHeight = maxLevelY - minLevelY;
 
                 // Keep fish slightly away from the exact boundaries
                 const y = minLevelY + 100 + Math.random() * (layerHeight - 200);
+
+                // Ensure X spawns to the right of the slope at that specific depth
+                const groundX = getDeepSoilX(y);
+                const xRange = 8000 - groundX;
+                const x = groundX + 100 + Math.random() * xRange;
 
                 const type = getRandomFishTypeForLevel(level);
                 this.fishes.push(new Fish(type, x, y));
@@ -81,16 +82,10 @@ const levelDistributions = {
         { type: 'anglerfish', prob: 0.15 },
         { type: 'coelacanth', prob: 0.05 }
     ],
-    5: [ // Abyss 1
-        { type: 'anglerfish', prob: 0.20 },
-        { type: 'coelacanth', prob: 0.30 },
-        { type: 'reaper', prob: 0.30 },
-        { type: 'megalodon', prob: 0.20 }
-    ],
-    6: [ // Abyss 2
-        { type: 'reaper', prob: 0.20 },
+    5: [ // Abyss
+        { type: 'reaper', prob: 0.40 },
         { type: 'megalodon', prob: 0.40 },
-        { type: 'kraken', prob: 0.40 }
+        { type: 'kraken', prob: 0.20 }
     ]
 };
 

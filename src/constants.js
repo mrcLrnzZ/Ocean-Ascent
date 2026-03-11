@@ -44,12 +44,11 @@ export const LEVEL_3_LENGTH = 4000;
 export const MAP_TRANSITION_X_LEFT = 740;
 
 export const DEPTH_LEVEL_HEIGHTS = {
-  1: 300, // Surface Level
+  1: 300,  // Surface Level
   2: 1500, // Depth 1
   3: 1500, // Depth 2
   4: 1500, // Depth 3
-  5: 1500, // Depth 4
-  6: 1500  // Depth 5 (Abyss)
+  5: 1500  // Depth 4 (Abyss)
 };
 
 export function getDepthStartLine(level) {
@@ -70,7 +69,7 @@ const DEEP_SOIL_PROFILE = [[0, 580], [50, 580], [100, 585], [150, 590], [200, 59
 
 export function getDeepSoilY(x) {
   if (x <= 0) return 580;
-  if (x >= 1745) return 2800;
+  if (x >= 1745) return Infinity;
   for (let i = 0; i < DEEP_SOIL_PROFILE.length - 1; i++) {
     const p1 = DEEP_SOIL_PROFILE[i];
     const p2 = DEEP_SOIL_PROFILE[i + 1];
@@ -103,8 +102,7 @@ export const DEPTH_COLORS = {
   2: '#0051ff80', // Depth 1
   3: '#0033aa80', // Depth 2
   4: '#001a6680', // Depth 3
-  5: '#00003380', // Depth 4
-  6: '#00000080'  // Depth 5 (Abyss)
+  5: '#00003380'  // Depth 4 (Abyss)
 };
 
 // Parallax background configuration per layer and map
@@ -139,21 +137,21 @@ export const PARALLAX_LAYERS = {
 
 export const MAPS = [
   {
-    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 6, hasDock: true, length: SHORE_LEVEL_LENGTH,
+    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 5, hasDock: true, length: SHORE_LEVEL_LENGTH,
 
     backgrounds: ['assets/sky_clouds.png', 'assets/sky_back_mountain.png', 'assets/sky_front_mountain.png', 'assets/parallax_seav2.png']
   },
   {
-    id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 6, hasDock: false, length: LEVEL_1_LENGTH,
+    id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 5, hasDock: false, length: LEVEL_1_LENGTH,
 
     backgrounds: ['assets/forest_mountain.png', 'assets/forest_back.png', 'assets/parallax_seav2.png']
   },
   {
-    id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 6, hasDock: false, length: LEVEL_2_LENGTH,
+    id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 5, hasDock: false, length: LEVEL_2_LENGTH,
     backgrounds: ['assets/parallax_farmountainv2.png', 'assets/parallax_mountainv2.png', 'assets/parallax_seav2.png']
   },
   {
-    id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 6, hasDock: false, length: LEVEL_3_LENGTH,
+    id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_3_LENGTH,
     backgrounds: ['assets/parallax_farmountainv2.png', 'assets/parallax_mountainv2.png', 'assets/parallax_seav2.png']
   }
 ];
