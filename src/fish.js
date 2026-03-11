@@ -23,9 +23,9 @@ export const SPRITE_DATA = {
     coelacanth: { src: 'assets/anglerfish.png', almanacSrc: 'assets/almanacAnglerfish.png', frames: 6, renderScale: 0.35, name: 'Angler', rarity: 'epic', desc: 'A deep-sea predator known for the glowing lure that dangles from its head, attracting prey in the dark abyss.' },
 
     // Level 5 & 6: Abyss
-    reaper: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.7, name: 'Reaper Leviathan', rarity: 'legendary', desc: 'A terrifying apex predator with mandibles designed to crush reinforced hulls.' },
-    megalodon: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.8, name: 'Megalodon', rarity: 'legendary', desc: 'An ancient, massive shark. Only the bravest or most foolish would try to catch one.' },
-    kraken: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.9, name: 'Kraken', rarity: 'legendary', desc: 'A mythic cephalopod of unimaginable size. Its tentacles can drag ships into the abyss.' }
+    Beluga: { src: 'assets/Beluga.png', almanacSrc: 'assets/almanacBeluga.png', frames: 4, renderScale: 0.7, name: 'Beluga', rarity: 'legendary', desc: 'A large beluga whale patrols the cold waters ahead. It is highly aware of movement through sound and vibration, and will approach unfamiliar creatures that enter its territory. Its strong body and quick bursts of speed make close encounters dangerous.' },
+    Mekong: { src: 'assets/Catfish.png', almanacSrc: 'assets/almanacBeluga.png', frames: 4, renderScale: 0.8, name: 'Mekong', rarity: 'legendary', desc: 'Mekong Giant Catfish detected. A massive freshwater fish capable of sudden bursts of speed. Its large size and powerful tail can easily knock aside smaller creatures that get too close.' },
+    kraken: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacDoomsday-Oarfish.png', frames: 4, renderScale: 0.9, name: 'Kraken', rarity: 'legendary', desc: 'A mythic cephalopod of unimaginable size. Its tentacles can drag ships into the abyss.' }
 };
 
 export class Fish {

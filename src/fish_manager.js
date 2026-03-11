@@ -84,7 +84,7 @@ const levelDistributions = {
     ],
     5: [ // Abyss
         { type: 'reaper', prob: 0.40 },
-        { type: 'megalodon', prob: 0.40 },
+        { type: 'Mekong', prob: 0.20 },
         { type: 'kraken', prob: 0.20 }
     ]
 };

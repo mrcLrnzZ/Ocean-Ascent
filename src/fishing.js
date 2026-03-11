@@ -1,6 +1,7 @@
 // src/fishing.js
 import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END, getDepthEndLine, getDeepSoilY } from './constants.js';
 import { SPRITE_DATA } from './fish.js';
+import { audio} from './main.js';
 
 export class Rod {
     constructor(player, fishManager) {
@@ -102,6 +103,7 @@ export class Rod {
                 this.caughtFish = null;
                 this.depthOffset = 0;
                 this.sinkDepth = (this.player.state === 'onBoat') ? 200 + 100 * (this.player.boatLevel - 1) : SHORE_LINE_DEPTH;
+                audio.play('cast');
             }
         }
 
@@ -110,16 +112,19 @@ export class Rod {
             if (!this.isBaitInWater) {
                 if (ePressedNow) {
                     this.reeling = true;
+                    audio.play('reel');
                     return;
                 }
 
                 this.vy += GRAVITY;
                 this.x += this.vx;
                 this.y += this.vy;
-
                 if (this.y >= WATER_Y) {
                     this.y = WATER_Y;
                     this.vx = 0; this.vy = 0;
+                
+                    audio.play('splash');
+
                     this.isBaitInWater = true;
                     this.isSinking = true;
                     this.landedX = this.x;
@@ -209,6 +214,7 @@ export class Rod {
                         const dist = Math.hypot(fish.x - this.x, fish.y - this.y);
                         fish.inHitbox = dist <= this.baitRadius;
                         if (fish.inHitbox && ePressedNow) {
+                            audio.play('reel');
                             fish.caught = true;
                             this.caughtFish = fish;
                             this.struggling = true;
@@ -219,6 +225,7 @@ export class Rod {
                     }
                     if (!this.caughtFish && ePressedNow) {
                         this.reeling = true; // reel empty hook
+                        audio.play('reel');
                     }
                 }
             }
@@ -245,6 +252,7 @@ export class Rod {
             // RNG Escape Roll
             if (Math.random() < escapeChance) {
                 console.log(`${this.caughtFish.type} snapped the line and got away!`);
+                audio.play('failed');
                 this.caughtFish.caught = false;
                 this.caughtFish = null;
                 this.struggling = false;
@@ -283,10 +291,12 @@ export class Rod {
                     if (this.player.inventory[fishId] !== undefined) {
                         this.player.inventory[fishId] += 1;
                     }
-
                     this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
                     console.log(`Landed a ${this.caughtFish.type}!`);
-
+                    audio.play('success');
+                    setTimeout(() => {
+                        this.reset();
+                    }, 100);
                     // Update caught notification ui
                     // uiManager.showNotification(`Caught a ${this.caughtFish.name}!`); // you can enable this later
 
@@ -460,6 +470,9 @@ export class Rod {
     }
 
     reset() {
+        audio.sounds.reel.pause();
+        audio.sounds.reel.currentTime = 0;
+
         this.isCasting = false;
         this.isBaitInWater = false;
         this.isSinking = false;
