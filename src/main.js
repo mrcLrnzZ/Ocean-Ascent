@@ -9,6 +9,8 @@ import { FishManager } from './fish_manager.js';
 import { uiManager } from './ui.js';
 import { camera } from './camera.js';
 import { transitionManager } from './map_transition.js';
+import { AudioManager } from './audio.js';
+export const audio = new AudioManager();
 
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
@@ -21,6 +23,7 @@ const fishManager = new FishManager();
 const player = new Player(fishManager); // pass fishManager to player
 const merchant = new Merchant(540, GROUND_Y);
 const boat = new Boat(950, 650);
+
 const keys = {};
 let frame = 0;
 let cameraX = 0;
