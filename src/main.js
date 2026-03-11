@@ -12,6 +12,7 @@ import { transitionManager } from './map_transition.js';
 import { AudioManager } from './audio.js';
 export const audio = new AudioManager();
 
+    audio.play("ocean");
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -68,6 +69,7 @@ function loop() {
     eWasUp = !(keys['e'] || keys['E']);
 
     if (ePressedNow && !uiManager.isOpen) {
+        audio.play('opentrade');
         if (!player.state) player.state = 'walking';
 
         if (player.state === 'walking') {
