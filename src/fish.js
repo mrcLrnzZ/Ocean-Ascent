@@ -8,12 +8,12 @@ export const SPRITE_DATA = {
     clownfish: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.18, name: 'Clownfish', rarity: 'common', desc: 'Bright orange with white stripes. Rarely strays far from the safety of its home.' },
 
     // Level 2: Mid-Shallows
-    tuna: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.2, name: 'Tuna', rarity: 'uncommon', desc: 'A fast, torpedo-shaped predator built for speed and endurance.' },
-    swordfish: { src: 'assets/choifish.png', almanacSrc: 'assets/almanachoifish.png', frames: 6, renderScale: 0.29, name: 'Choifish', rarity: 'uncommon', desc: 'A graceful fish known for its flowing fins and vibrant colors. Often seen gliding peacefully through clear waters.' },
+    tuna: { src: 'assets/choifish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 6, renderScale: 0.2, name: 'Tuna', rarity: 'uncommon', desc: 'A fast, torpedo-shaped predator built for speed and endurance.' },
+    swordfish: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanachoifish.png', frames: 4, renderScale: 0.29, name: 'Choifish', rarity: 'uncommon', desc: 'A graceful fish known for its flowing fins and vibrant colors. Often seen gliding peacefully through clear waters.' },
     mahi_mahi: { src: 'assets/devilfish.png', almanacSrc: 'assets/almanacdevilfish.png', frames: 6, renderScale: 0.25, name: 'DevilFish', rarity: 'uncommon', desc: 'A fast and agile ocean fish, known for its acrobatic leaps and energetic movements in open waters.' },
 
     // Level 3: Deep
-    cod: { src: 'assets/anchovyy.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.3, name: 'Cod', rarity: 'rare', desc: 'A heavy-bodied fish that prefers colder, deeper waters.' },
+    cod: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.3, name: 'Cod', rarity: 'rare', desc: 'A heavy-bodied fish that prefers colder, deeper waters.' },
     pufferfish: { src: 'assets/flowerhead.png', almanacSrc: 'assets/almanacflowerhead.png', frames: 6, renderScale: 0.2, name: 'FlowerHorn', rarity: 'rare', desc: 'A rare fish with a head shaped like blooming petals. Its vibrant colors and elegant movement make it a beautiful sight in calm waters.' },
     sunfish: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.4, name: 'Sunfish', rarity: 'rare', desc: 'A bizarre, flattened giant that often basks sideways near the surface, but dives deep for jellyfish.' },
 
@@ -35,7 +35,9 @@ export class Fish {
         this.y = y;
 
         // Movement
-        this.speed = (Math.random() * 0.5) + 0.2;
+        this.baseSpeed = (Math.random() * 1.2) + 0.4;
+        this.speed = this.baseSpeed;
+        this.targetSpeed = this.baseSpeed;
         this.direction = Math.random() < 0.5 ? -1 : 1;
 
         this.caught = false;
@@ -60,8 +62,8 @@ export class Fish {
 
         this.img = new Image();
         this.img.onload = () => {
-            this.frameW = this.img.naturalWidth / this.frames; // width of one frame
-            this.frameH = this.img.naturalHeight;
+            this.frameW = Math.floor(this.img.naturalWidth / this.frames); // width of one frame, rigorously typed as integer
+            this.frameH = Math.floor(this.img.naturalHeight);
             this.renderW = this.frameW * this.renderScale; // how wide it appears on screen
             this.renderH = this.frameH * this.renderScale; // how tall it appears on screen
         };
@@ -74,24 +76,41 @@ export class Fish {
     update() {
         if (this.caught) return; // stop moving if caught
 
-        // Prevent fish from swimming into the deep soil slope
-        const groundY = getDeepSoilY(this.x);
-        if (this.y >= groundY) {
-            // Push out horizontally
-            this.direction = 1; // force them to swim right
-            this.x = getDeepSoilX(this.y) + 1;
+        // Behavior: Adjust target speed occasionally
+        if (Math.random() < 0.01) {
+            this.targetSpeed = this.baseSpeed * ((Math.random() * 0.8) + 0.6); // 60% to 140% of base speed
+        }
+
+        // Smoothly interpolate current speed to target speed
+        this.speed += (this.targetSpeed - this.speed) * 0.05;
+
+        // X Movement Boundaries (Let them go far into the map)
+        if (this.x < 100) {
+            this.direction = 1;
+        } else if (this.x > 8000) {
+            this.direction = -1;
+        }
+
+        // Randomly turn around occasionally
+        if (Math.random() < 0.003) {
+            this.direction *= -1;
         }
 
         this.x += this.speed * this.direction; // move left or right
+
+        // Prevent fish from swimming left into the deep soil slope wall
+        const groundX = getDeepSoilX(this.y);
+        if (this.x <= groundX) {
+            this.x = groundX + 1;
+            if (this.direction === -1) {
+                this.direction = 1;
+            }
+        }
 
         this.frameTick++;
         if (this.frameTick >= this.frameRate) {
             this.frameTick = 0;
             this.frameIndex = (this.frameIndex + 1) % this.frames;
-        }
-
-        if (Math.random() < 0.005) {
-            this.direction *= -1;
         }
     }
 
