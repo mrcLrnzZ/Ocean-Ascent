@@ -1,4 +1,4 @@
-import { P, W, H, GROUND_Y, SHORE_END, WATER_Y, DEPTH_COLORS, DEPTH_LEVEL_HEIGHT, DEPTH_LINE_COLOR, MAPS } from './constants.js';
+import { P, W, H, GROUND_Y, SHORE_END, WATER_Y, DEPTH_COLORS, DEPTH_LEVEL_HEIGHTS, getDepthStartLine, getDepthEndLine, DEPTH_LINE_COLOR, MAPS, PARALLAX_LAYERS } from './constants.js';
 import { waveSurf } from './environment.js';
 
 const bgImageCache = {};
@@ -28,11 +28,6 @@ const shore = {
     y: 900,
     scale: 5,
     animSpeed: 10
-};
-
-export const parallax = {
-    y: 750,
-    scale: 4
 };
 
 export const soilOverlap = {
@@ -100,13 +95,18 @@ export function drawSky(ctx) {
 export function drawBackground(ctx, cx = 0, currentMap = 0) {
     ctx.imageSmoothingEnabled = false;
 
-    const drawY = parallax.y - 150 * parallax.scale;
-    const drawW = 600 * parallax.scale;
-    const drawH = 150 * parallax.scale;
-
     //parallax layer Helperr
-    function drawLayer(img, speed) {
+    function drawLayer(img, config, index) {
         if (!img.complete || img.naturalWidth === 0) return;
+
+        // Fallback to default configs if layer doesn't have an explicit setup
+        const currentMapLayers = PARALLAX_LAYERS[currentMap] || PARALLAX_LAYERS[0];
+        const layerConfig = currentMapLayers[index] || currentMapLayers[currentMapLayers.length - 1];
+
+        const drawY = layerConfig.y;
+        const drawW = layerConfig.width * layerConfig.scale;
+        const drawH = layerConfig.height * layerConfig.scale;
+        const speed = layerConfig.speed;
 
         // Calculate offset based on camera x and speed
         let offset = (cx * speed) % drawW;
@@ -120,13 +120,11 @@ export function drawBackground(ctx, cx = 0, currentMap = 0) {
 
     // Get dynamic backgrounds for the current map
     const bgs = MAPS[currentMap].backgrounds || [];
-    const speeds = [0.1, 0.3, 0.6]; // Slow, Medium, Fast
 
     // Draw from farthest (slowest) to nearest (fastest)
     bgs.forEach((src, index) => {
         const img = getCachedImage(src);
-        const speed = speeds[index] || speeds[speeds.length - 1];
-        drawLayer(img, speed);
+        drawLayer(img, null, index); // The index pulls the respective setup from PARALLAX_LAYERS
     });
 }
 
@@ -167,13 +165,13 @@ export function drawWaterBackground(ctx, cx, currentMap = 0) {
 
         const minDepth = MAPS[currentMap].minDepth || 1;
         const maxDepth = MAPS[currentMap].maxDepth || minDepth;
-        const totalLayers = maxDepth - minDepth + 1;
-        const layerHeight = DEPTH_LEVEL_HEIGHT;
-        const maxWaterH = totalLayers * layerHeight;
+        const waterStartY = getDepthStartLine(minDepth);
+        const waterEndY = getDepthEndLine(maxDepth);
+        const maxWaterH = waterEndY - waterStartY;
 
         // Draw a solid background so the transparent surface level doesn't show essentially empty canvas
         ctx.fillStyle = '#0a65c7';
-        ctx.fillRect(Math.floor(screenStartX), WATER_Y, W - screenStartX, maxWaterH + 10000);
+        ctx.fillRect(Math.floor(screenStartX), waterStartY, W - screenStartX, maxWaterH + 10000);
     }
 }
 
@@ -186,30 +184,36 @@ export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
 
         const minDepth = MAPS[currentMap].minDepth || 1;
         const maxDepth = MAPS[currentMap].maxDepth || minDepth;
-        const totalLayers = maxDepth - minDepth + 1;
-        const layerHeight = DEPTH_LEVEL_HEIGHT;
-        const maxWaterH = totalLayers * layerHeight;
+        const waterStartY = getDepthStartLine(minDepth);
+        const waterEndY = getDepthEndLine(maxDepth);
+        const maxWaterH = waterEndY - waterStartY;
 
-        const g = ctx.createLinearGradient(0, WATER_Y, 0, WATER_Y + maxWaterH);
+        const g = ctx.createLinearGradient(0, waterStartY, 0, waterEndY);
 
-        for (let i = 0; i < totalLayers; i++) {
-            const color = DEPTH_COLORS[minDepth + i] || P.waterTop;
+        for (let i = minDepth; i <= maxDepth; i++) {
+            const color = DEPTH_COLORS[i] || P.waterTop;
+
+            const layerStartY = getDepthStartLine(i);
+            const layerEndY = getDepthEndLine(i);
+
+            const solidStopY = layerStartY + 300;
+            const blendStartY = layerEndY - 300;
+
+            const solidStop = (solidStopY - waterStartY) / maxWaterH;
+            const blendStart = (blendStartY - waterStartY) / maxWaterH;
 
             // Solid color for the main part of the layer, then gradients into the next
-            const solidStop = (i * layerHeight + 300) / maxWaterH;
-            const blendStart = ((i + 1) * layerHeight - 300) / maxWaterH;
-
-            g.addColorStop(Math.min(1, solidStop), color);
+            g.addColorStop(Math.max(0, Math.min(1, solidStop)), color);
             // Blend nicely into the next layer by keeping the base color solid until the last ~300px
-            if (i < totalLayers - 1) {
-                g.addColorStop(Math.min(1, blendStart), color);
+            if (i < maxDepth) {
+                g.addColorStop(Math.max(0, Math.min(1, blendStart)), color);
             }
         }
         g.addColorStop(1, DEPTH_COLORS[maxDepth]);
 
         ctx.fillStyle = g;
         // Extend to support endless abyss depth scrolling with the Free Cam
-        ctx.fillRect(Math.floor(screenStartX), WATER_Y, W - screenStartX, maxWaterH + 10000);
+        ctx.fillRect(Math.floor(screenStartX), waterStartY, W - screenStartX, maxWaterH + 10000);
 
         // Draw dotted lines at the end of every depth level
         ctx.save();
@@ -218,8 +222,8 @@ export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
         ctx.setLineDash([20, 20]);
         ctx.lineDashOffset = cx;
         ctx.beginPath();
-        for (let i = 1; i <= 5; i++) {
-            const lineY = WATER_Y + (i * layerHeight);
+        for (let i = minDepth; i <= maxDepth; i++) {
+            const lineY = getDepthEndLine(i);
             ctx.moveTo(Math.floor(screenStartX), lineY);
             ctx.lineTo(W, lineY);
         }

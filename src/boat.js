@@ -24,7 +24,7 @@ export class Boat {
     setLevel(lvl) {
         this.isPurchased = true;
         this.level = lvl;
-        if (lvl === 1) { this.img.src = 'assets/boatlvl1.png'; this.speed = 4; }
+        if (lvl === 1) { this.img.src = 'assets/boatlvl1.png'; this.speed = 20; }
         if (lvl === 2) { this.img.src = 'assets/boatlvl2.png'; this.speed = 8; }
         if (lvl === 3) { this.img.src = 'assets/boatlvl3.png'; this.speed = 20; }
     }
@@ -72,7 +72,7 @@ export class Boat {
         let tiltAngle = 0;
         if (player.state === 'onBoat') {
             const playerRelCenter = player.x + (player.frameW * player.scale) / 2 - (this.x + bounds.width / 2);
-            tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1; // max ~0.1 rad
+            tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1; 
         }
 
         ctx.save();
@@ -89,17 +89,18 @@ export class Boat {
 
         // Show interaction prompts if player is on boat OR near it at dock
         if (player.state === 'onBoat') {
-            const playerRelX = player.x - this.x;
+            const playerRelCenterX = (player.x + 64) - this.x;
             const zoneWidth = bounds.width / 3;
 
             ctx.fillStyle = "white";
             ctx.font = "bold 14px Arial";
             ctx.textAlign = "center";
 
-            if (playerRelX < zoneWidth) {
+            if (playerRelCenterX < zoneWidth) {
                 // Left zone: Fishing
-                ctx.fillText("Press [E] to Fish", screenX + zoneWidth / 2, floatingY - 20);
-            } else if (playerRelX > bounds.width - zoneWidth) {
+                const action = this.state === 'fishing' ? "Stop Fishing" : "Fish";
+                ctx.fillText(`Press [E] to ${action}`, screenX + zoneWidth / 2, floatingY - 20);
+            } else if (playerRelCenterX > bounds.width - zoneWidth) {
                 // Right zone: Navigation
                 const action = this.state === 'sailing' ? "Stop Sailing" : "Sail";
                 ctx.fillText(`Press [E] to ${action}`, screenX + bounds.width - zoneWidth / 2, floatingY - 20);
