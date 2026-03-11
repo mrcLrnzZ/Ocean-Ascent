@@ -90,7 +90,12 @@ export class Player {
         } else {
             this.boatRef = null;
             // Walking logic
-            if (G.keys['ArrowRight'] || G.keys['d']) {
+            const isFishing = this.rod.isCasting || this.rod.power > 0 || this.rod.reeling || this.rod.struggling;
+
+            if (isFishing) {
+                this.vx = 0;
+                this.isMoving = false;
+            } else if (G.keys['ArrowRight'] || G.keys['d']) {
                 this.vx = speed;
                 this.facing = 1;
                 this.isMoving = true;
@@ -98,7 +103,9 @@ export class Player {
                 this.vx = -speed;
                 this.facing = -1;
                 this.isMoving = true;
-            } else this.vx = 0;
+            } else {
+                this.vx = 0;
+            }
 
             this.x += this.vx * dt;
             this.x = Math.max(0, Math.min(this.x, PIER_END_X));
