@@ -25,7 +25,7 @@ export const SPRITE_DATA = {
     // Level 5 & 6: Abyss
     Beluga: { src: 'assets/Beluga.png', almanacSrc: 'assets/almanacBeluga.png', frames: 4, renderScale: 0.7, name: 'Beluga', rarity: 'legendary', desc: 'A large beluga whale patrols the cold waters ahead. It is highly aware of movement through sound and vibration, and will approach unfamiliar creatures that enter its territory. Its strong body and quick bursts of speed make close encounters dangerous.' },
     Mekong: { src: 'assets/Catfish.png', almanacSrc: 'assets/almanacBeluga.png', frames: 4, renderScale: 0.8, name: 'Mekong', rarity: 'legendary', desc: 'Mekong Giant Catfish detected. A massive freshwater fish capable of sudden bursts of speed. Its large size and powerful tail can easily knock aside smaller creatures that get too close.' },
-    kraken: { src: 'assets/doomsday-oarfishF.png', almanacSrc: 'assets/almanacDoomsday-Oarfish.png', frames: 4, renderScale: 0.9, name: 'Kraken', rarity: 'legendary', desc: 'A mythic cephalopod of unimaginable size. Its tentacles can drag ships into the abyss.' }
+    kraken: { src: 'assets/kraken.png', almanacSrc: 'assets/krakenalmanac', frames: 4, renderScale: 0.9, name: 'Kraken', rarity: 'legendary', desc: 'A mythic cephalopod of unimaginable size. Its tentacles can drag ships into the abyss.' }
 };
 
 export class Fish {
