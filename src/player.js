@@ -20,11 +20,39 @@ export class Player {
         this.walkImg.src = 'assets/Fisherman_walkv2.png';
         this.idleImg = new Image();
         this.idleImg.src = 'assets/Fishermanred_idlev2.png';
+        this.throwImg = new Image();
+        this.throwImg.src = 'assets/Fisherman_throw10.png';
+        this.fishIdleImg = new Image();
+        this.fishIdleImg.src = 'assets/Fisherman_fishidle.png';
+
+        // Throw spritesheet: varies, 94px tall, each frame 127px wide
+        this.throwFrameW = 127;
+        this.throwFrameH = 94;
+        this.throwFrameCount = 10;
+        this.throwspeed = 1;
+
+        // Fish-idle spritesheet: 508x94, 4 frames (127px each)
+        this.fishIdleFrameW = 127; // 508 / 4
+        this.fishIdleFrameH = 94;
+        this.fishIdleFrameCount = 4;
+        this.fishIdleFrameSpeed = 10; // ticks per frame (~6 fps)
+        this.isFishIdle = false;
+        this.fishIdleFrame = 0;
+        this.fishIdleTimer = 0;
 
         this.currentFrame = 0;
         this.frameTimer = 0;
         this.isMoving = false;
         this.lastState = false;
+
+        // Throw animation state
+        this.isThrowAnim = false;
+        this.throwFrame = 0;
+        this.throwTimer = 0;
+        // 1 second total / 10 frames = 6 ticks per frame at 60fps
+        this.throwFrameDuration = Math.ceil((this.throwspeed * 60) / this.throwFrameCount); // 6 ticks
+        // Pending cast data stored when spacebar released, used after anim
+        this._pendingCast = null;
 
         // --- Game state ---
         this.state = 'walking'; // 'walking', 'onBoat'
@@ -90,7 +118,7 @@ export class Player {
         } else {
             this.boatRef = null;
             // Walking logic
-            const isFishing = this.rod.isCasting || this.rod.power > 0 || this.rod.reeling || this.rod.struggling;
+            const isFishing = this.rod.isCasting || this.rod.power > 0 || this.rod.reeling || this.rod.struggling || this.isThrowAnim;
 
             if (isFishing) {
                 this.vx = 0;
@@ -115,30 +143,102 @@ export class Player {
             this.rod.sinkDepth = 100;
         }
 
-        // Reset frame on state change
+        // Rod update runs FIRST so this.originX/Y is fresh for the throw/fishidle ticks below.
+        // This ensures _fireCast() launches the hook from the exact rod tip of the final throw frame.
+        this.rod.update(G.keys, this.isThrowAnim);
+
+        // --- Throw animation tick ---
+        if (this.isThrowAnim) {
+            this.throwTimer++;
+            if (this.throwTimer >= this.throwFrameDuration) {
+                this.throwTimer = 0;
+                this.throwFrame++;
+                if (this.throwFrame >= this.throwFrameCount) {
+                    // Animation done — fire the cast from the CURRENT rod tip
+                    this.throwFrame = this.throwFrameCount - 1;
+                    this.isThrowAnim = false;
+                    if (this._pendingCast) {
+                        this.rod._fireCast(this._pendingCast);
+                        this._pendingCast = null;
+                    }
+                    // Start fish-idle loop
+                    this.isFishIdle = true;
+                    this.fishIdleFrame = 0;
+                    this.fishIdleTimer = 0;
+                }
+            }
+        }
+
+        // --- Fish-idle animation tick (loops while hook is in water) ---
+        if (this.isFishIdle) {
+            // Exit when the rod resets (fish caught or empty reel returns)
+            if (!this.rod.isCasting && !this.rod.reeling && !this.rod.struggling) {
+                this.isFishIdle = false;
+                this.fishIdleFrame = 0;
+                this.fishIdleTimer = 0;
+            } else {
+                this.fishIdleTimer++;
+                if (this.fishIdleTimer >= this.fishIdleFrameSpeed) {
+                    this.fishIdleTimer = 0;
+                    this.fishIdleFrame = (this.fishIdleFrame + 1) % this.fishIdleFrameCount;
+                }
+            }
+        }
+
+        // Walk/idle sprite frame counter
         if (this.lastState !== this.isMoving) {
             this.currentFrame = 0;
             this.frameTimer = 0;
         }
-
         this.frameTimer++;
         if (this.isMoving) {
-            if (this.frameTimer >= 7) {
-                this.currentFrame = (this.currentFrame + 1) % 6;
-                this.frameTimer = 0;
-            }
+            if (this.frameTimer >= 7) { this.currentFrame = (this.currentFrame + 1) % 6; this.frameTimer = 0; }
         } else {
-            if (this.frameTimer >= 12) {
-                this.currentFrame = (this.currentFrame + 1) % 4;
-                this.frameTimer = 0;
-            }
+            if (this.frameTimer >= 12) { this.currentFrame = (this.currentFrame + 1) % 4; this.frameTimer = 0; }
         }
-
-        // Update rod every frame
-        this.rod.update(G.keys);
     }
 
     draw(ctx, cx) {
+        const screenX = this.x - cx;
+
+        if (this.isThrowAnim && this.throwImg.complete && this.throwImg.naturalWidth !== 0) {
+            // Draw throw spritesheet frame
+            const drawW = this.throwFrameW * this.scale;
+            const drawH = this.throwFrameH * this.scale;
+            ctx.save();
+            ctx.translate(Math.floor(screenX + drawW / 2), Math.floor(this.y));
+            ctx.scale(this.facing, 1);
+            ctx.drawImage(
+                this.throwImg,
+                Math.floor(this.throwFrame * this.throwFrameW), 0,
+                this.throwFrameW, this.throwFrameH,
+                Math.floor(-drawW / 2), 0,
+                drawW, drawH
+            );
+            ctx.restore();
+            this.rod.draw(ctx, cx);
+            return;
+        }
+
+        if (this.isFishIdle && this.fishIdleImg.complete && this.fishIdleImg.naturalWidth !== 0) {
+            // Draw looping fish-idle spritesheet
+            const drawW = this.fishIdleFrameW * this.scale;
+            const drawH = this.fishIdleFrameH * this.scale;
+            ctx.save();
+            ctx.translate(Math.floor(screenX + drawW / 2), Math.floor(this.y));
+            ctx.scale(this.facing, 1);
+            ctx.drawImage(
+                this.fishIdleImg,
+                Math.floor(this.fishIdleFrame * this.fishIdleFrameW), 0,
+                this.fishIdleFrameW, this.fishIdleFrameH,
+                Math.floor(-drawW / 2), 0,
+                drawW, drawH
+            );
+            ctx.restore();
+            this.rod.draw(ctx, cx);
+            return;
+        }
+
         const activeImg = this.isMoving ? this.walkImg : this.idleImg;
         if (!activeImg.complete || activeImg.naturalWidth === 0) {
             ctx.fillStyle = "rgba(255,0,0,0.5)";
@@ -146,7 +246,6 @@ export class Player {
             return;
         }
 
-        const screenX = this.x - cx;
         const drawW = this.frameW * this.scale;
         const drawH = this.frameH * this.scale;
 

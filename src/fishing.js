@@ -1,7 +1,8 @@
 // src/fishing.js
 import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END, getDepthEndLine, getDeepSoilY } from './constants.js';
 import { SPRITE_DATA } from './fish.js';
-import { audio} from './main.js';
+import { audio } from './main.js';
+import { ROD_TIPS } from './rod_tips.js';
 
 export class Rod {
     constructor(player, fishManager) {
@@ -12,6 +13,9 @@ export class Rod {
         this.y = player.y;
         this.vx = 0;
         this.vy = 0;
+        // Initialized properly so draw() never falls back to head position
+        this.originX = player.x + 20;
+        this.originY = player.y + 30;
 
         this.angle = -Math.PI / 4;
         this.power = 0;
@@ -48,7 +52,7 @@ export class Rod {
         this.struggling = false; // true when a fish is hooked but not yet fully caught
     }
 
-    update(keys) {
+    update(keys, isThrowAnim = false) {
         const ePressedNow = keys['f'] && this.eWasUp;
         this.eWasUp = !keys['f'];
 
@@ -61,18 +65,47 @@ export class Rod {
         // Dynamic bait radius based on rod level. +15px per level. Level 1 = 32. Level 5 = 92
         this.baitRadius = 32 + (this.player.rodLevel - 1) * 15;
 
-        // Determine rod origin (player or boat)
-        let originX = this.player.x + 20; // default origin
-        let originY = this.player.y + 30; // adjusted for rod height
-        if (this.player.state === 'onBoat' && this.player.boatRef) {
-            originX = this.player.boatRef.x + (this.player.x - this.player.boatRef.x) + 20;
-            originY = this.player.y; // y adjusted by player.js for tilt
+        // Determine rod origin from per-frame sprite rod-tip lookup table
+        const p = this.player;
+        const sc = p.scale;
+
+        // Pick which lookup key + frame index to use
+        let tipKey, tipFrame, tipFrameW;
+        if (p.isThrowAnim) {
+            tipKey    = 'throw';
+            tipFrame  = p.throwFrame;
+            tipFrameW = p.throwFrameW;
+        } else if (p.isFishIdle) {
+            tipKey    = 'fishidle';
+            tipFrame  = p.fishIdleFrame;
+            tipFrameW = p.fishIdleFrameW;
+        } else if (p.isMoving) {
+            tipKey    = 'walk';
+            tipFrame  = p.currentFrame;
+            tipFrameW = p.frameW;
+        } else {
+            tipKey    = 'idle';
+            tipFrame  = p.currentFrame;
+            tipFrameW = p.frameW;
         }
+
+        const tips = ROD_TIPS[tipKey];
+        const tip  = (tips && tips[tipFrame]) ? tips[tipFrame] : { x: 20, y: 30 };
+
+        // The sprite is drawn centred on player.x + drawW/2 and flipped for facing
+        const drawW = tipFrameW * sc;
+        const centerX = p.x + drawW / 2;
+
+        // Mirror tip.x when facing left (scale(-1,1) around centre)
+        const tipLocalX = p.facing === 1 ? tip.x : (tipFrameW - tip.x);
+        const originX = centerX + (tipLocalX - tipFrameW / 2) * sc;
+        const originY = p.y + tip.y * sc;
+
         this.originX = originX;
         this.originY = originY;
 
         // ---------- Casting ----------
-        if (!this.isCasting) {
+        if (!this.isCasting && !isThrowAnim) {
             // Require explicit boat fishing state if on a boat
             if (this.player.state === 'onBoat' && this.player.boatRef) {
                 if (this.player.boatRef.state !== 'fishing') {
@@ -91,19 +124,24 @@ export class Rod {
                 const projectedX = originX + Math.cos(this.angle) * this.power * 10;
                 if (projectedX <= SHORE_END) { this.power = 0; return; }
 
-                this.isCasting = true;
-                this.vx = Math.cos(this.angle) * this.power;
-                this.vy = Math.sin(this.angle) * this.power;
+                // Store pending cast parameters and start throw animation
+                this._pendingOriginX = originX;
+                this._pendingOriginY = originY;
+                const castData = {
+                    vx: Math.cos(this.angle) * this.power,
+                    vy: Math.sin(this.angle) * this.power,
+                    originX,
+                    originY,
+                    sinkDepth: (this.player.state === 'onBoat') ? 200 + 100 * (this.player.boatLevel - 1) : SHORE_LINE_DEPTH
+                };
                 this.power = 0;
-                this.reelTimer = 0;
-                this.landedX = null;
-                this.landedXOffset = 0;
-                this.landedY = null;
-                this.isSinking = false;
-                this.caughtFish = null;
-                this.depthOffset = 0;
-                this.sinkDepth = (this.player.state === 'onBoat') ? 200 + 100 * (this.player.boatLevel - 1) : SHORE_LINE_DEPTH;
-                audio.play('cast');
+
+                // Trigger throw animation on player; actual cast fires in _fireCast() after anim
+                this.player.isThrowAnim = true;
+                this.player.throwFrame = 0;
+                this.player.throwTimer = 0;
+                this.player._pendingCast = castData;
+                return;
             }
         }
 
@@ -122,7 +160,7 @@ export class Rod {
                 if (this.y >= WATER_Y) {
                     this.y = WATER_Y;
                     this.vx = 0; this.vy = 0;
-                
+
                     audio.play('splash');
 
                     this.isBaitInWater = true;
@@ -322,6 +360,30 @@ export class Rod {
         }
     }
 
+    /**
+     * Called by Player after the throw animation completes.
+     * Launches the hook with the stored cast parameters.
+     */
+    _fireCast(castData) {
+        this.isCasting = true;
+        this.vx = castData.vx;
+        this.vy = castData.vy;
+        this.power = 0;
+        this.reelTimer = 0;
+        this.landedX = null;
+        this.landedXOffset = 0;
+        this.landedY = null;
+        this.isSinking = false;
+        this.caughtFish = null;
+        this.depthOffset = 0;
+        this.sinkDepth = castData.sinkDepth;
+        // Launch bait from the CURRENT rod tip (end of throw animation),
+        // not the stale idle position stored when spacebar was released.
+        this.x = this.originX;
+        this.y = this.originY;
+        audio.play('cast');
+    }
+
     draw(ctx, cameraX = 0) {
         const screenX = this.x - cameraX;
         const screenY = this.y;
@@ -330,8 +392,9 @@ export class Rod {
         ctx.strokeStyle = '#e0e0e0';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        const rodTipX = this.originX ? this.originX - cameraX : this.player.x - cameraX + 24;
-        const rodTipY = this.originY ? this.originY : this.player.y + 30;
+        // Use !== undefined so originX=0 still works (avoids falsy fallback to head position)
+        const rodTipX = (this.originX !== undefined) ? this.originX - cameraX : this.player.x - cameraX + 24;
+        const rodTipY = (this.originY !== undefined) ? this.originY : this.player.y + 30;
         ctx.moveTo(rodTipX, rodTipY);
 
         let sag = 0;
@@ -400,7 +463,8 @@ export class Rod {
         // Struggle minigame UI
         if (this.struggling && this.caughtFish) {
             let requiredTaps = 2;
-            switch (this.caughtFish.type) {
+            const fishRarity = SPRITE_DATA[this.caughtFish.type]?.rarity || 'common';
+            switch (fishRarity) {
                 case 'common': requiredTaps = 2; break;
                 case 'uncommon': requiredTaps = 4; break;
                 case 'rare': requiredTaps = 8; break;
