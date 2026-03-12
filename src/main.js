@@ -10,6 +10,7 @@ import { uiManager } from './ui.js';
 import { camera } from './camera.js';
 import { transitionManager } from './map_transition.js';
 import { AudioManager } from './audio.js';
+import { WeatherSystem } from './environment.js';
 export const audio = new AudioManager();
 
     audio.play("ocean");
@@ -47,6 +48,33 @@ document.getElementById('debug-btn').addEventListener('click', () => {
     toggleDebugCam(cameraX, cameraY);
 });
 
+// Weather Control - Expose to window for HTML buttons
+window.setWeather = (weatherType) => {
+    WeatherSystem.setWeather(weatherType);
+    updateWeatherDisplay();
+};
+
+// Update weather display in UI
+function updateWeatherDisplay() {
+    const weatherNames = {
+        'clear': '☀ Clear',
+        'cloudy': '☁ Cloudy',
+        'rainy': '🌧 Rainy',
+        'stormy': '⛈ Stormy',
+        'foggy': '🌫 Foggy'
+    };
+
+    const currentWeatherEl = document.getElementById('current-weather');
+    const hudWeatherEl = document.getElementById('h-wx');
+
+    if (currentWeatherEl) {
+        currentWeatherEl.textContent = weatherNames[WeatherSystem.currentWeather] || WeatherSystem.currentWeather;
+    }
+    if (hudWeatherEl) {
+        hudWeatherEl.textContent = weatherNames[WeatherSystem.currentWeather] || WeatherSystem.currentWeather;
+    }
+}
+
 // 5. MAIN LOOP
 function loop() {
     frame++;
@@ -55,6 +83,7 @@ function loop() {
     const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame };
 
     // --- UPDATE LOGIC ---
+    WeatherSystem.update(frame);             // update weather system
     player.update(1, G, boat, fishManager); // player handles movement + rod
     fishManager.update();                    // all fish update
     merchant.update();
@@ -107,6 +136,11 @@ function loop() {
     // Depth Meter Logic
     uiManager.updateDepthMeter(cameraY + (H / 2), WATER_Y, getDepthEndLine);
 
+    // Update weather display every 60 frames (once per second at 60fps)
+    if (frame % 60 === 0) {
+        updateWeatherDisplay();
+    }
+
     // Camera logic: Follow player, boat, debug, or fishing hook
     camera.update(player, boat, debugCam, keys, W, H);
     cameraX = camera.x;
@@ -119,7 +153,7 @@ function loop() {
         ctx.save();
         ctx.translate(0, -Math.floor(cameraY));
 
-        drawSky(ctx);
+        drawSky(ctx, frame);
         drawWaterBackground(ctx, cameraX, currentMap);
         drawBackground(ctx, cameraX, currentMap);
         drawGround(ctx, cameraX, currentMap, frame);
@@ -145,6 +179,10 @@ function loop() {
         boat.draw(ctx, cameraX, frame, player);
         drawWaterForeground(ctx, cameraX, frame, currentMap);
         drawDeepSoil(ctx, cameraX, currentMap);
+
+        // Draw weather effects (rain, fog, etc.)
+        WeatherSystem.drawWeatherEffects(ctx, cameraY);
+
         ctx.restore();
 
         if (transitionManager.active) {
