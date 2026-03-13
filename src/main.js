@@ -55,7 +55,7 @@ function loop() {
 
     // --- UPDATE LOGIC ---
     boat.update(G);                          // Move boat first
-    player.update(1, G, boat, fishManager); // then player follows
+    player.update(1, G, boat, fishManager, currentMap); // then player follows
     fishManager.update();                    // all fish update
     merchant.update();
 

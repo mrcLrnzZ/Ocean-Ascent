@@ -73,7 +73,7 @@ export class Player {
         };
     }
 
-    update(dt, G, boat, fishManager) {
+    update(dt, G, boat, fishManager, currentMap = 0) {
         this.lastState = this.isMoving;
         this.isMoving = false;
 
@@ -153,7 +153,7 @@ export class Player {
 
         // Rod update runs FIRST so this.originX/Y is fresh for the throw/fishidle ticks below.
         // This ensures _fireCast() launches the hook from the exact rod tip of the final throw frame.
-        this.rod.update(G.keys, this.isThrowAnim);
+        this.rod.update(G.keys, this.isThrowAnim, currentMap);
 
         // --- Throw animation tick ---
         if (this.isThrowAnim) {

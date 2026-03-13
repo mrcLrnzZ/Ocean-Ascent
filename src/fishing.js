@@ -1,5 +1,5 @@
 // src/fishing.js
-import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END, getDepthEndLine, getDeepSoilY } from './constants.js';
+import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END, getDepthEndLine, getDeepSoilY, MAPS } from './constants.js';
 import { SPRITE_DATA } from './fish.js';
 import { audio } from './main.js';
 import { ROD_TIPS } from './rod_tips.js';
@@ -52,7 +52,7 @@ export class Rod {
         this.struggling = false; // true when a fish is hooked but not yet fully caught
     }
 
-    update(keys, isThrowAnim = false) {
+    update(keys, isThrowAnim = false, currentMap = 0) {
         const ePressedNow = keys['f'] && this.eWasUp;
         this.eWasUp = !keys['f'];
 
@@ -191,9 +191,12 @@ export class Rod {
                 this.x = originX + this.landedXOffset;
                 this.depthOffset += this.sinkSpeed;
 
-                // Max depth based on rod level
-                // Player's rodLevel handles this, defaults to Level 1
-                this.maxDepthOffset = getDepthEndLine(Math.min(6, this.player.rodLevel)) - WATER_Y;
+                // Max depth based on rod level AND map constraint
+                const mapMaxDepth = MAPS[currentMap]?.maxDepth || 5;
+                const rodMaxDepth = Math.min(6, this.player.rodLevel);
+                const finalMaxDepth = Math.min(mapMaxDepth, rodMaxDepth);
+
+                this.maxDepthOffset = getDepthEndLine(finalMaxDepth) - WATER_Y;
 
                 // Vertical bait control override
                 const depthSpeed = 4.0; // Responsive manual speed
@@ -231,8 +234,12 @@ export class Rod {
             } else {
                 this.x = originX + this.landedXOffset;
 
-                // Max depth based on rod level
-                this.maxDepthOffset = getDepthEndLine(Math.min(6, this.player.rodLevel)) - WATER_Y;
+                // Max depth based on rod level AND map constraint
+                const mapMaxDepth = MAPS[currentMap]?.maxDepth || 5;
+                const rodMaxDepth = Math.min(6, this.player.rodLevel);
+                const finalMaxDepth = Math.min(mapMaxDepth, rodMaxDepth);
+
+                this.maxDepthOffset = getDepthEndLine(finalMaxDepth) - WATER_Y;
 
                 // Vertical bait control
                 const depthSpeed = 4.0;

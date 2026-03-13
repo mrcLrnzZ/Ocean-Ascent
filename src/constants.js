@@ -68,7 +68,7 @@ export const THEMES = {
 };
 
 // Level Distance Configuration
-export const SHORE_LEVEL_LENGTH = 2000;
+export const SHORE_LEVEL_LENGTH = 1500;
 export const LEVEL_1_LENGTH = 10000;
 export const LEVEL_2_LENGTH = 10000;
 export const LEVEL_3_LENGTH = 20000;
@@ -140,15 +140,15 @@ export const PARALLAX_LAYERS = {
   0: [ // Shore
     { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.1 },
     { y: -170, width: 1900, height: 1600, scale: 0.5, speed: 0.3 },
-    { y: 30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
-    { y: 10, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
+    { y: -30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
+    { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
     1: [ // Shore
     { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.1 },
     { y: -170, width: 1900, height: 1600, scale: 0.5, speed: 0.3 },
-    { y: 30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
-    { y: 10, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
+    { y: -30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
+    { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
   2: [ // Map 1
@@ -173,7 +173,7 @@ export const PARALLAX_LAYERS = {
 
 export const MAPS = [
   {
-    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 5, hasDock: true, length: SHORE_LEVEL_LENGTH,
+    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 2, hasDock: true, length: SHORE_LEVEL_LENGTH,
     theme: 'default',
     backgrounds: ['assets/forest_mountain.png', 'assets/sky_front_mountain.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
@@ -185,14 +185,14 @@ export const MAPS = [
 
   },
   {
-    id: 2, name: "Map 2", requiredBoatLvl: 1, maxDepth: 5, hasDock: false, length: LEVEL_2_LENGTH,
+    id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 5, hasDock: false, length: LEVEL_2_LENGTH,
     theme: 'default',
     backgrounds: ['assets/sky_clouds.png', 'assets/sky_back_mountain.png', 'assets/sky_front_mountain.png', 'assets/parallax_seav2.png']
     
     //backgrounds: ['assets/forest_mountain.png', 'assets/forest_back.png', 'assets/parallax_seav2.png']
   },
   {
-    id: 3, name: "Map 3", requiredBoatLvl: 2, maxDepth: 5, hasDock: false, length: LEVEL_3_LENGTH,
+    id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_3_LENGTH,
     theme: 'night',
     backgrounds: ['assets/moon_back.png', 'assets/moon_mid.png', 'assets/moon_front.png', 'assets/parallax_seanightv3.png']
   },
