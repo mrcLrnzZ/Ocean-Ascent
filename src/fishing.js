@@ -24,6 +24,7 @@ export class Rod {
         this.isCasting = false;
         this.isBaitInWater = false;
         this.isSinking = false;
+        this.wasOnBoat = false;
 
         this.baitImg = new Image();
         this.baitImg.src = 'assets/doomsday-oarfish.png';
@@ -55,6 +56,20 @@ export class Rod {
     update(keys, isThrowAnim = false, currentMap = 0) {
         const ePressedNow = keys['f'] && this.eWasUp;
         this.eWasUp = !keys['f'];
+        const currentlyOnBoat = this.player.state === 'onBoat' && this.player.boatRef;
+
+        if (currentlyOnBoat && !this.wasOnBoat) {
+            audio.play('onBoat');
+        } else if (!currentlyOnBoat && this.wasOnBoat) {
+        
+            if (audio.sounds?.onBoat) {
+                audio.sounds.onBoat.pause();
+                audio.sounds.onBoat.currentTime = 0;
+                audio.sounds.ocean.volume = 0.25
+            }
+        }
+
+        this.wasOnBoat = currentlyOnBoat;
 
         if (this.fishManager) {
             for (const fish of this.fishManager.fishes) fish.inHitbox = false;
@@ -175,6 +190,10 @@ export class Rod {
                     this.vx = 0; this.vy = 0;
 
                     audio.play('splash');
+                if (!this.isBaitInWater) {
+                    audio.play('underwater');
+                    audio.sounds.ocean.volume = 0.08;
+                }
 
                     this.isBaitInWater = true;
                     this.isSinking = true;
@@ -278,6 +297,7 @@ export class Rod {
                             this.struggling = true;
                             this.catchProgress = 0;
                             this.hookFlash = 120;
+                            audio.play('hooked');
                             break;
                         }
                     }
@@ -554,8 +574,16 @@ export class Rod {
     }
 
     reset() {
-        audio.sounds.reel.pause();
-        audio.sounds.reel.currentTime = 0;
+        if (audio.sounds.reel) {
+            audio.sounds.reel.pause();
+            audio.sounds.reel.currentTime = 0;
+        }
+
+        if (audio.sounds.underwater) {
+        audio.sounds.underwater.pause();
+        audio.sounds.underwater.currentTime = 0;
+        audio.sounds.ocean.volume = 0.5;
+        }
 
         this.isCasting = false;
         this.isBaitInWater = false;

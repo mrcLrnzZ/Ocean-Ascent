@@ -1,5 +1,5 @@
 import { GROUND_Y } from './constants.js';
-
+import { audio } from './main.js';
 export class Merchant {
     constructor(x, y) {
         this.x = x;
