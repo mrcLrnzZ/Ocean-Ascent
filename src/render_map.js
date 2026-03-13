@@ -1,4 +1,4 @@
-import { P, W, H, GROUND_Y, SHORE_END, WATER_Y, DEPTH_COLORS, DEPTH_LEVEL_HEIGHTS, getDepthStartLine, getDepthEndLine, DEPTH_LINE_COLOR, MAPS, PARALLAX_LAYERS } from './constants.js';
+import { P, W, H, GROUND_Y, SHORE_END, WATER_Y, DEPTH_COLORS, DEPTH_LEVEL_HEIGHTS, getDepthStartLine, getDepthEndLine, DEPTH_LINE_COLOR, MAPS, PARALLAX_LAYERS, getMapTheme } from './constants.js';
 import { waveSurf, WeatherSystem } from './environment.js';
 
 const bgImageCache = {};
@@ -100,6 +100,9 @@ export function drawSky(ctx, frame = 0) {
 export function drawBackground(ctx, cx = 0, currentMap = 0) {
     ctx.imageSmoothingEnabled = false;
 
+    const theme = getMapTheme(currentMap);
+    const isNight = MAPS[currentMap].theme === 'night';
+
     //parallax layer Helperr
     function drawLayer(img, config, index) {
         if (!img.complete || img.naturalWidth === 0) return;
@@ -117,10 +120,17 @@ export function drawBackground(ctx, cx = 0, currentMap = 0) {
         let offset = (cx * speed) % drawW;
         let startX = -offset;
 
+        ctx.save();
+        if (isNight && index < (MAPS[currentMap].backgrounds.length - 1)) {
+            // Darken background layers for night theme
+            ctx.filter = 'brightness(0.4) saturate(0.7)'; 
+        }
+
         while (startX < W) {
             ctx.drawImage(img, startX, drawY, drawW, drawH);
             startX += drawW;
         }
+        ctx.restore();
     }
 
     // Get dynamic backgrounds for the current map
@@ -174,13 +184,17 @@ export function drawWaterBackground(ctx, cx, currentMap = 0) {
         const waterEndY = getDepthEndLine(maxDepth);
         const maxWaterH = waterEndY - waterStartY;
 
-        // Draw a solid background so the transparent surface level doesn't show essentially empty canvas
-        ctx.fillStyle = '#0a65c7';
+        // Use theme water background color
+        const theme = getMapTheme(currentMap);
+        ctx.fillStyle = theme.waterBg;
         ctx.fillRect(Math.floor(screenStartX), waterStartY, W - screenStartX, maxWaterH + 10000);
     }
 }
 
 export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
+    const theme = getMapTheme(currentMap);
+    const depthColors = theme.depthColors;
+
     const startX = MAPS[currentMap].hasDock ? SHORE_END + 110 : 0;
     const endX = cx + W;
 
@@ -196,7 +210,7 @@ export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
         const g = ctx.createLinearGradient(0, waterStartY, 0, waterEndY);
 
         for (let i = minDepth; i <= maxDepth; i++) {
-            const color = DEPTH_COLORS[i] || P.waterTop;
+            const color = depthColors[i] || theme.waterTop;
 
             const layerStartY = getDepthStartLine(i);
             const layerEndY = getDepthEndLine(i);
@@ -214,7 +228,7 @@ export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
                 g.addColorStop(Math.max(0, Math.min(1, blendStart)), color);
             }
         }
-        g.addColorStop(1, DEPTH_COLORS[maxDepth]);
+        g.addColorStop(1, depthColors[maxDepth] || theme.waterTop);
 
         ctx.fillStyle = g;
         // Extend to support endless abyss depth scrolling with the Free Cam
@@ -235,11 +249,11 @@ export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
         ctx.stroke();
         ctx.restore();
 
-        ctx.fillStyle = P.waterFoam;
+        ctx.fillStyle = theme.waterFoam;
         for (let x = Math.max(startX, cx); x < endX; x += 10) {
             const screenX = x - cx;
             const y = waveSurf(x, frame);
-            rect(ctx, screenX, y, 10, 40, P.waterFoam);
+            rect(ctx, screenX, y, 10, 40, theme.waterFoam);
         }
     }
 }

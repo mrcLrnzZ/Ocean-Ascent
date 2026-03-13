@@ -26,7 +26,7 @@ export class Boat {
         this.level = lvl;
         if (lvl === 1) { this.img.src = 'assets/boatlvl1.png'; this.speed = 20; }
         if (lvl === 2) { this.img.src = 'assets/boatlvl2.png'; this.speed = 8; }
-        if (lvl === 3) { this.img.src = 'assets/boatlvl3.png'; this.speed = 20; }
+        if (lvl === 3) { this.img.src = 'assets/boatlvl3.png'; this.speed = 30; }
     }
 
     getBounds() {
