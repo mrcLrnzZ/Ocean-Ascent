@@ -1,7 +1,7 @@
 
 import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, drawWaterForeground, drawTransition, drawDeepSoil } from './render_map.js';
 import { Player } from './player.js';
-import { Merchant } from './merchant.js';
+import { Merchant, RodMerchant } from './merchant.js';
 import { Boat } from './boat.js';
 import { GROUND_Y, WATER_Y, MAPS, MAP_TRANSITION_X_LEFT, W, H, getDepthStartLine, getDepthEndLine } from './constants.js';
 import { debugCam, toggleDebugCam } from './debugcam.js';
@@ -23,7 +23,8 @@ canvas.height = H;
 // 2. INITIALIZE GAME OBJECTS
 const fishManager = new FishManager();
 const player = new Player(fishManager); // pass fishManager to player
-const merchant = new Merchant(540, GROUND_Y);
+const boatMerchant = new Merchant(540, GROUND_Y, "boat");
+const rodMerchant = new RodMerchant(300, GROUND_Y);
 const boat = new Boat(950, 650);
 
 const keys = {};
@@ -32,6 +33,7 @@ let cameraX = 0;
 let cameraY = 0;
 let currentMap = 0;
 let eWasUp = true;
+let rWasUp = true;
 
 uiManager.init(player, boat);
 
@@ -135,7 +137,8 @@ function loop() {
   WeatherSystem.update(frame);  // Move boat first
     player.update(1, G, boat, fishManager, currentMap); // then player follows
     fishManager.update();                    // all fish update
-    merchant.update();
+    boatMerchant.update();
+    rodMerchant.update(boat, frame);
 
     // --- MAP TRANSITIONS & BOUNDARIES ---
     currentMap = transitionManager.updateTransition(currentMap, boat, player);
@@ -144,18 +147,32 @@ function loop() {
     // --- INTERACTIONS ---
     const ePressedNow = (keys['e'] || keys['E']) && eWasUp;
     eWasUp = !(keys['e'] || keys['E']);
+    const rPressedNow = (keys['r'] || keys['R']) && rWasUp;
+    rWasUp = !(keys['r'] || keys['R']);
+
+    if (rPressedNow && !uiManager.isOpen) {
+        if (player.state === 'walking') {
+            if (boat.isPurchased && Math.abs(player.x - boat.x) < 200) {
+                player.state = 'onBoat';
+                player.x = boat.x + (boat.width * boat.scale) / 2;
+                uiManager.showNotification("You are on the boat. [E] to Fish/Sail, [R] to Disembark.");
+            }
+        } else if (player.state === 'onBoat') {
+            if (Math.abs(boat.x - 950) < 100 && boat.state === 'idle') {
+                player.state = 'walking';
+                player.x = 1000;
+                uiManager.showNotification("Disembarked boat.");
+            }
+        }
+    }
 
     if (ePressedNow && !uiManager.isOpen) {
         audio.play('opentrade');
         if (!player.state) player.state = 'walking';
 
         if (player.state === 'walking') {
-            if (merchant.isNear(player)) uiManager.openMerchantUI(keys);
-            else if (boat.isPurchased && Math.abs(player.x - boat.x) < 200) {
-                player.state = 'onBoat';
-                player.x = boat.x + (boat.width * boat.scale) / 2;
-                uiManager.showNotification("You are on the boat. Press E at ends to Fish/Sail.");
-            }
+            if (boatMerchant.isNear(player)) uiManager.openMerchantUI("boat", keys);
+            else if (rodMerchant.isNear(player)) uiManager.openMerchantUI("rod", keys);
         } else if (player.state === 'onBoat') {
             const bounds = boat.getBounds();
             const playerRelCenterX = (player.x + 64) - boat.x; // Use player center (~128px width, center is +64)
@@ -173,11 +190,7 @@ function loop() {
                 }
             }
             else if (playerRelCenterX > bounds.width - zoneWidth) boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
-            else if (Math.abs(boat.x - 950) < 100 && boat.state === 'idle') {
-                player.state = 'walking';
-                player.x = 1000;
-                uiManager.showNotification("Disembarked boat.");
-            }
+            else if (rodMerchant.isNear(player)) uiManager.openMerchantUI("rod", keys);
         }
     }
 
@@ -211,7 +224,11 @@ function loop() {
         drawGround(ctx, cameraX, currentMap, frame);
 
         if (currentMap === 0) {
-            merchant.draw(ctx, cameraX, player);
+            boatMerchant.draw(ctx, cameraX, player);
+            rodMerchant.draw(ctx, cameraX, player);
+        } else {
+            // Rod merchant follows on boat in other maps too
+            rodMerchant.draw(ctx, cameraX, player);
         }
         fishManager.draw(ctx, cameraX);  // the fish
 

@@ -105,14 +105,14 @@ export class Boat {
                 const action = this.state === 'sailing' ? "Stop Sailing" : "Sail";
                 ctx.fillText(`Press [E] to ${action}`, screenX + bounds.width - zoneWidth / 2, floatingY - 20);
             } else if (Math.abs(this.x - 950) < 100 && this.state === 'idle') {
-                ctx.fillText("Press [E] to Disembark", screenX + bounds.width / 2, floatingY - 20);
+                ctx.fillText("Press [R] to Disembark", screenX + bounds.width / 2, floatingY - 20);
             }
         } else if (Math.abs(player.x - this.x) < 100 && player.state === 'walking') {
             // Near boat at dock
             ctx.fillStyle = "white";
             ctx.font = "bold 14px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("Press [E] to Board Boat", screenX + bounds.width / 2, floatingY - 20);
+            ctx.fillText("Press [R] to Board Boat", screenX + bounds.width / 2, floatingY - 20);
         }
     }
 }

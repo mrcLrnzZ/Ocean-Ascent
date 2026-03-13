@@ -7,36 +7,25 @@ export const WATER_Y = 600;
 
 export const SHORE_END = 305;
 export const PIER_END_X = 1100;
-export const SHORE_LINE_DEPTH = 100; // max depth for shore fish
+export const SHORE_LINE_DEPTH = 100; 
 export const GRAVITY = 0.5;
 
-// Default Palette & Colors
+// Palette & Colors
 export const P = {
+
   // Sky Gradient Colors
   skyTop: '#5bc8f5',
   skyBot: '#0a65c7',
-
-  // lugar Colors
-  sandTop: '#f0d080',
-  sandMid: '#d8b060',
-
-  grassTop: '#7ec850',
-  grassMid: '#5a9a30',
-  grassDark: '#3a6a1a',
-
-  dirtTop: '#8a6040',
-  dirtMid: '#6a4828',
 
   // tubig Colors
   waterTop: '#4090c880',
   waterDeep: '#0051ff80',
   waterFoam: '#39bdff80',
-
-  // Water Background Solid
   waterBg: '#0a65c7'
 };
 
 export const THEMES = {
+
   default: {
     skyTop: '#5bc8f5',
     skyBot: '#0a65c7',
@@ -51,6 +40,7 @@ export const THEMES = {
       5: '#00003380'
     }
   },
+  
   night: {
     skyTop: '#020210',
     skyBot: '#101030',
@@ -135,7 +125,6 @@ export const DEPTH_LINE_COLOR = '#ffffff40';
 // This is the default. Themes will override these.
 export const DEPTH_COLORS = THEMES.default.depthColors;
 
-// Parallax background configuration per layer and map
 export const PARALLAX_LAYERS = {
   0: [ // Shore
     { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.1 },
@@ -144,26 +133,26 @@ export const PARALLAX_LAYERS = {
     { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
-    1: [ // Shore
+    1: [ 
     { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.1 },
     { y: -170, width: 1900, height: 1600, scale: 0.5, speed: 0.3 },
     { y: -30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
     { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
-  2: [ // Map 1
+  2: [ 
         { y: 0, width: 1900, height: 1000, scale: 0.5, speed: 0.1 }, // Farthest layer
     { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 }, // third layer
     { y: 160, width: 1900, height: 1000, scale: 0.5, speed: 0.4 }, // second layer
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 } 
   ],
-  3: [ // Map 2
+  3: [ 
     { y: 0, width: 1900, height: 1000, scale: 0.5, speed: 0.1 },
     { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
     { y: 160, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
-  4: [ // Map 3
+  4: [ 
     { y: 0, width: 1900, height: 1000, scale: 0.5, speed: 0.1 },
     { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
     { y: 160, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
@@ -188,9 +177,7 @@ export const MAPS = [
     id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 5, hasDock: false, length: LEVEL_2_LENGTH,
     theme: 'default',
     backgrounds: ['assets/sky_clouds.png', 'assets/sky_back_mountain.png', 'assets/sky_front_mountain.png', 'assets/parallax_seav2.png']
-    
-    //backgrounds: ['assets/forest_mountain.png', 'assets/forest_back.png', 'assets/parallax_seav2.png']
-  },
+      },
   {
     id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_3_LENGTH,
     theme: 'night',
