@@ -55,10 +55,10 @@ function loop() {
     const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame };
 
     // --- UPDATE LOGIC ---
-    player.update(1, G, boat, fishManager); // player handles movement + rod
+    boat.update(G);                          // Move boat first
+    player.update(1, G, boat, fishManager, currentMap); // then player follows
     fishManager.update();                    // all fish update
     merchant.update();
-    boat.update(G);
 
     // --- MAP TRANSITIONS & BOUNDARIES ---
     currentMap = transitionManager.updateTransition(currentMap, boat, player);
@@ -119,7 +119,7 @@ function loop() {
         ctx.save();
         ctx.translate(0, -Math.floor(cameraY));
 
-        drawSky(ctx);
+        drawSky(ctx, currentMap);
         drawWaterBackground(ctx, cameraX, currentMap);
         drawBackground(ctx, cameraX, currentMap);
         drawGround(ctx, cameraX, currentMap, frame);
