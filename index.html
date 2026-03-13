@@ -55,6 +55,17 @@
         <button id="debug-btn"
             style="position:absolute; top: 10px; right: 80px; z-index: 1000; padding: 5px; cursor: pointer;">Debug Cam:
             OFF</button>
+
+        <!-- Weather Control Panel -->
+        <div id="weather-controls" style="position:absolute; top: 50px; right: 10px; z-index: 1000; background: rgba(10, 5, 20, 0.85); padding: 10px; border-radius: 5px; color: white; font-size: 12px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">🌤 Weather Controls</div>
+            <button onclick="window.setWeather('clear')" style="margin: 2px; padding: 3px 8px; cursor: pointer;">☀ Clear</button>
+            <button onclick="window.setWeather('cloudy')" style="margin: 2px; padding: 3px 8px; cursor: pointer;">☁ Cloudy</button>
+            <button onclick="window.setWeather('rainy')" style="margin: 2px; padding: 3px 8px; cursor: pointer;">🌧 Rainy</button>
+            <button onclick="window.setWeather('stormy')" style="margin: 2px; padding: 3px 8px; cursor: pointer;">⛈ Stormy</button>
+            <button onclick="window.setWeather('foggy')" style="margin: 2px; padding: 3px 8px; cursor: pointer;">🌫 Foggy</button>
+            <div style="margin-top: 5px; font-size: 11px;">Current: <span id="current-weather">Clear</span></div>
+        </div>
         <div id="sea-depth-meter"
             style="position:absolute; bottom: 20px; left: 20px; color: white; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px black; z-index: 1000; display: none;">
             Sea Depth: 0m</div>

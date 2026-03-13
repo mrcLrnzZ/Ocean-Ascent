@@ -1,5 +1,5 @@
 import { P, W, H, GROUND_Y, SHORE_END, WATER_Y, DEPTH_COLORS, DEPTH_LEVEL_HEIGHTS, getDepthStartLine, getDepthEndLine, DEPTH_LINE_COLOR, MAPS, PARALLAX_LAYERS, getMapTheme } from './constants.js';
-import { waveSurf } from './environment.js';
+import { waveSurf, WeatherSystem } from './environment.js';
 
 const bgImageCache = {};
 
@@ -80,16 +80,21 @@ function rect(ctx, x, y, w, h, c) {
     ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(w), Math.ceil(h));
 }
 
-export function drawSky(ctx, currentMap = 0) {
-    const theme = getMapTheme(currentMap);
-    ctx.fillStyle = theme.skyTop;
+export function drawSky(ctx, frame = 0) {
+    // Get current weather colors
+    const weather = WeatherSystem.getCurrentWeather();
+
+    ctx.fillStyle = weather.skyTop;
     ctx.fillRect(0, -2000, W, 2000);
 
     const g = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
-    g.addColorStop(0, theme.skyTop);
-    g.addColorStop(1, theme.skyBot);
+    g.addColorStop(0, weather.skyTop);
+    g.addColorStop(1, weather.skyBot);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, GROUND_Y);
+
+    // Draw dynamic clouds
+    WeatherSystem.drawClouds(ctx, frame);
 }
 
 export function drawBackground(ctx, cx = 0, currentMap = 0) {
