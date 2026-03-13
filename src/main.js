@@ -10,7 +10,7 @@ import { uiManager } from './ui.js';
 import { camera } from './camera.js';
 import { transitionManager } from './map_transition.js';
 import { AudioManager } from './audio.js';
-import { WeatherSystem } from './environment.js';
+import { WeatherSystem, waveParams } from './environment.js';
 export const audio = new AudioManager();
 
     audio.play("ocean");
@@ -48,32 +48,80 @@ document.getElementById('debug-btn').addEventListener('click', () => {
     toggleDebugCam(cameraX, cameraY);
 });
 
-// Weather Control - Expose to window for HTML buttons
+// Weather Control — exposed to HTML buttons
 window.setWeather = (weatherType) => {
     WeatherSystem.setWeather(weatherType);
     updateWeatherDisplay();
 };
 
+window.wxSetAuto = (enabled) => {
+    WeatherSystem.autoWeather = enabled;
+};
+
+window.wxSetDuration = (frames) => {
+    WeatherSystem.weatherDuration = frames;
+    WeatherSystem.weatherTimer = 0; // reset so it doesn't fire immediately
+    const el = document.getElementById('wx-timer-val');
+    if (el) el.textContent = `${Math.round(frames / 60)}s`;
+};
+
+window.wxSetTransition = (frames) => {
+    WeatherSystem.transitionDuration = frames;
+    const el = document.getElementById('wx-trans-val');
+    if (el) el.textContent = `${Math.round(frames / 60)}s`;
+};
+
+window.wxSetWeight = (type, value) => {
+    WeatherSystem.weatherWeights[type] = +value;
+};
+
+// Build the weight sliders once the DOM is ready
+function buildWeatherWeightPanel() {
+    const panel = document.getElementById('wx-weights-panel');
+    if (!panel) return;
+    const icons = { clear: '☀', rainy: '🌧', stormy: '⛈', foggy: '🌫' };
+    panel.innerHTML = '';
+    for (const [type, weight] of Object.entries(WeatherSystem.weatherWeights)) {
+        const id = `wx-w-${type}`;
+        const row = document.createElement('div');
+        row.style.cssText = 'margin-bottom:5px;';
+        row.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:1px;">
+                <span>${icons[type] || ''} ${type[0].toUpperCase()+type.slice(1)}</span>
+                <span id="${id}-val" style="color:#ffe;">${weight}</span>
+            </div>
+            <input type="range" min="0" max="100" step="1" value="${weight}"
+                oninput="window.wxSetWeight('${type}',+this.value); document.getElementById('${id}-val').textContent=this.value;"
+                style="width:100%; cursor:pointer; accent-color:#5588cc;">`;
+        panel.appendChild(row);
+    }
+}
+
 // Update weather display in UI
 function updateWeatherDisplay() {
     const weatherNames = {
-        'clear': '☀ Clear',
-        'cloudy': '☁ Cloudy',
-        'rainy': '🌧 Rainy',
+        'clear':  '☀ Clear',
+        'rainy':  '🌧 Rainy',
         'stormy': '⛈ Stormy',
-        'foggy': '🌫 Foggy'
+        'foggy':  '🌫 Foggy'
     };
-
-    const currentWeatherEl = document.getElementById('current-weather');
-    const hudWeatherEl = document.getElementById('h-wx');
-
-    if (currentWeatherEl) {
-        currentWeatherEl.textContent = weatherNames[WeatherSystem.currentWeather] || WeatherSystem.currentWeather;
-    }
-    if (hudWeatherEl) {
-        hudWeatherEl.textContent = weatherNames[WeatherSystem.currentWeather] || WeatherSystem.currentWeather;
-    }
+    const label = weatherNames[WeatherSystem.targetState] || WeatherSystem.targetState;
+    const el1 = document.getElementById('current-weather');
+    const el2 = document.getElementById('h-wx');
+    if (el1) el1.textContent = label;
+    if (el2) el2.textContent = label;
 }
+
+// Wave descriptor for HUD
+function waveLabel() {
+    const amp = Math.round(waveParams.amp1);
+    if (amp <= 6)  return 'Calm';
+    if (amp <= 12) return 'Choppy';
+    if (amp <= 20) return 'Rough';
+    return 'Violent';
+}
+
+buildWeatherWeightPanel();
 
 // 5. MAIN LOOP
 function loop() {
@@ -136,9 +184,13 @@ function loop() {
     // Depth Meter Logic
     uiManager.updateDepthMeter(cameraY + (H / 2), WATER_Y, getDepthEndLine);
 
-    // Update weather display every 60 frames (once per second at 60fps)
+    // Update weather/wave HUD every 60 frames (once per second at 60fps)
     if (frame % 60 === 0) {
         updateWeatherDisplay();
+        const wvEl   = document.getElementById('h-wave');
+        const windEl = document.getElementById('h-wind');
+        if (wvEl)   wvEl.textContent   = `Waves: ${waveLabel()}`;
+        if (windEl) windEl.textContent = `Wind: ${Math.round(WeatherSystem.getCurrentWeather().windX * 3)}mph`;
     }
 
     // Camera logic: Follow player, boat, debug, or fishing hook
@@ -179,11 +231,10 @@ function loop() {
         boat.draw(ctx, cameraX, frame, player);
         drawWaterForeground(ctx, cameraX, frame, currentMap);
         drawDeepSoil(ctx, cameraX, currentMap);
-
-        // Draw weather effects (rain, fog, etc.)
-        WeatherSystem.drawWeatherEffects(ctx, cameraY);
-
         ctx.restore();
+
+        // Weather effects drawn in SCREEN-SPACE (after restore) so they don't scroll
+        WeatherSystem.drawWeatherEffects(ctx, cameraY);
 
         if (transitionManager.active) {
             drawTransition(ctx, transitionManager.progress, transitionManager.direction, transitionManager.sweepDir);

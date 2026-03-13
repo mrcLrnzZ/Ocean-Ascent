@@ -80,21 +80,40 @@ function rect(ctx, x, y, w, h, c) {
     ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(w), Math.ceil(h));
 }
 
-export function drawSky(ctx, frame = 0) {
-    // Get current weather colors
-    const weather = WeatherSystem.getCurrentWeather();
+export function drawSky(ctx, frame = 0, currentMap = 0) {
+    const theme   = getMapTheme(currentMap);
+    const weather = WeatherSystem.getCurrentWeather(); // already fully blended
 
-    ctx.fillStyle = weather.skyTop;
+    // The sky color is a blend between the map theme and the weather state.
+    // We use the transition progress to slide 0→1 from theme→weather sky.
+    const t = Math.min(1, WeatherSystem._progress / Math.max(1, WeatherSystem.transitionDuration));
+    const isNonClear = WeatherSystem.targetWeather !== 'clear';
+    // At full non-clear weather we want 70% weather influence; at clear, 0%.
+    const skyBlend = isNonClear ? (t * 0.7) : ((1 - t) * 0.7);
+
+    function blendHex(mapColor, weatherColor, blend) {
+        const a = WeatherSystem.hexToRgb(mapColor);
+        const b = WeatherSystem.hexToRgb(weatherColor);
+        return WeatherSystem.rgbToHex(
+            Math.round(a.r + (b.r - a.r) * blend),
+            Math.round(a.g + (b.g - a.g) * blend),
+            Math.round(a.b + (b.b - a.b) * blend)
+        );
+    }
+
+    const skyTop = blendHex(theme.skyTop, weather.skyTop, skyBlend);
+    const skyBot = blendHex(theme.skyBot, weather.skyBot, skyBlend);
+
+    ctx.fillStyle = skyTop;
     ctx.fillRect(0, -2000, W, 2000);
 
     const g = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
-    g.addColorStop(0, weather.skyTop);
-    g.addColorStop(1, weather.skyBot);
+    g.addColorStop(0, skyTop);
+    g.addColorStop(1, skyBot);
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, GROUND_Y);
 
-    // Draw dynamic clouds
-    WeatherSystem.drawClouds(ctx, frame);
+    //WeatherSystem.drawClouds(ctx, frame);
 }
 
 export function drawBackground(ctx, cx = 0, currentMap = 0) {
@@ -249,14 +268,25 @@ export function drawWaterForeground(ctx, cx, frame, currentMap = 0) {
         ctx.stroke();
         ctx.restore();
 
+     WeatherSystem.drawWaterSplashes(ctx, cx, frame);
+ 
+// Full context — the bottom of drawWaterForeground should look like:
+ 
         ctx.fillStyle = theme.waterFoam;
         for (let x = Math.max(startX, cx); x < endX; x += 10) {
             const screenX = x - cx;
             const y = waveSurf(x, frame);
             rect(ctx, screenX, y, 10, 40, theme.waterFoam);
         }
+ 
+        // ← ADD THIS:
+        WeatherSystem.drawWaterSplashes(ctx, cx, frame);
     }
 }
+ 
+
+
+    
 
 export function drawTransition(ctx, progress, direction, sweepDir = 1) {
     if (progress <= 0) return;
