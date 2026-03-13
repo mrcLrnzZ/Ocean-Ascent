@@ -17,7 +17,7 @@ export class Rod {
         this.originX = player.x + 20;
         this.originY = player.y + 30;
 
-        this.angle = -Math.PI / 4;
+        this.angle = (player && player.state === 'onBoat') ? Math.PI : -Math.PI / 4;
         this.power = 0;
         this.maxPower = 7.5;
         // state variables
@@ -118,6 +118,19 @@ export class Rod {
 
             if (keys['w'] || keys['ArrowUp']) this.angle -= 0.02;
             if (keys['s'] || keys['ArrowDown']) this.angle += 0.02;
+
+            // Restrict throw angle on boat to 90-270 degrees (the Left side)
+            if (this.player.state === 'onBoat') {
+                const minAngle = Math.PI / 2;    // 90 deg
+                const maxAngle = 1.5 * Math.PI;  // 270 deg
+
+                // Normalize angle to [0, 2PI]
+                while (this.angle < 0) this.angle += Math.PI * 2;
+                while (this.angle > Math.PI * 2) this.angle -= Math.PI * 2;
+
+                if (this.angle < minAngle) this.angle = minAngle;
+                if (this.angle > maxAngle) this.angle = maxAngle;
+            }
             if (keys[' ']) this.power = Math.min(this.power + 0.3, this.maxPower);
 
             if (!keys[' '] && this.power > 0) {
@@ -543,7 +556,7 @@ export class Rod {
         this.vx = 0; this.vy = 0;
         this.x = this.player.x + 20;
         this.y = this.player.y;
-        this.angle = -Math.PI / 4;
+        this.angle = (this.player && this.player.state === 'onBoat') ? Math.PI : -Math.PI / 4;
         this.power = 0;
         this.reeling = false;
         this.struggling = false;

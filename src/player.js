@@ -83,16 +83,19 @@ export class Player {
             this.boatRef = boat;
             const bounds = boat.getBounds();
 
+            // Initialize relative X if needed
+            if (this.relBoatX === undefined) {
+                this.relBoatX = this.x - boat.x;
+            }
+
             if (boat.state === 'sailing' || boat.state === 'fishing') {
                 this.vx = 0;
                 this.isMoving = false;
-                if (boat.state === 'sailing') {
-                    this.x += boat.vx; // move with boat
-                }
+                // Position is locked relative to boat while sailing/fishing
             } else {
                 if (G.keys['ArrowRight'] || G.keys['d']) {
                     this.vx = speed;
-                    this.facing = 1;
+                   this.facing = 1;
                     this.isMoving = true;
                 } else if (G.keys['ArrowLeft'] || G.keys['a']) {
                     this.vx = -speed;
@@ -100,23 +103,28 @@ export class Player {
                     this.isMoving = true;
                 } else this.vx = 0;
 
-                this.x += (this.vx + boat.vx) * dt;
+                // Move relative to boat
+                this.relBoatX += this.vx * dt;
             }
 
-            // Keep player on boat
-            this.x = Math.max(bounds.left, Math.min(this.x, bounds.right - this.frameW * this.scale));
+            // Keep player on boat deck
+            this.relBoatX = Math.max(0, Math.min(this.relBoatX, bounds.width - this.frameW * this.scale));
+            
+            // Sync absolute world position
+            this.x = boat.x + this.relBoatX;
 
             // Vertical position with waves & tilt
-            const playerRelCenter = this.x + (this.frameW * this.scale) / 2 - (boat.x + bounds.width / 2);
+            const playerRelCenter = this.relBoatX + (this.frameW * this.scale) / 2 - (bounds.width / 2);
             const tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1;
             const yOffset = playerRelCenter * Math.sin(tiltAngle);
             const floatingY = waveSurf(boat.x + bounds.width / 2, G.frame) - bounds.height * 0.8;
             this.y = floatingY - (this.frameH * this.scale) + yOffset + boat.floorYOffset;
 
             // Dynamic rod sink depth for boat
-            this.rod.sinkDepth = 200 + 100 * (boat.level - 1); // example: deeper with upgraded boat
+            this.rod.sinkDepth = 200 + 100 * (boat.level - 1); 
         } else {
             this.boatRef = null;
+            this.relBoatX = undefined; // Reset when not on boat
             // Walking logic
             const isFishing = this.rod.isCasting || this.rod.power > 0 || this.rod.reeling || this.rod.struggling || this.isThrowAnim;
 
