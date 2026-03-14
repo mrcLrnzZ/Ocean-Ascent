@@ -13,9 +13,9 @@ export class AudioManager {
             underwater: new Audio("./assets/audio/underwater.mp3"),
 
             click: new Audio("./assets/audio/click.mp3"),
-            opentrade: new Audio("./assets/audio/open-trade.mp3"),
+            openTrade: new Audio("./assets/audio/open-trade.mp3"),
             buy: new Audio("./assets/audio/buy.mp3"),
-            nextpage: new Audio("./assets/audio/nextpage.mp3"),
+            nextPage: new Audio("./assets/audio/nextpage.mp3"),
         };
         this.sounds.reel.loop = true;
         this.sounds.onBoat.loop = true;
@@ -36,9 +36,9 @@ export class AudioManager {
         this.sounds.underwater.volume = 0.12;
 
         this.sounds.click.volume = 0.35;
-        this.sounds.opentrade.volume = 0.45;
+        this.sounds.openTrade.volume = 0.45;
         this.sounds.buy.volume = 0.45;
-        this.sounds.nextpage.volume = 0.55;
+        this.sounds.nextPage.volume = 0.55;
     }
 
     play(name) {

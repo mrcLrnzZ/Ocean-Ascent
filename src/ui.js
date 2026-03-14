@@ -48,39 +48,44 @@ export class UIManager {
         document.getElementById('h-catch').textContent = `${totalCaught} fish`;
     }
 
-    openMerchantUI(keys) {
+    openMerchantUI(type = "boat", keys = null) {
         this.isOpen = true;
+        this.lastMerchantType = type;
         // Release specific keys to prevent getting stuck
-        for (let k of ['e', 'E', 'ArrowLeft', 'ArrowRight', 'a', 'd']) {
-            if (keys && keys[k] !== undefined) keys[k] = false;
+        if (keys) {
+            for (let k of ['e', 'E', 'ArrowLeft', 'ArrowRight', 'a', 'd']) {
+                if (keys[k] !== undefined) keys[k] = false;
+            }
         }
 
         const popup = document.getElementById('popup');
-        let html = `<h2>Merchant</h2>`;
+        let html = `<h2>${type === "boat" ? "Boat Dealer" : "Rod Specialist"}</h2>`;
 
-        // Boat Upgrades
-        if (this.player.boatLevel < 3) {
-            const nextBoat = this.player.boatLevel + 1;
-            const price = boatPrices[nextBoat];
-            html += `<div class="row">
-                Level ${nextBoat} Boat - $${price}
-                <button onclick="buyBoat(${nextBoat}, ${price})" class="gold">Buy</button>
-            </div>`;
+        if (type === "boat") {
+            // Boat Upgrades
+            if (this.player.boatLevel < 3) {
+                const nextBoat = this.player.boatLevel + 1;
+                const price = boatPrices[nextBoat];
+                html += `<div class="row">
+                    Level ${nextBoat} Boat - $${price}
+                    <button onclick="buyBoat(${nextBoat}, ${price})" class="gold">Buy</button>
+                </div>`;
+            } else {
+                html += `<div class="row">Boat: Fully Upgraded!</div>`;
+            }
         } else {
-            html += `<div class="row">Boat: Fully Upgraded!</div>`;
-        }
-
-        // Rod Upgrades
-        if (this.player.rodLevel < 5) {
-            const nextRod = this.player.rodLevel + 1;
-            const price = rodPrices[nextRod];
-            const name = rodNames[nextRod];
-            html += `<div class="row">
-                ${name} - $${price}
-                <button onclick="buyRod(${nextRod}, ${price})" class="gold">Buy</button>
-            </div>`;
-        } else {
-            html += `<div class="row">Rod: Fully Upgraded!</div>`;
+            // Rod Upgrades
+            if (this.player.rodLevel < 5) {
+                const nextRod = this.player.rodLevel + 1;
+                const price = rodPrices[nextRod];
+                const name = rodNames[nextRod];
+                html += `<div class="row">
+                    ${name} - $${price}
+                    <button onclick="buyRod(${nextRod}, ${price})" class="gold">Buy</button>
+                </div>`;
+            } else {
+                html += `<div class="row">Rod: Fully Upgraded!</div>`;
+            }
         }
 
         html += `<button onclick="closeUI()" style="margin-top:15px">Close</button>`;
@@ -98,7 +103,7 @@ export class UIManager {
                 this.boat.isPurchased = true;
             }
             this.updateHUD();
-            this.openMerchantUI();
+            this.openMerchantUI("boat");
             if (this.onUpdateHUD) this.onUpdateHUD();
         } else {
             alert("Not enough money!");
@@ -112,7 +117,7 @@ export class UIManager {
             this.player.rodLevel = level;
             this.player.rod.maxPower = 5 + level * 3.5; // pampalakas ng bato based sa level
             this.updateHUD();
-            this.openMerchantUI();
+            this.openMerchantUI("rod");
             if (this.onUpdateHUD) this.onUpdateHUD();
         } else {
             alert("Not enough money!");
