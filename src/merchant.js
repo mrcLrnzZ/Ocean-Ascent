@@ -74,11 +74,14 @@ export class Merchant {
 export class RodMerchant extends Merchant {
     constructor(x, y) {
         super(x, y, "rod");
+        this.frameH = 94; // New sprite height
         this.onBoat = false;
         this.walkingToBoat = false;
         this.walkImg = new Image();
-        this.walkImg.src = 'assets/Fisherman_walkv2.png';
-        this.idleImg = this.img;
+        this.walkImg.src = 'assets/rodmerch_walk.png';
+        this.idleImg = new Image();
+        this.idleImg.src = 'assets/rodmerch_idle.png';
+        this.img = this.idleImg;
         this.speed = 2;
     }
 
@@ -90,14 +93,31 @@ export class RodMerchant extends Merchant {
             
             // Floating with waves (similar to boat/player logic)
             const floatingY = waveSurf(boat.x + bounds.width / 2, frame) - bounds.height * 0.8;
-            this.y = floatingY + boat.floorYOffset; // Higher than player slightly? No, use floor offset.
+            this.y = floatingY + boat.floorYOffset;
             
             this.img = this.idleImg;
             this.interactionRadius = 100;
+
+            // Idle animation (6 frames)
+            this.frameTimer++;
+            if (this.frameTimer >= 12) {
+                this.currentFrame = (this.currentFrame + 1) % 6;
+                this.frameTimer = 0;
+            }
         } else if (boat.isPurchased) {
             this.walkingToBoat = true;
-            const targetX = boat.x + (boat.width * boat.scale / 2);
-            if (Math.abs(this.x - targetX) > 5) {
+            const targetX = boat.x + (boat.width * boat.scale / 2) - (this.frameW * this.scale) / 2;
+            const dist = Math.abs(this.x - targetX);
+
+            // Teleport if way too far (e.g. map transition or player sailed ahead)
+            if (dist > 1000) {
+                this.x = targetX;
+                this.onBoat = true;
+                this.walkingToBoat = false;
+                return;
+            }
+
+            if (dist > 5) {
                 this.facing = this.x < targetX ? 1 : -1;
                 this.x += this.facing * this.speed;
                 this.img = this.walkImg;
@@ -113,8 +133,12 @@ export class RodMerchant extends Merchant {
                 this.walkingToBoat = false;
             }
         } else {
-            // Normal idle update
-            super.update();
+            // Normal idle update (6 frames for RodMerchant)
+            this.frameTimer++;
+            if (this.frameTimer >= 12) {
+                this.currentFrame = (this.currentFrame + 1) % 6;
+                this.frameTimer = 0;
+            }
         }
     }
 }
