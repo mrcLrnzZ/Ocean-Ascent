@@ -163,6 +163,31 @@ function drawWetEffect() {
 // Start rain animation
 drawRain();
 
+// Lightning Effect System
+const lightningOverlay = document.getElementById('lightning-overlay');
+
+function triggerLightning() {
+    if (!gameStarted && lightningOverlay) {
+        // Remove previous animation class
+        lightningOverlay.classList.remove('lightning-flash');
+        
+        // Trigger reflow to restart animation
+        void lightningOverlay.offsetWidth;
+        
+        // Add animation class to trigger flash
+        lightningOverlay.classList.add('lightning-flash');
+    }
+}
+
+// Trigger lightning every 3 seconds while on homepage
+const lightningInterval = setInterval(() => {
+    if (gameStarted) {
+        clearInterval(lightningInterval);
+    } else {
+        triggerLightning();
+    }
+}, 3000);
+
 startBtn.addEventListener('click', () => {
     if (!gameStarted) {
         gameStarted = true;
