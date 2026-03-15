@@ -17,14 +17,25 @@ export const audio = new AudioManager();
 
 // HOMEPAGE RAIN SYSTEM & WEATHER SOUNDS
 let gameStarted = false;
+let audioStarted = false;
 const homepage = document.getElementById('homepage');
 const startBtn = document.getElementById('start-btn');
 const rainCanvas = document.getElementById('rain-canvas');
 const rainCtx = rainCanvas.getContext('2d');
 
-// Play homepage weather sounds
-audio.play('heavyrain');
-audio.play('thunder');
+// Start homepage weather sounds on first user interaction
+function startHomepageAudio() {
+    if (!audioStarted && !gameStarted) {
+        audioStarted = true;
+        audio.play('heavyrain');
+        audio.play('thunder');
+    }
+}
+
+// Enable audio on any user interaction
+document.addEventListener('click', startHomepageAudio, { once: true });
+document.addEventListener('keydown', startHomepageAudio, { once: true });
+document.addEventListener('touchstart', startHomepageAudio, { once: true });
 
 // Set canvas size
 function resizeRainCanvas() {
@@ -362,7 +373,7 @@ function loop() {
     
     // --- WEATHER SOUND LOGIC ---
     const currentWeather = WeatherSystem.targetState;
-    if (currentWeather === 'rainy' || currentWeather === 'stormy') {
+    if (currentWeather === 'stormy') {
         if (audio.currentWeatherSound !== 'heavyrain') {
             audio.stop('heavyrain');
             audio.play('heavyrain');

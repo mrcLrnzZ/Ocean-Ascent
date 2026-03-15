@@ -395,14 +395,14 @@ export const WeatherSystem = {
                 ctx.fillRect(0, 0, W, H)
             }
 
-            // Wind streaks during heavy rain and storms
-            if (w.windX > 3) {
-                ctx.globalAlpha = w.rainAlpha * (isStorm ? 0.35 : 0.15)
-                ctx.strokeStyle = isStorm ? '#a0c8d8' : '#b8d0d8'
-                ctx.lineWidth = isStorm ? 2.5 : 1.5
+            // Wind streaks during stormy weather only
+            if (isStorm && w.windX > 3) {
+                ctx.globalAlpha = w.rainAlpha * 0.35
+                ctx.strokeStyle = '#a0c8d8'
+                ctx.lineWidth = 2.5
                 
                 const windStrength = w.windX
-                const streakCount = isStorm ? 25 : 12
+                const streakCount = 25
                 
                 for (let i = 0; i < streakCount; i++) {
                     const y = (i * (H / streakCount) + (cameraY % H)) % H

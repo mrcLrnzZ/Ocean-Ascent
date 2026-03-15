@@ -58,9 +58,17 @@ export class AudioManager {
         
         if (sound.loop) {
             if (!sound.paused) return;
-            } 
-        sound.currentTime = 0; // restart sound if spammed
-        sound.play();
+        }
+        
+        sound.currentTime = 0;
+        const playPromise = sound.play();
+        
+        // Handle potential autoplay restrictions
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log(`Audio autoplay blocked for ${name}. User interaction may be required.`);
+            });
+        }
     }
     
     stop(name) {
