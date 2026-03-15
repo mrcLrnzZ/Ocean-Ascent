@@ -311,9 +311,22 @@ export class Rod {
 
         // ---------- Struggle Minigame ----------
         if (this.struggling && this.caughtFish) {
-            // Fish stays attached to the struggle point
-            this.caughtFish.x = this.x;
-            this.caughtFish.y = this.y;
+            // Apply a slight shake to the hook/bait itself
+            this.x += (Math.random() - 0.5) * 6;
+            this.y += (Math.random() - 0.5) * 6;
+
+            // Fish stays attached to the struggle point, but moves fast to show resistance
+            const time = Date.now() * 0.02; // fast oscillation
+            const oscillateX = Math.sin(time) * 25;
+            const oscillateY = Math.cos(time * 1.5) * 15;
+            const jitter = (Math.random() - 0.5) * 10;
+
+            this.caughtFish.x = this.x + oscillateX + jitter;
+            this.caughtFish.y = this.y + oscillateY + jitter;
+
+            // Flip direction based on oscillation to look like it's swimming frantically
+            if (oscillateX > 0) this.caughtFish.direction = 1;
+            else this.caughtFish.direction = -1;
 
             let requiredTaps = 2; // default for common
             let escapeChance = 0; // chance to escape per frame
@@ -353,8 +366,16 @@ export class Rod {
         // ---------- Reel ----------
         if (this.reeling) {
             if (this.caughtFish) {
-                this.caughtFish.x = this.x;
-                this.caughtFish.y = this.y;
+                // Still struggling while being reeled in, but less intense
+                const time = Date.now() * 0.01;
+                const oscillateX = Math.sin(time) * 10;
+                const oscillateY = Math.cos(time * 1.2) * 5;
+                
+                this.caughtFish.x = this.x + oscillateX;
+                this.caughtFish.y = this.y + oscillateY;
+                
+                if (oscillateX > 0) this.caughtFish.direction = 1;
+                else this.caughtFish.direction = -1;
             }
 
             const dx = originX - this.x;
