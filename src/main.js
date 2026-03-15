@@ -15,12 +15,16 @@ export const audio = new AudioManager();
 
     audio.play("ocean");
 
-// HOMEPAGE RAIN SYSTEM
+// HOMEPAGE RAIN SYSTEM & WEATHER SOUNDS
 let gameStarted = false;
 const homepage = document.getElementById('homepage');
 const startBtn = document.getElementById('start-btn');
 const rainCanvas = document.getElementById('rain-canvas');
 const rainCtx = rainCanvas.getContext('2d');
+
+// Play homepage weather sounds
+audio.play('heavyrain');
+audio.play('thunder');
 
 // Set canvas size
 function resizeRainCanvas() {
@@ -120,8 +124,38 @@ function drawRain(timestamp) {
     // Draw droplets on title and button surfaces
     drawWetEffect();
     
+    // Draw wind streaks during heavy rainstorm
+    drawWindStreaks();
+    
     rainCtx.globalAlpha = 1;
     requestAnimationFrame(drawRain);
+}
+
+// Draw wind streaks on homepage
+function drawWindStreaks() {
+    rainCtx.globalAlpha = RAIN_CONFIG.rainAlpha * 0.25;
+    rainCtx.strokeStyle = RAIN_CONFIG.dropColor;
+    rainCtx.lineWidth = 2;
+    
+    const windStrength = Math.abs(RAIN_CONFIG.windX) * 2;
+    const streakCount = 20;
+    
+    for (let i = 0; i < streakCount; i++) {
+        const y = (i * (rainCanvas.height / streakCount)) % rainCanvas.height;
+        const streakLength = 60 + Math.sin(i * 0.5) * 30;
+        const xOffset = Math.sin(i * 0.3) * 15;
+        
+        rainCtx.beginPath();
+        rainCtx.moveTo(xOffset, y);
+        rainCtx.lineTo(xOffset + streakLength, y);
+        rainCtx.stroke();
+        
+        // Double streak for layered effect
+        rainCtx.beginPath();
+        rainCtx.moveTo(rainCanvas.width + xOffset - streakLength, y + 2);
+        rainCtx.lineTo(rainCanvas.width + xOffset, y + 2);
+        rainCtx.stroke();
+    }
 }
 
 // Draw wet droplets on UI elements
@@ -191,6 +225,9 @@ const lightningInterval = setInterval(() => {
 startBtn.addEventListener('click', () => {
     if (!gameStarted) {
         gameStarted = true;
+        // Stop homepage weather sounds
+        audio.stop('heavyrain');
+        audio.stop('thunder');
         // Fade out effect
         homepage.style.transition = 'opacity 0.8s ease-out';
         homepage.style.opacity = '0';
@@ -321,7 +358,23 @@ function loop() {
 
     // --- UPDATE LOGIC ---
     boat.update(G);   
-  WeatherSystem.update(frame);  // Move boat first
+    WeatherSystem.update(frame);  // Move boat first
+    
+    // --- WEATHER SOUND LOGIC ---
+    const currentWeather = WeatherSystem.targetState;
+    if (currentWeather === 'rainy' || currentWeather === 'stormy') {
+        if (audio.currentWeatherSound !== 'heavyrain') {
+            audio.stop('heavyrain');
+            audio.play('heavyrain');
+            audio.currentWeatherSound = 'heavyrain';
+        }
+    } else {
+        if (audio.currentWeatherSound === 'heavyrain') {
+            audio.stop('heavyrain');
+            audio.currentWeatherSound = null;
+        }
+    }
+    
     player.update(1, G, boat, fishManager, currentMap); // then player follows
     fishManager.update();                    // all fish update
     boatMerchant.update();
