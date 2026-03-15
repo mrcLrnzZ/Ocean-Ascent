@@ -369,8 +369,13 @@ export class Rod {
                     if (this.player.inventory[fishId] !== undefined) {
                         this.player.inventory[fishId] += 1;
                     }
+
+                    // Add money from fish price
+                    const fishPrice = SPRITE_DATA[fishId]?.price || 10;
+                    this.player.money += fishPrice;
+
                     this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
-                    console.log(`Landed a ${this.caughtFish.type}!`);
+                    console.log(`Landed a ${this.caughtFish.type}! Earned $${fishPrice}`);
                     audio.play('success');
                     setTimeout(() => {
                         this.reset();
@@ -378,7 +383,7 @@ export class Rod {
                     // Update caught notification ui
                     // uiManager.showNotification(`Caught a ${this.caughtFish.name}!`); // you can enable this later
 
-                    // Update HUD to reflect new total catch count
+                    // Update HUD to reflect new total catch count and money
                     import('./ui.js').then(module => {
                         module.uiManager.updateHUD();
                     });
