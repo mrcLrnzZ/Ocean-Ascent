@@ -14,6 +14,25 @@ import { WeatherSystem, waveParams } from './environment.js';
 export const audio = new AudioManager();
 
     audio.play("ocean");
+
+// HOMEPAGE START BUTTON LOGIC
+let gameStarted = false;
+const homepage = document.getElementById('homepage');
+const startBtn = document.getElementById('start-btn');
+
+startBtn.addEventListener('click', () => {
+    if (!gameStarted) {
+        gameStarted = true;
+        // Fade out effect
+        homepage.style.transition = 'opacity 0.8s ease-out';
+        homepage.style.opacity = '0';
+        setTimeout(() => {
+            homepage.classList.add('hidden');
+            homepage.style.opacity = '1';
+        }, 800);
+    }
+});
+
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');

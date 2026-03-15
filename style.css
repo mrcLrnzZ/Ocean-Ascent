@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 
+/* Import Custom Font */
+@font-face {
+    font-family: 'upheaval';
+    src: url('assets/font/upheavtt.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 body {
     background: #000;
     width: 100vw;
@@ -476,3 +484,113 @@ button:hover {
     color: #8a1010;
 }
 
+/* --- HOMEPAGE --- */
+.homepage-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 9999;
+    pointer-events: all;
+    background: linear-gradient(180deg, #0a1e3a 0%, #1a3a5a 30%, #2a4a7a 50%, #1a3a5a 70%, #0a1e3a 100%);
+}
+
+.ocean{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 150%;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: contain;
+    z-index: 4;
+}
+.mountain{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: contain;
+    z-index: 3;
+}
+
+.sky{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45%;
+    background-repeat:repeat;
+    background-position: top;
+    background-size: auto 100%;
+    z-index: 1;
+}
+
+.homepage-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 100;
+    pointer-events: all;
+}
+
+.game-title {
+    margin-top: 5px;
+    font-family: 'upheaval', cursive;
+    font-size: 224px;
+    color: #00aeff;
+    text-shadow: 2px 2px 4px rgb(0, 0, 0);
+    margin-bottom: 70px;
+    letter-spacing: 10px;
+}
+
+
+
+.start-button {
+    font-family: 'upheaval', cursive;
+    padding: 18px 60px;
+    font-size: 24px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #5eb3d6 0%, #4a9fd8 50%, #3a8bc0 100%);
+    border: 3px solid #4a9fd8;
+    color: #001a4d;
+    cursor: pointer;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    pointer-events: all;
+}
+
+.start-button:hover {
+    background: linear-gradient(135deg, #6ec5e0 0%, #5eb3d6 50%, #4a9fd8 100%);
+    border-color: #5eb3d6;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.start-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hint-text {
+    display: none;
+}
+
+.particles {
+    display: none;
+}
+
+.homepage-container.hidden {
+    display: none;
+}
