@@ -43,6 +43,17 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
 
+// const startBtn = document.getElementById("startBtn");
+// const video = document.getElementById("introVideo");
+
+// startBtn.addEventListener("click", () => {
+//     startBtn.style.display = "none";
+//     canvas.style.display = "none";
+
+//     video.style.display = "block";
+//     video.play();
+// });
+
 
 
 // Debug Camera logic
@@ -274,4 +285,13 @@ if (rodMerchant.onBoat) {
     }
 }
 
-loop();
+// video.addEventListener("ended", () => {
+
+//     video.style.display = "none";
+//     canvas.style.display = "block";
+
+//     loop(); // start the game loop
+
+// });
+
+  loop(); //

@@ -73,7 +73,7 @@ export const DEPTH_LEVEL_HEIGHTS = {
   2: 1500, // Depth 1
   3: 1500, // Depth 2
   4: 1500, // Depth 3
-  5: 1500  // Depth 4 (Abyss)
+  5: 2500  // Depth 4 (Abyss)
 };
 
 export function getDepthStartLine(level) {

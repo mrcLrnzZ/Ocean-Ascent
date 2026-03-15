@@ -37,7 +37,7 @@ export class Rod {
         this.landedX = null;
         this.landedXOffset = 0;
         this.landedY = null;
-        this.sinkSpeed = 0.8;
+        this.sinkSpeed = 20.8;
         this.sinkDepth = SHORE_LINE_DEPTH;
         this.depthOffset = 0;
         this.maxDepthOffset = 0;

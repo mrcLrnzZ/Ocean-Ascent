@@ -15,7 +15,7 @@ export const SPRITE_DATA = {
     // Level 3: Deep
     cod: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.3, name: 'Cod', rarity: 'rare', desc: 'A heavy-bodied fish that prefers colder, deeper waters.' },
     pufferfish: { src: 'assets/flowerhead.png', almanacSrc: 'assets/almanacflowerhead.png', frames: 6, renderScale: 0.2, name: 'FlowerHorn', rarity: 'rare', desc: 'A rare fish with a head shaped like blooming petals. Its vibrant colors and elegant movement make it a beautiful sight in calm waters.' },
-    sunfish: { src: 'assets/swordfish.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 4, renderScale: 0.4, name: 'Sunfish', rarity: 'rare', desc: 'A bizarre, flattened giant that often basks sideways near the surface, but dives deep for jellyfish.' },
+    sunfish: { src: 'assets/turtle.png', almanacSrc: 'assets/almanacEnchovy.png', frames: 5, renderScale: 5.4, name: 'Sunfish', rarity: 'rare', desc: 'A bizarre, flattened giant that often basks sideways near the surface, but dives deep for jellyfish.' },
 
     // Level 4: Trench
     oarfish: { src: 'assets/halfmoon.png', almanacSrc: 'assets/almanacHalfmoon.png', frames: 6, renderScale: 0.59, name: 'Halfmoon', rarity: 'epic', desc: 'A rare deep-sea fish with a glowing crescent tail that resembles a half moon. Known to appear only in calm waters at night, making it a prized catch among legendary anglers.' },
@@ -25,7 +25,7 @@ export const SPRITE_DATA = {
     // Level 5 & 6: Abyss
     Beluga: { src: 'assets/Beluga.png', almanacSrc: 'assets/almanacBeluga.png', frames: 4, renderScale: 10.7, name: 'Beluga', rarity: 'legendary', desc: 'A large beluga whale patrols the cold waters ahead. It is highly aware of movement through sound and vibration, and will approach unfamiliar creatures that enter its territory. Its strong body and quick bursts of speed make close encounters dangerous.' },
     Mekong: { src: 'assets/Catfish.png', almanacSrc: 'assets/almanacBeluga.png', frames: 4, renderScale: 0.8, name: 'Mekong', rarity: 'legendary', desc: 'Mekong Giant Catfish detected. A massive freshwater fish capable of sudden bursts of speed. Its large size and powerful tail can easily knock aside smaller creatures that get too close.' },
-    kraken: { src: 'assets/kraken.png', almanacSrc: 'assets/krakenalmanac', frames: 4, renderScale: 0.9, name: 'Kraken', rarity: 'legendary', desc: 'A mythic cephalopod of unimaginable size. Its tentacles can drag ships into the abyss.' }
+    kraken: { src: 'assets/kraken.png', almanacSrc: 'assets/krakenalmanac', frames: 4, renderScale: 20.9, name: 'Kraken', rarity: 'legendary', desc: 'A mythic cephalopod of unimaginable size. Its tentacles can drag ships into the abyss.' }
 };
 
 export class Fish {
