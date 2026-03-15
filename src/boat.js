@@ -42,10 +42,16 @@ export class Boat {
         };
     }
 
-    update(G) {
+    update(G, rodMerchant) {
         if (!this.isPurchased) return;
 
         if (this.state === 'sailing') {
+            // Prevent sailing if the merchant isn't onboard yet
+            if (rodMerchant && !rodMerchant.onBoat) {
+                this.vx = 0;
+                return;
+            }
+
             if (G.keys['ArrowRight'] || G.keys['d']) {
                 this.vx = this.speed;
             } else if (G.keys['ArrowLeft'] || G.keys['a']) {

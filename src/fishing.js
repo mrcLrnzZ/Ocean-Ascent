@@ -61,7 +61,7 @@ export class Rod {
         if (currentlyOnBoat && !this.wasOnBoat) {
             audio.play('onBoat');
         } else if (!currentlyOnBoat && this.wasOnBoat) {
-        
+
             if (audio.sounds?.onBoat) {
                 audio.sounds.onBoat.pause();
                 audio.sounds.onBoat.currentTime = 0;
@@ -87,25 +87,25 @@ export class Rod {
         // Pick which lookup key + frame index to use
         let tipKey, tipFrame, tipFrameW;
         if (p.isThrowAnim) {
-            tipKey    = 'throw';
-            tipFrame  = p.throwFrame;
+            tipKey = 'throw';
+            tipFrame = p.throwFrame;
             tipFrameW = p.throwFrameW;
         } else if (p.isFishIdle) {
-            tipKey    = 'fishidle';
-            tipFrame  = p.fishIdleFrame;
+            tipKey = 'fishidle';
+            tipFrame = p.fishIdleFrame;
             tipFrameW = p.fishIdleFrameW;
         } else if (p.isMoving) {
-            tipKey    = 'walk';
-            tipFrame  = p.currentFrame;
+            tipKey = 'walk';
+            tipFrame = p.currentFrame;
             tipFrameW = p.frameW;
         } else {
-            tipKey    = 'idle';
-            tipFrame  = p.currentFrame;
+            tipKey = 'idle';
+            tipFrame = p.currentFrame;
             tipFrameW = p.frameW;
         }
 
         const tips = ROD_TIPS[tipKey];
-        const tip  = (tips && tips[tipFrame]) ? tips[tipFrame] : { x: 20, y: 30 };
+        const tip = (tips && tips[tipFrame]) ? tips[tipFrame] : { x: 20, y: 30 };
 
         // The sprite is drawn centred on player.x + drawW/2 and flipped for facing
         const drawW = tipFrameW * sc;
@@ -190,10 +190,10 @@ export class Rod {
                     this.vx = 0; this.vy = 0;
 
                     audio.play('splash');
-                if (!this.isBaitInWater) {
-                    audio.play('underwater');
-                    audio.sounds.ocean.volume = 0.08;
-                }
+                    if (!this.isBaitInWater) {
+                        audio.play('underwater');
+                        audio.sounds.ocean.volume = 0.08;
+                    }
 
                     this.isBaitInWater = true;
                     this.isSinking = true;
@@ -370,10 +370,10 @@ export class Rod {
                 const time = Date.now() * 0.01;
                 const oscillateX = Math.sin(time) * 10;
                 const oscillateY = Math.cos(time * 1.2) * 5;
-                
+
                 this.caughtFish.x = this.x + oscillateX;
                 this.caughtFish.y = this.y + oscillateY;
-                
+
                 if (oscillateX > 0) this.caughtFish.direction = 1;
                 else this.caughtFish.direction = -1;
             }
@@ -381,7 +381,9 @@ export class Rod {
             const dx = originX - this.x;
             const dy = originY - this.y;
             const dist = Math.hypot(dx, dy);
-            const reelSpeed = 5;
+
+            // Dynamic reel speed: faster if empty hook (15), slower if fish caught (3)
+            const reelSpeed = this.caughtFish ? 3 : 15;
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
@@ -601,9 +603,9 @@ export class Rod {
         }
 
         if (audio.sounds.underwater) {
-        audio.sounds.underwater.pause();
-        audio.sounds.underwater.currentTime = 0;
-        audio.sounds.ocean.volume = 0.5;
+            audio.sounds.underwater.pause();
+            audio.sounds.underwater.currentTime = 0;
+            audio.sounds.ocean.volume = 0.5;
         }
 
         this.isCasting = false;
