@@ -43,6 +43,17 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
 
+// const startBtn = document.getElementById("startBtn");
+// const video = document.getElementById("introVideo");
+
+// startBtn.addEventListener("click", () => {
+//     startBtn.style.display = "none";
+//     canvas.style.display = "none";
+
+//     video.style.display = "block";
+//     video.play();
+// });
+
 
 
 // Debug Camera logic
@@ -133,8 +144,8 @@ function loop() {
     const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame };
 
     // --- UPDATE LOGIC ---
-    boat.update(G);   
-  WeatherSystem.update(frame);  // Move boat first
+    boat.update(G, rodMerchant);   
+    WeatherSystem.update(frame);  // Move boat first
     player.update(1, G, boat, fishManager, currentMap); // then player follows
     fishManager.update();                    // all fish update
     boatMerchant.update();
@@ -189,7 +200,14 @@ function loop() {
                     boat.state = 'fishing';
                 }
             }
-            else if (playerRelCenterX > bounds.width - zoneWidth) boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
+            else if (playerRelCenterX > bounds.width - zoneWidth) {
+                if (rodMerchant.onBoat) {
+                    boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
+                } else {
+                    uiManager.showNotification("Wait for the Rod Merchant to board first!");
+                    boat.state = 'idle';
+                }
+            }
             else if (rodMerchant.isNear(player)) uiManager.openMerchantUI("rod", keys);
         }
     }
@@ -274,4 +292,13 @@ if (rodMerchant.onBoat) {
     }
 }
 
-loop();
+// video.addEventListener("ended", () => {
+
+//     video.style.display = "none";
+//     canvas.style.display = "block";
+
+//     loop(); // start the game loop
+
+// });
+
+  loop(); //
