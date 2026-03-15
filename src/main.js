@@ -11,6 +11,7 @@ import { camera } from './camera.js';
 import { transitionManager } from './map_transition.js';
 import { AudioManager } from './audio.js';
 import { WeatherSystem, waveParams } from './environment.js';
+import { effectManager } from './effects.js';
 export const audio = new AudioManager();
 
     audio.play("ocean");
@@ -150,6 +151,7 @@ function loop() {
     fishManager.update();                    // all fish update
     boatMerchant.update();
     rodMerchant.update(boat, frame);
+    effectManager.update();
 
     // --- MAP TRANSITIONS & BOUNDARIES ---
     currentMap = transitionManager.updateTransition(currentMap, boat, player);
@@ -272,6 +274,7 @@ if (rodMerchant.onBoat) {
 
         // 6. Foreground layers
         drawWaterForeground(ctx, cameraX, frame, currentMap);
+        effectManager.draw(ctx, cameraX);
         drawDeepSoil(ctx, cameraX, currentMap);
         ctx.restore();
 

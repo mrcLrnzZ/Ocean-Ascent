@@ -30,7 +30,7 @@ export const THEMES = {
     skyTop: '#5bc8f5',
     skyBot: '#0a65c7',
     waterTop: '#4090c880',
-    waterFoam: '#39bdff80',
+    waterFoam: '#39bdff100',
     waterBg: '#0a65c7',
     depthColors: {
       1: '#0a65c780',

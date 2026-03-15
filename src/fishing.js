@@ -2,6 +2,8 @@
 import { WATER_Y, GRAVITY, SHORE_LINE_DEPTH, SHORE_END, getDepthEndLine, getDeepSoilY, MAPS } from './constants.js';
 import { SPRITE_DATA } from './fish.js';
 import { audio } from './main.js';
+import { effectManager } from './effects.js';
+import { waveSurf } from './environment.js';
 import { ROD_TIPS } from './rod_tips.js';
 
 export class Rod {
@@ -190,6 +192,10 @@ export class Rod {
                     this.vx = 0; this.vy = 0;
 
                     audio.play('splash');
+                    // Use a rough frame count for visual splash alignment with waves
+                    const approxFrame = Math.floor(Date.now() / 16);
+                    const splashY = waveSurf(this.x, approxFrame); 
+                    effectManager.addSplash(this.x, splashY);
                     if (!this.isBaitInWater) {
                         audio.play('underwater');
                         audio.sounds.ocean.volume = 0.08;
