@@ -15,10 +15,153 @@ export const audio = new AudioManager();
 
     audio.play("ocean");
 
-// HOMEPAGE START BUTTON LOGIC
+// HOMEPAGE RAIN SYSTEM
 let gameStarted = false;
 const homepage = document.getElementById('homepage');
 const startBtn = document.getElementById('start-btn');
+const rainCanvas = document.getElementById('rain-canvas');
+const rainCtx = rainCanvas.getContext('2d');
+
+// Set canvas size
+function resizeRainCanvas() {
+    rainCanvas.width = window.innerWidth;
+    rainCanvas.height = window.innerHeight;
+}
+resizeRainCanvas();
+window.addEventListener('resize', resizeRainCanvas);
+
+// Rain drop configuration
+const RAIN_CONFIG = {
+    count: 150,
+    windX: 2,
+    rainAlpha: 0.6,
+    dropColor: '#c8dce8'
+};
+
+// Create rain drops
+const rainDrops = Array.from({ length: RAIN_CONFIG.count }, () => ({
+    x: Math.random() * rainCanvas.width,
+    y: Math.random() * rainCanvas.height,
+    len: 7 + Math.random() * 10,
+    speed: 13 + Math.random() * 9
+}));
+
+// Check if point is near UI element
+function isNearElement(x, y) {
+    const titleRect = document.querySelector('.game-title').getBoundingClientRect();
+    const buttonRect = document.querySelector('.start-button').getBoundingClientRect();
+    
+    // Check title collision
+    if (x > titleRect.left && x < titleRect.right && y > titleRect.top && y < titleRect.bottom) {
+        return { type: 'title', rect: titleRect };
+    }
+    
+    // Check button collision
+    if (x > buttonRect.left && x < buttonRect.right && y > buttonRect.top && y < buttonRect.bottom) {
+        return { type: 'button', rect: buttonRect };
+    }
+    
+    return null;
+}
+
+// Draw rain on canvas
+function drawRain(timestamp) {
+    if (gameStarted) return;
+    
+    rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+    rainCtx.strokeStyle = RAIN_CONFIG.dropColor;
+    rainCtx.globalAlpha = RAIN_CONFIG.rainAlpha;
+    rainCtx.lineWidth = 1.5;
+    
+    for (let i = 0; i < rainDrops.length; i++) {
+        const drop = rainDrops[i];
+        
+        // Update position
+        drop.y += drop.speed;
+        drop.x += RAIN_CONFIG.windX * 0.3;
+        
+        // Wrap around
+        if (drop.y > rainCanvas.height + 20) {
+            drop.y = -12;
+            drop.x = Math.random() * rainCanvas.width;
+        }
+        if (drop.x > rainCanvas.width + 20) {
+            drop.x = -10;
+        }
+        if (drop.x < -20) {
+            drop.x = rainCanvas.width + 10;
+        }
+        
+        // Check collision with UI elements
+        const collision = isNearElement(drop.x, drop.y);
+        
+        if (collision) {
+            // Draw rain drop with glow/splash effect near UI
+            rainCtx.globalAlpha = RAIN_CONFIG.rainAlpha * 0.8;
+            rainCtx.shadowColor = 'rgba(200, 220, 255, 0.5)';
+            rainCtx.shadowBlur = 4;
+            
+            rainCtx.beginPath();
+            rainCtx.moveTo(drop.x, drop.y);
+            rainCtx.lineTo(drop.x + RAIN_CONFIG.windX * 0.5, drop.y + drop.len);
+            rainCtx.stroke();
+            
+            rainCtx.shadowColor = 'transparent';
+        } else {
+            // Normal rain
+            rainCtx.globalAlpha = RAIN_CONFIG.rainAlpha;
+            rainCtx.beginPath();
+            rainCtx.moveTo(drop.x, drop.y);
+            rainCtx.lineTo(drop.x + RAIN_CONFIG.windX * 0.5, drop.y + drop.len);
+            rainCtx.stroke();
+        }
+    }
+    
+    // Draw droplets on title and button surfaces
+    drawWetEffect();
+    
+    rainCtx.globalAlpha = 1;
+    requestAnimationFrame(drawRain);
+}
+
+// Draw wet droplets on UI elements
+function drawWetEffect() {
+    const titleElement = document.querySelector('.game-title');
+    const buttonElement = document.querySelector('.start-button');
+    
+    if (titleElement && buttonElement) {
+        const titleRect = titleElement.getBoundingClientRect();
+        const buttonRect = buttonElement.getBoundingClientRect();
+        
+        // Draw droplets on title
+        rainCtx.globalAlpha = RAIN_CONFIG.rainAlpha * 0.5;
+        for (let i = 0; i < 5; i++) {
+            const x = titleRect.left + Math.random() * titleRect.width;
+            const y = titleRect.bottom - 5;
+            const radius = 1.5 + Math.random() * 2;
+            
+            rainCtx.beginPath();
+            rainCtx.arc(x, y, radius, 0, Math.PI * 2);
+            rainCtx.fillStyle = RAIN_CONFIG.dropColor;
+            rainCtx.fill();
+        }
+        
+        // Draw droplets on button
+        for (let i = 0; i < 3; i++) {
+            const x = buttonRect.left + Math.random() * buttonRect.width;
+            const y = buttonRect.top + Math.random() * buttonRect.height;
+            const radius = 1 + Math.random() * 1.5;
+            
+            rainCtx.beginPath();
+            rainCtx.arc(x, y, radius, 0, Math.PI * 2);
+            rainCtx.fillStyle = RAIN_CONFIG.dropColor;
+            rainCtx.fill();
+        }
+    }
+}
+
+// Start rain animation
+drawRain();
 
 startBtn.addEventListener('click', () => {
     if (!gameStarted) {
