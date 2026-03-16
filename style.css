@@ -413,8 +413,8 @@ button:hover {
     box-shadow: none;
     padding: 10px 90px 45px 90px;
     color: #3a2210;
-    width: 800px;
-    height: 500px;
+    width: 1300px;
+    height: 700px;
     max-height: none;
     display: flex;
     flex-direction: column;

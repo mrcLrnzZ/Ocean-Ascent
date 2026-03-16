@@ -42,10 +42,16 @@ export class Boat {
         };
     }
 
-    update(G) {
+    update(G, rodMerchant) {
         if (!this.isPurchased) return;
 
         if (this.state === 'sailing') {
+            // Prevent sailing if the merchant isn't onboard yet
+            if (rodMerchant && !rodMerchant.onBoat) {
+                this.vx = 0;
+                return;
+            }
+
             if (G.keys['ArrowRight'] || G.keys['d']) {
                 this.vx = this.speed;
             } else if (G.keys['ArrowLeft'] || G.keys['a']) {
@@ -104,7 +110,7 @@ export class Boat {
                 // Right zone: Navigation
                 const action = this.state === 'sailing' ? "Stop Sailing" : "Sail";
                 ctx.fillText(`Press [E] to ${action}`, screenX + bounds.width - zoneWidth / 2, floatingY - 20);
-            } else if (Math.abs(this.x - 950) < 100 && this.state === 'idle') {
+            } else if (Math.abs(this.x - 750) < 100 && this.state === 'idle') {
                 ctx.fillText("Press [R] to Disembark", screenX + bounds.width / 2, floatingY - 20);
             }
         } else if (Math.abs(player.x - this.x) < 100 && player.state === 'walking') {

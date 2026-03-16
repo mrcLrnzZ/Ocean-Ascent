@@ -11,6 +11,7 @@ import { camera } from './camera.js';
 import { transitionManager } from './map_transition.js';
 import { AudioManager } from './audio.js';
 import { WeatherSystem, waveParams } from './environment.js';
+import { effectManager } from './effects.js';
 export const audio = new AudioManager();
 
     audio.play("ocean");
@@ -260,7 +261,7 @@ const fishManager = new FishManager();
 const player = new Player(fishManager); // pass fishManager to player
 const boatMerchant = new Merchant(540, GROUND_Y, "boat");
 const rodMerchant = new RodMerchant(300, GROUND_Y);
-const boat = new Boat(950, 650);
+const boat = new Boat(750, 650);
 
 const keys = {};
 let frame = 0;
@@ -277,6 +278,17 @@ window.addEventListener('keydown', e => {
     if (!uiManager.isOpen) keys[e.key] = true;
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
+
+// const startBtn = document.getElementById("startBtn");
+// const video = document.getElementById("introVideo");
+
+// startBtn.addEventListener("click", () => {
+//     startBtn.style.display = "none";
+//     canvas.style.display = "none";
+
+//     video.style.display = "block";
+//     video.play();
+// });
 
 
 
@@ -386,10 +398,13 @@ function loop() {
         }
     }
     
+    boat.update(G, rodMerchant);   
+    WeatherSystem.update(frame);  // Move boat first
     player.update(1, G, boat, fishManager, currentMap); // then player follows
     fishManager.update();                    // all fish update
     boatMerchant.update();
     rodMerchant.update(boat, frame);
+    effectManager.update();
 
     // --- MAP TRANSITIONS & BOUNDARIES ---
     currentMap = transitionManager.updateTransition(currentMap, boat, player);
@@ -409,9 +424,9 @@ function loop() {
                 uiManager.showNotification("You are on the boat. [E] to Fish/Sail, [R] to Disembark.");
             }
         } else if (player.state === 'onBoat') {
-            if (Math.abs(boat.x - 950) < 100 && boat.state === 'idle') {
+            if (Math.abs(boat.x - 750) < 100 && boat.state === 'idle') {
                 player.state = 'walking';
-                player.x = 1000;
+                player.x = 950;
                 uiManager.showNotification("Disembarked boat.");
             }
         }
@@ -440,7 +455,14 @@ function loop() {
                     boat.state = 'fishing';
                 }
             }
-            else if (playerRelCenterX > bounds.width - zoneWidth) boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
+            else if (playerRelCenterX > bounds.width - zoneWidth) {
+                if (rodMerchant.onBoat) {
+                    boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
+                } else {
+                    uiManager.showNotification("Wait for the Rod Merchant to board first!");
+                    boat.state = 'idle';
+                }
+            }
             else if (rodMerchant.isNear(player)) uiManager.openMerchantUI("rod", keys);
         }
     }
@@ -474,30 +496,38 @@ function loop() {
         drawBackground(ctx, cameraX, currentMap);
         drawGround(ctx, cameraX, currentMap, frame);
 
+        
         if (currentMap === 0) {
             boatMerchant.draw(ctx, cameraX, player);
-            rodMerchant.draw(ctx, cameraX, player);
-        } else {
-            // Rod merchant follows on boat in other maps too
-            rodMerchant.draw(ctx, cameraX, player);
         }
-        fishManager.draw(ctx, cameraX);  // the fish
 
-        if (player.state == 'onBoat') {
+if (player.state !== 'onBoat') {
+    player.draw(ctx, cameraX);
+}
 
-            drawDock(ctx, cameraX, currentMap);
-            player.draw(ctx, cameraX);
+if (!rodMerchant.onBoat) {
+    rodMerchant.draw(ctx, cameraX, player);
+}
+
+drawDock(ctx, cameraX, currentMap);
+
+if (player.state === 'onBoat') {
+    player.draw(ctx, cameraX);
+}
+
+if (rodMerchant.onBoat) {
+    rodMerchant.draw(ctx, cameraX, player);
+}
 
 
-        } else {
-            player.draw(ctx, cameraX);
-            drawDock(ctx, cameraX, currentMap);
+        fishManager.draw(ctx, cameraX);
 
 
-
-        }
         boat.draw(ctx, cameraX, frame, player);
+
+        // 6. Foreground layers
         drawWaterForeground(ctx, cameraX, frame, currentMap);
+        effectManager.draw(ctx, cameraX);
         drawDeepSoil(ctx, cameraX, currentMap);
         ctx.restore();
 
@@ -518,4 +548,13 @@ function loop() {
     }
 }
 
-loop();
+// video.addEventListener("ended", () => {
+
+//     video.style.display = "none";
+//     canvas.style.display = "block";
+
+//     loop(); // start the game loop
+
+// });
+
+  loop(); //

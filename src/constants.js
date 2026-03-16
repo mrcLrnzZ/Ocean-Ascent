@@ -30,7 +30,7 @@ export const THEMES = {
     skyTop: '#5bc8f5',
     skyBot: '#0a65c7',
     waterTop: '#4090c880',
-    waterFoam: '#39bdff80',
+    waterFoam: '#39bdff100',
     waterBg: '#0a65c7',
     depthColors: {
       1: '#0a65c780',
@@ -73,7 +73,7 @@ export const DEPTH_LEVEL_HEIGHTS = {
   2: 1500, // Depth 1
   3: 1500, // Depth 2
   4: 1500, // Depth 3
-  5: 1500  // Depth 4 (Abyss)
+  5: 2500  // Depth 4 (Abyss)
 };
 
 export function getDepthStartLine(level) {
