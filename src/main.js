@@ -237,16 +237,27 @@ const lightningInterval = setInterval(() => {
 startBtn.addEventListener('click', () => {
     if (!gameStarted) {
         gameStarted = true;
-        // Stop homepage weather sounds
+        // Stop all homepage sounds while video plays
+        audio.stop('ocean');
         audio.stop('heavyrain');
         audio.stop('thunder');
-        // Fade out effect
-        homepage.style.transition = 'opacity 0.8s ease-out';
-        homepage.style.opacity = '0';
-        setTimeout(() => {
-            homepage.classList.add('hidden');
-            homepage.style.opacity = '1';
-        }, 800);
+        
+        // Show and play the intro video
+        const introVideo = document.getElementById('introVideo');
+        const gameCanvas = document.getElementById('gameCanvas');
+        
+        introVideo.style.display = 'block';
+        gameCanvas.style.display = 'none';
+        homepage.style.display = 'none';
+        
+        introVideo.play();
+        
+        // When video ends, start the game
+        introVideo.addEventListener('ended', () => {
+            introVideo.style.display = 'none';
+            gameCanvas.style.display = 'block';
+            requestAnimationFrame(loop);
+        }, { once: true });
     }
 });
 
@@ -557,4 +568,4 @@ if (rodMerchant.onBoat) {
 
 // });
 
-  loop(); //
+// Game loop is started AFTER the intro video plays
