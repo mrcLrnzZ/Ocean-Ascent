@@ -54,6 +54,20 @@ export const THEMES = {
       4: '#00020880',
       5: '#00000080'
     }
+  },
+    sunset: {
+    skyTop: '#ff6600ff',
+    skyBot: '#e0f000ff',
+    waterTop: '#4090c880',
+    waterFoam: '#39bdff100',
+    waterBg: '#0a65c7',
+    depthColors: {
+      1: '#0a65c780',
+      2: '#0051ff80',
+      3: '#0033aa80',
+      4: '#001a6680',
+      5: '#00003380'
+    }
   }
 };
 
@@ -127,14 +141,17 @@ export const DEPTH_COLORS = THEMES.default.depthColors;
 
 export const PARALLAX_LAYERS = {
   0: [ // Shore
-    { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.1 },
+    { y: -30, width: 2500, height: 1000, scale: 0.5, speed: 0.1 },
+    { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.2 },
     { y: -170, width: 1900, height: 1600, scale: 0.5, speed: 0.3 },
     { y: -30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
     { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
     1: [ 
-    { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.1 },
+    { y: -30, width: 2500, height: 1000, scale: 0.5, speed: 0.1 },
+
+    { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.2 },
     { y: -170, width: 1900, height: 1600, scale: 0.5, speed: 0.3 },
     { y: -30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
     { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
@@ -163,14 +180,14 @@ export const PARALLAX_LAYERS = {
 export const MAPS = [
   {
     id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 2, hasDock: true, length: SHORE_LEVEL_LENGTH,
-    theme: 'default',
-    backgrounds: ['assets/forest_mountain.png', 'assets/sky_front_mountain.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
+    theme: 'sunset',
+    backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
   },
     {
     id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 5, hasDock: false, length: LEVEL_1_LENGTH,
-    theme: 'default',
-    backgrounds: ['assets/forest_mountain.png', 'assets/sky_front_mountain.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
+    theme: 'sunset',
+    backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
   },
   {
