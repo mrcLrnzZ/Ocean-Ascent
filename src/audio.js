@@ -16,11 +16,15 @@ export class AudioManager {
             openTrade: new Audio("./assets/audio/open-trade.mp3"),
             buy: new Audio("./assets/audio/buy.mp3"),
             nextPage: new Audio("./assets/audio/nextpage.mp3"),
+            heavyrain: new Audio("./assets/audio/heavyrain.wav"),
+            thunder: new Audio("./assets/audio/thunder.wav")
         };
         this.sounds.reel.loop = true;
         this.sounds.onBoat.loop = true;
         this.sounds.ocean.loop = true;
         this.sounds.underwater.loop = true;
+        this.sounds.heavyrain.loop = true;
+        this.sounds.thunder.loop = true;
 
         // optional volume control
         this.sounds.cast.volume = 0.55; 
@@ -39,6 +43,12 @@ export class AudioManager {
         this.sounds.openTrade.volume = 0.45;
         this.sounds.buy.volume = 0.45;
         this.sounds.nextPage.volume = 0.55;
+        
+        this.sounds.heavyrain.volume = 0.6;
+        this.sounds.thunder.volume = 0.5;
+        
+        // Track current weather sounds
+        this.currentWeatherSound = null;
     }
 
     play(name) {
@@ -48,9 +58,17 @@ export class AudioManager {
         
         if (sound.loop) {
             if (!sound.paused) return;
-            } 
-        sound.currentTime = 0; // restart sound if spammed
-        sound.play();
+        }
+        
+        sound.currentTime = 0;
+        const playPromise = sound.play();
+        
+        // Handle potential autoplay restrictions
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log(`Audio autoplay blocked for ${name}. User interaction may be required.`);
+            });
+        }
     }
     
     stop(name) {
