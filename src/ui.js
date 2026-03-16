@@ -116,6 +116,7 @@ export class UIManager {
             this.player.money -= price;
             this.player.rodLevel = level;
             this.player.rod.maxPower = 5 + level * 3.5; // pampalakas ng bato based sa level
+            this.player.updateRodSprites();
             this.updateHUD();
             this.openMerchantUI("rod");
             if (this.onUpdateHUD) this.onUpdateHUD();

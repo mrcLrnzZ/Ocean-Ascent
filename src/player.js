@@ -17,13 +17,12 @@ export class Player {
         this.facing = 1;
 
         this.walkImg = new Image();
-        this.walkImg.src = 'assets/Fisherman_walkv2.png';
         this.idleImg = new Image();
-        this.idleImg.src = 'assets/Fishermanred_idlev2.png';
         this.throwImg = new Image();
-        this.throwImg.src = 'assets/Fisherman_throw10.png';
         this.fishIdleImg = new Image();
-        this.fishIdleImg.src = 'assets/Fisherman_fishidle.png';
+        
+        this.rodLevel = 1;
+        this.updateRodSprites();
 
         // Throw spritesheet: varies, 94px tall, each frame 127px wide
         this.throwFrameW = 127;
@@ -58,7 +57,6 @@ export class Player {
         this.state = 'walking'; // 'walking', 'onBoat'
         this.money = 2000;
         this.boatLevel = 0;
-        this.rodLevel = 1;
 
         // --- Fishing ---
         this.rod = new Rod(this, fishManager);
@@ -203,6 +201,43 @@ export class Player {
             if (this.frameTimer >= 7) { this.currentFrame = (this.currentFrame + 1) % 6; this.frameTimer = 0; }
         } else {
             if (this.frameTimer >= 12) { this.currentFrame = (this.currentFrame + 1) % 4; this.frameTimer = 0; }
+        }
+    }
+
+    updateRodSprites() {
+        console.log(`Updating rod sprites for level ${this.rodLevel}`);
+        if (this.rodLevel == 2) {
+            // Level 2+ uses the new rod folder sprites (currently only red is provided)
+            // We can extend this logic as more tiers (blue, gold, etc) are added.
+            const folder = 'assets/rod/';
+            this.walkImg.src = `${folder}walk_red.png`;
+            this.idleImg.src = `${folder}idle_red.png`;
+            this.throwImg.src = `${folder}fullthrow_red.png`;
+            this.fishIdleImg.src = `${folder}fishidle_red.png`;
+        }else if (this.rodLevel === 3) {
+            const folder = 'assets/rod/';
+            this.walkImg.src = `${folder}walk_green.png`;
+            this.idleImg.src = `${folder}idle_green.png`;
+            this.throwImg.src = `${folder}fullthrow_green.png`;
+            this.fishIdleImg.src = `${folder}fishidle_green.png`;
+        }else if (this.rodLevel === 4) {
+            const folder = 'assets/rod/';
+            this.walkImg.src = `${folder}walk_blue.png`;
+            this.idleImg.src = `${folder}idle_blue.png`;
+            this.throwImg.src = `${folder}fullthrow_blue.png`;
+            this.fishIdleImg.src = `${folder}fishidle_blue.png`;
+        }else if (this.rodLevel === 5) {
+            const folder = 'assets/rod/';
+            this.walkImg.src = `${folder}walk_legendary.png`;
+            this.idleImg.src = `${folder}idle_legendary.png`;
+            this.throwImg.src = `${folder}fullthrow_legendary.png`;
+            this.fishIdleImg.src = `${folder}fishidle_legendary.png`;
+        } else {
+            // Default Level 1
+            this.walkImg.src = 'assets/Fisherman_walkv2.png';
+            this.idleImg.src = 'assets/Fishermanred_idlev2.png';
+            this.throwImg.src = 'assets/Fisherman_throw10.png';
+            this.fishIdleImg.src = 'assets/Fisherman_fishidle.png';
         }
     }
 

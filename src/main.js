@@ -12,7 +12,9 @@ import { transitionManager } from './map_transition.js';
 import { AudioManager } from './audio.js';
 import { WeatherSystem, waveParams } from './environment.js';
 import { effectManager } from './effects.js';
+import { RadioManager } from './radio.js';
 export const audio = new AudioManager();
+export const radio = new RadioManager();
 
     audio.play("ocean");
 
@@ -290,16 +292,29 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
 
-// const startBtn = document.getElementById("startBtn");
-// const video = document.getElementById("introVideo");
+const startBtn = document.getElementById("startBtn");
+const video = document.getElementById("introVideo");
+const homepage = document.getElementById("homepage");
 
-// startBtn.addEventListener("click", () => {
-//     startBtn.style.display = "none";
-//     canvas.style.display = "none";
+if (startBtn && video) {
+    startBtn.addEventListener("click", () => {
+        if (homepage) homepage.style.display = "none";
+        startBtn.style.display = "none";
+        canvas.style.display = "none";
+        video.style.display = "block";
+       // video.play();
+        video.style.display = "none";
+        canvas.style.display = "block";
+        requestAnimationFrame(loop);
+    });
 
-//     video.style.display = "block";
-//     video.play();
-// });
+    // video.addEventListener("ended", () => {
+    //     video.style.display = "none";
+    //     canvas.style.display = "block";
+    //     requestAnimationFrame(loop);
+    // });
+
+}
 
 
 
@@ -307,6 +322,33 @@ window.addEventListener('keyup', e => keys[e.key] = false);
 document.getElementById('debug-btn').addEventListener('click', () => {
     toggleDebugCam(cameraX, cameraY);
 });
+
+// Radio toggle logic
+const radioContainer = document.getElementById('radio-container');
+const radioToggleBtn = document.getElementById('radio-toggle-btn');
+if (radioToggleBtn && radioContainer) {
+    radioToggleBtn.addEventListener('click', () => {
+        radioContainer.classList.toggle('visible');
+        // If hiding, also remove centered
+        if (!radioContainer.classList.contains('visible')) {
+            radioContainer.classList.remove('centered');
+        }
+    });
+
+    // Center the radio when clicked
+    radioContainer.addEventListener('click', (e) => {
+        // Don't toggle if clicking buttons
+        if (e.target.closest('.radio-btn')) return;
+        
+        if (radioContainer.classList.contains('visible')) {
+            radioContainer.classList.toggle('centered');
+            // If centered, play music if not already playing
+            if (radioContainer.classList.contains('centered') && !radio.isPlaying) {
+                radio.play();
+            }
+        }
+    });
+}
 
 // Weather Control — exposed to HTML buttons
 window.setWeather = (weatherType) => {

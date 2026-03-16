@@ -462,8 +462,15 @@ export class Rod {
         const screenX = this.x - cameraX;
         const screenY = this.y;
 
-        // Rod line
-        ctx.strokeStyle = '#e0e0e0';
+        // Rod line colors based on level
+        const lineColors = {
+            1: '#e0e0e0', // Level 1: Bamboo (White/Grey)
+            2: '#ff4d4d', // Level 2: Fiberglass (Red)
+            3: '#4dff4d', // Level 3: Graphite (Green)
+            4: '#00ffe2', // Level 4: Carbon (Blue)
+            5: '#ffd700'  // Level 5: Master (Gold/Legendary)
+        };
+        ctx.strokeStyle = lineColors[this.player.rodLevel] || '#e0e0e0';
         ctx.lineWidth = 1;
         ctx.beginPath();
         // Use !== undefined so originX=0 still works (avoids falsy fallback to head position)

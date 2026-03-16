@@ -37,6 +37,25 @@
     <canvas id="gameCanvas"></canvas>
 
     <div id="overlay">
+        <!-- Radio UI -->
+        <div id="radio-container" class="radio-ui">
+            <!-- Screen area -->
+            <div class="radio-screen">
+                <div class="scrolling-text-container">
+                    <span id="song-name">Now Playing: Coastal Breeze</span>
+                </div>
+            </div>
+            
+            <img src="assets/radio.png" id="radio-img" alt="Radio">
+
+            <!-- Control Buttons -->
+            <div class="radio-controls">
+                <button id="radio-prev" class="radio-btn">◀</button>
+                <button id="radio-play-pause" class="radio-btn">⏸</button>
+                <button id="radio-next" class="radio-btn">▶</button>
+            </div>
+        </div>
+        <button id="radio-toggle-btn">📻 Radio</button>
 
         <div id="hud-left">
             <span class="lbl">Money</span> <span class="val" id="h-money">$0</span><br>
