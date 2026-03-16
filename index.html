@@ -9,13 +9,53 @@
 </head>
 
 <body>
-    <video id="introVideo" width="100%" style="display:none;">
-    <source src="assets/1st.mp4" type="video/mp4">
-</video>
-<button id="startBtn">Start</button>
+    <!-- Homepage with Parallax -->
+    <div id="homepage" class="homepage-container">
+       
+        <div class="mountain" style="background-image: url('assets/sky_front_mountain.png');"></div>
+        <div class="ocean" style="background-image: url('assets/parallax_seav2.png');"></div>
+        <div class="sky" style="background-image: url('assets/sky_clouds.png');"></div>
+        <div class="backmountain" style="background-image: url('assets/sky_back_mountain.png');"></div>
+
+        <!-- Weather Effects -->
+        <canvas id="rain-canvas" class="weather-effects"></canvas>
+        <div id="lightning-overlay" class="lightning-overlay"></div>
+
+        <!-- Homepage Content -->
+        <div class="homepage-content">
+            <h1 class="game-title">Ocean Ascent</h1>
+            <button id="startBtn" class="start-button">START FISHING</button>
+        </div>
+
+        <!-- Floating particles -->
+        <div class="particles"></div>
+    </div>
+
+    <video id="introVideo" width="100%" height="100%" style="display:none; position:fixed; top:0; left:0; z-index:100; object-fit:cover; image-rendering: pixelated; image-rendering: crisp-edges;">
+        <source src="assets/1st.mp4" type="video/mp4">
+    </video>
     <canvas id="gameCanvas"></canvas>
 
     <div id="overlay">
+        <!-- Radio UI -->
+        <div id="radio-container" class="radio-ui">
+            <!-- Screen area -->
+            <div class="radio-screen">
+                <div class="scrolling-text-container">
+                    <span id="song-name">Now Playing: Coastal Breeze</span>
+                </div>
+            </div>
+            
+            <img src="assets/radio.png" id="radio-img" alt="Radio">
+
+            <!-- Control Buttons -->
+            <div class="radio-controls">
+                <button id="radio-prev" class="radio-btn">◀</button>
+                <button id="radio-play-pause" class="radio-btn">⏸</button>
+                <button id="radio-next" class="radio-btn">▶</button>
+            </div>
+        </div>
+        <button id="radio-toggle-btn">📻 Radio</button>
 
         <div id="hud-left">
             <span class="lbl">Money</span> <span class="val" id="h-money">$0</span><br>

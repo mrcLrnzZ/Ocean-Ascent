@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 
+/* Import Custom Font */
+@font-face {
+    font-family: 'upheaval';
+    src: url('assets/font/upheavtt.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 body {
     background: #000;
     width: 100vw;
@@ -474,5 +482,322 @@ button:hover {
 .page-btn:hover {
     transform: scale(1.05);
     color: #8a1010;
+}
+
+/* --- RADIO UI --- */
+#radio-container {
+    position: absolute;
+    bottom: -300px; /* Hide initially below screen */
+    right: 30px;
+    width: 220px;
+    transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2), 
+                top 0.5s ease, left 0.5s ease, transform 0.5s ease;
+    pointer-events: auto;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+#radio-container.visible {
+    bottom: 25px;
+}
+
+/* Middle of Screen State */
+#radio-container.centered {
+    width: 20%;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(-50%, -50%) scale(2.2);
+    cursor: default;
+}
+
+#radio-img {
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    filter: drop-shadow(0 10px 25px rgba(0,0,0,0.8));
+    display: block;
+    z-index: 0;
+}
+
+/* Black Strip Screen */
+.radio-screen {
+    position: absolute;
+    top: 40%; /* Positioned middle of radio */
+    left: 55%;
+    width: 39%;
+    height: 28px;
+    background: #080808;
+    border: 1px solid #222;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.scrolling-text-container {
+    display: inline-block;
+    white-space: nowrap;
+    animation: radio-scroll 8s linear infinite;
+}
+
+#song-name {
+    color: #00ff44; /* Retro green display */
+    font-family: 'upheaval', cursive;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-shadow: 0 0 5px rgba(0, 255, 68, 0.5);
+}
+
+@keyframes radio-scroll {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(110%); }
+}
+
+/* Radio Control Buttons Area */
+.radio-controls {
+    position: absolute;
+    bottom: 12%;
+    left: 75%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+#radio-container.centered .radio-controls {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.radio-btn {
+    background: #151515;
+    border: 1px solid #444;
+    color: #aaa;
+    width: 42px;
+    height: 44px;
+    padding: 0;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.05);
+}
+
+.radio-btn:hover {
+    background: #252525;
+    color: #fff;
+    border-color: #666;
+}
+
+.radio-btn:active {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+#radio-toggle-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 250px;
+    padding: 6px 14px;
+    font-size: 12px;
+    z-index: 1001;
+}
+
+#introVideo {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+}
+
+/* --- HOMEPAGE --- */
+.homepage-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 9999;
+    pointer-events: all;
+    background: linear-gradient(180deg, #0a1e3a 0%, #1a3a5a 30%, #2a4a7a 50%, #1a3a5a 70%, #0a1e3a 100%);
+}
+
+.ocean{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 150%;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: contain;
+    z-index: 4;
+}
+
+.mountain{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: contain;
+    z-index: 3;
+}
+
+.sky{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 45%;
+    background-repeat:repeat;
+    background-position: top;
+    background-size: auto 100%;
+    z-index: 1;
+}
+
+.backmountain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    background-repeat: repeat-x;
+    background-position: top;
+    background-size: auto 100%;
+    z-index: 2;
+}
+
+.homepage-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 100;
+    pointer-events: all;
+}
+
+/* Weather Effects */
+.weather-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#rain-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99;
+    pointer-events: none;
+}
+
+.rain-container {
+    display: none;
+}
+
+#lightning-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0);
+    animation: none;
+}
+
+#lightning-overlay.lightning-flash {
+    animation: lightningFlash 0.15s ease-out;
+}
+
+@keyframes lightningFlash {
+    0% {
+        background: rgba(255, 255, 255, 0);
+    }
+    50% {
+        background: rgba(255, 255, 255, 0.8);
+    }
+    100% {
+        background: rgba(255, 255, 255, 0);
+    }
+}
+
+.lightning-overlay {
+    display: block;
+}
+
+.storm-overlay {
+    display: none;
+}
+
+.game-title {
+    margin-top: 5px;
+    font-family: 'upheaval', cursive;
+    font-size: 224px;
+    color: #1100ff;
+    text-shadow: 4px 9px 4px rgb(0, 0, 0);
+    margin-bottom: 50px;
+    letter-spacing: 10px;
+}
+
+.start-button {
+    font-family: 'upheaval', cursive;
+    padding: 18px 60px;
+    font-size: 24px;
+    font-weight: bold;
+    background: rgb(0, 225, 255);
+    border: 3px solid #020066;
+    color: #000000;
+    cursor: pointer;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    pointer-events: all;
+}
+
+.start-button:hover {
+    background: linear-gradient(135deg, #6ec5e0 0%, #5eb3d6 50%, #4a9fd8 100%);
+    border-color: #5eb3d6;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.start-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hint-text {
+    display: none;
+}
+
+.particles {
+    display: none;
+}
+
+.homepage-container.hidden {
+    display: none;
 }
 
