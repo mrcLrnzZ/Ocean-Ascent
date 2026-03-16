@@ -22,7 +22,7 @@ export const radio = new RadioManager();
 let gameStarted = false;
 let audioStarted = false;
 const homepage = document.getElementById('homepage');
-const startBtn = document.getElementById('start-btn');
+const startBtn = document.getElementById('startBtn');
 const rainCanvas = document.getElementById('rain-canvas');
 const rainCtx = rainCanvas.getContext('2d');
 
@@ -292,32 +292,6 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.key] = false);
 
-const startBtn = document.getElementById("startBtn");
-const video = document.getElementById("introVideo");
-const homepage = document.getElementById("homepage");
-
-if (startBtn && video) {
-    startBtn.addEventListener("click", () => {
-        if (homepage) homepage.style.display = "none";
-        startBtn.style.display = "none";
-        canvas.style.display = "none";
-        video.style.display = "block";
-       // video.play();
-        video.style.display = "none";
-        canvas.style.display = "block";
-        requestAnimationFrame(loop);
-    });
-
-    // video.addEventListener("ended", () => {
-    //     video.style.display = "none";
-    //     canvas.style.display = "block";
-    //     requestAnimationFrame(loop);
-    // });
-
-}
-
-
-
 // Debug Camera logic
 document.getElementById('debug-btn').addEventListener('click', () => {
     toggleDebugCam(cameraX, cameraY);
@@ -432,9 +406,7 @@ function loop() {
     // Game state object
     const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame };
 
-    // --- UPDATE LOGIC ---
-    boat.update(G);   
-    WeatherSystem.update(frame);  // Move boat first
+
     
     // --- WEATHER SOUND LOGIC ---
     const currentWeather = WeatherSystem.targetState;
