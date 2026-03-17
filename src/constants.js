@@ -132,6 +132,16 @@ export const PARALLAX_LAYERS = {
     { y: -30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
     { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
+
+    //  { y: 70, width: 1900, height: 1300, scale: 0.5, speed: 0.1 },
+    //  { y: 10, width: 1900, height: 1200, scale: 0.5, speed: 0.2 },
+    //  { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
+    //  { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
+    // { y: 115, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
+    // { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
+    // { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.6 },
+    // { y: -500, width: 1900, height: 1000, scale: 1.5, speed: 0.7 },
+    // { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
     1: [ 
     { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.1 },
@@ -153,9 +163,15 @@ export const PARALLAX_LAYERS = {
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
   4: [ 
-    { y: 0, width: 1900, height: 1000, scale: 0.5, speed: 0.1 },
-    { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
-    { y: 160, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
+
+     { y: 70, width: 1900, height: 1300, scale: 0.5, speed: 0.1 },
+     { y: 10, width: 1900, height: 1200, scale: 0.5, speed: 0.2 },
+     { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
+     { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
+    { y: 115, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
+    { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
+    { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.6 },
+    { y: -500, width: 1900, height: 1000, scale: 1.5, speed: 0.7 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ]
 };
@@ -165,6 +181,7 @@ export const MAPS = [
     id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 2, hasDock: true, length: SHORE_LEVEL_LENGTH,
     theme: 'default',
     backgrounds: ['assets/forest_mountain.png', 'assets/sky_front_mountain.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
+   // backgrounds: ['assets/skycloud.png','assets/backhill.png','assets/backbuilding1.png','assets/backbuilding2.png','assets/backbuilding3.png' ,'assets/eifeltower.png','assets/riversidebuilding.png', 'assets/riverbankwithpeople.png', 'assets/parallax_seav2.png']
 
   },
     {
@@ -185,8 +202,9 @@ export const MAPS = [
   },
   {
     id: 4, name: "Map 4", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_4_LENGTH,
-    theme: 'night',
-    backgrounds: ['assets/parallax_farmountainv2.png', 'assets/parallax_mountainv2.png', 'assets/parallax_seav2.png']
+    theme: 'sunset',
+    backgrounds: ['assets/skycloud.png','assets/backhill.png','assets/backbuilding1.png','assets/backbuilding2.png','assets/backbuilding3.png' ,'assets/eifeltower.png','assets/riversidebuilding.png', 'assets/riverbankwithpeople.png', 'assets/parallax_seav2.png']
+   
   }
   
 ];
