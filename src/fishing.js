@@ -29,7 +29,7 @@ export class Rod {
         this.wasOnBoat = false;
 
         this.baitImg = new Image();
-        this.baitImg.src = 'assets/doomsday-oarfish.png';
+        this.baitImg.src = 'assets/doomsday-oarfishF.png';
         this.baitSize = 16;
 
         this.reeling = false;
