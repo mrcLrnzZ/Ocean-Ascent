@@ -83,18 +83,40 @@ export class RodMerchant extends Merchant {
         this.idleImg.src = 'assets/rodmerch_idle.png';
         this.img = this.idleImg;
         this.speed = 2;
+        this.disembarked = false;
+        this.targetDisembarkX = null;
+        this.disembarkState = 'idle'; // 'idle', 'waiting', 'walking'
+        this.disembarkWaitTimer = 0;
+        this.hasLeftPermanently = false;
     }
+
+    disembark(targetX, shouldWait = false) {
+        this.onBoat = false;
+        this.disembarked = true;
+        this.targetDisembarkX = targetX;
+        this.y = GROUND_Y;
+        
+        if (shouldWait) {
+            this.disembarkState = 'waiting';
+            this.disembarkWaitTimer = 120; // 2 seconds at 60fps
+            this.img = this.idleImg;
+            this.hasLeftPermanently = true; // Mark as permanent exit
+        } else {
+            this.disembarkState = 'walking';
+        }
+    }
+
 
     update(boat, frame) {
         if (this.onBoat) {
             const bounds = boat.getBounds();
             // Middle of the boat
             this.x = boat.x + (bounds.width / 2) - (this.frameW * this.scale) / 2;
-            
+
             // Floating with waves (similar to boat/player logic)
             const floatingY = waveSurf(boat.x + bounds.width / 2, frame) - bounds.height * 0.8;
             this.y = floatingY + boat.floorYOffset;
-            
+
             this.img = this.idleImg;
             this.interactionRadius = 100;
 
@@ -104,7 +126,41 @@ export class RodMerchant extends Merchant {
                 this.currentFrame = (this.currentFrame + 1) % 6;
                 this.frameTimer = 0;
             }
-        } else if (boat.isPurchased) {
+        } else if (this.disembarked) {
+            if (this.disembarkState === 'waiting') {
+                this.disembarkWaitTimer--;
+                this.img = this.idleImg;
+                this.facing = -1; // Stare to the right
+                
+                // Animation for idle
+                this.frameTimer++;
+                if (this.frameTimer >= 12) {
+                    this.currentFrame = (this.currentFrame + 1) % 6;
+                    this.frameTimer = 0;
+                }
+
+                if (this.disembarkWaitTimer <= 0) {
+                    this.disembarkState = 'walking';
+                }
+            } else if (this.disembarkState === 'walking' && this.targetDisembarkX !== null) {
+                const dist = Math.abs(this.x - this.targetDisembarkX);
+                if (dist > 5) {
+                    this.facing = this.x < this.targetDisembarkX ? 1 : -1;
+                    this.x += this.facing * (this.targetDisembarkX > 4000 ? 3 : this.speed); // Walk faster if leaving
+                    this.img = this.walkImg;
+                    this.frameTimer++;
+                    if (this.frameTimer >= 7) {
+                        this.currentFrame = (this.currentFrame + 1) % 6;
+                        this.frameTimer = 0;
+                    }
+                } else {
+                    this.disembarked = false;
+                    this.targetDisembarkX = null;
+                    this.disembarkState = 'idle';
+                    this.img = this.idleImg;
+                }
+            }
+        } else if (boat.isPurchased && !this.hasLeftPermanently) {
             this.walkingToBoat = true;
             const targetX = boat.x + (boat.width * boat.scale / 2) - (this.frameW * this.scale) / 2;
             const dist = Math.abs(this.x - targetX);
@@ -121,7 +177,7 @@ export class RodMerchant extends Merchant {
                 this.facing = this.x < targetX ? 1 : -1;
                 this.x += this.facing * this.speed;
                 this.img = this.walkImg;
-                
+
                 // Animation
                 this.frameTimer++;
                 if (this.frameTimer >= 7) {

@@ -46,12 +46,14 @@ export class MapTransitionManager {
 
         if (boat.x > currentMapLength) {
             if (currentMap < MAPS.length - 1) {
-                const nextMapReq = MAPS[currentMap + 1].requiredBoatLvl;
+                // Use jumping map for requirement check
+                const targetMap = currentMap + 1;
+                const nextMapReq = MAPS[targetMap].requiredBoatLvl;
                 if (player.boatLevel >= nextMapReq) {
                     this.active = true;
                     this.direction = 1;
                     this.sweepDir = 1;
-                    this.pendingMapChange = currentMap + 1;
+                    this.pendingMapChange = targetMap;
                     const playerRel = player.x - boat.x;
                     this.pendingBoatX = MAP_TRANSITION_X_LEFT + 10;
                     this.pendingPlayerX = this.pendingBoatX + playerRel;
@@ -73,7 +75,7 @@ export class MapTransitionManager {
             this.sweepDir = -1;
             this.pendingMapChange = currentMap - 1;
             const playerRel = player.x - boat.x;
-            this.pendingBoatX = MAPS[currentMap - 1].length - 50;
+            this.pendingBoatX = MAPS[this.pendingMapChange].length - 50;
             this.pendingPlayerX = this.pendingBoatX + playerRel;
             boat.vx = 0;
         } else if (boat.x < MAP_TRANSITION_X_LEFT && currentMap === 0) {

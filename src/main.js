@@ -1,5 +1,5 @@
 
-import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, drawWaterForeground, drawTransition, drawDeepSoil } from './render_map.js';
+import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, drawWaterForeground, drawTransition, drawDeepSoil, drawDockOverlay } from './render_map.js';
 import { Player } from './player.js';
 import { Merchant, RodMerchant } from './merchant.js';
 import { Boat } from './boat.js';
@@ -16,7 +16,7 @@ import { RadioManager } from './radio.js';
 export const audio = new AudioManager();
 export const radio = new RadioManager();
 
-    audio.play("ocean");
+audio.play("ocean");
 // 1. SETUP CANVAS
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -37,6 +37,7 @@ let cameraY = 0;
 let currentMap = 0;
 let eWasUp = true;
 let rWasUp = true;
+let hasReachedEndingDock = false;
 
 uiManager.init(player, boat);
 
@@ -56,7 +57,7 @@ if (startBtn && video) {
         startBtn.style.display = "none";
         canvas.style.display = "none";
         video.style.display = "block";
-       // video.play();
+        // video.play();
         video.style.display = "none";
         canvas.style.display = "block";
         requestAnimationFrame(loop);
@@ -93,7 +94,7 @@ if (radioToggleBtn && radioContainer) {
     radioContainer.addEventListener('click', (e) => {
         // Don't toggle if clicking buttons
         if (e.target.closest('.radio-btn')) return;
-        
+
         if (radioContainer.classList.contains('visible')) {
             radioContainer.classList.toggle('centered');
             // If centered, play music if not already playing
@@ -143,7 +144,7 @@ function buildWeatherWeightPanel() {
         row.style.cssText = 'margin-bottom:5px;';
         row.innerHTML = `
             <div style="display:flex; justify-content:space-between; margin-bottom:1px;">
-                <span>${icons[type] || ''} ${type[0].toUpperCase()+type.slice(1)}</span>
+                <span>${icons[type] || ''} ${type[0].toUpperCase() + type.slice(1)}</span>
                 <span id="${id}-val" style="color:#ffe;">${weight}</span>
             </div>
             <input type="range" min="0" max="100" step="1" value="${weight}"
@@ -156,10 +157,10 @@ function buildWeatherWeightPanel() {
 // Update weather display in UI
 function updateWeatherDisplay() {
     const weatherNames = {
-        'clear':  '☀ Clear',
-        'rainy':  '🌧 Rainy',
+        'clear': '☀ Clear',
+        'rainy': '🌧 Rainy',
         'stormy': '⛈ Stormy',
-        'foggy':  '🌫 Foggy'
+        'foggy': '🌫 Foggy'
     };
     const label = weatherNames[WeatherSystem.targetState] || WeatherSystem.targetState;
     const el1 = document.getElementById('current-weather');
@@ -171,7 +172,7 @@ function updateWeatherDisplay() {
 // Wave descriptor for HUD
 function waveLabel() {
     const amp = Math.round(waveParams.amp1);
-    if (amp <= 6)  return 'Calm';
+    if (amp <= 6) return 'Calm';
     if (amp <= 12) return 'Choppy';
     if (amp <= 20) return 'Rough';
     return 'Violent';
@@ -184,10 +185,10 @@ function loop() {
     frame++;
 
     // Game state object
-    const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame };
+    const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame, currentMap };
 
     // --- UPDATE LOGIC ---
-    boat.update(G, rodMerchant);   
+    boat.update(G, rodMerchant);
     WeatherSystem.update(frame);  // Move boat first
     player.update(1, G, boat, fishManager, currentMap); // then player follows
     fishManager.update();                    // all fish update
@@ -197,6 +198,25 @@ function loop() {
 
     // --- MAP TRANSITIONS & BOUNDARIES ---
     currentMap = transitionManager.updateTransition(currentMap, boat, player);
+    if (currentMap !== 4) hasReachedEndingDock = false;
+    
+    // --- ENDING AUTO-DOCK CUTSCENE ---
+    if (currentMap === 4 && !hasReachedEndingDock && !transitionManager.active) {
+        boat.state = 'sailing';
+        boat.x += 10; // Auto-move boat towards the dock
+        if (boat.x >= 2900) {
+            boat.x = 2900;
+            boat.state = 'idle';
+            hasReachedEndingDock = true;
+            uiManager.showNotification("You've reached the end. [R] to Disembark.");
+
+            // Auto-disembark merchant when boat stops at the final dock
+            if (rodMerchant.onBoat) {
+                rodMerchant.disembark(5500, true);
+            }
+        }
+    }
+
     transitionManager.checkBoundaries(currentMap, boat, player, uiManager);
 
     // --- INTERACTIONS ---
@@ -213,9 +233,18 @@ function loop() {
                 uiManager.showNotification("You are on the boat. [E] to Fish/Sail, [R] to Disembark.");
             }
         } else if (player.state === 'onBoat') {
-            if (Math.abs(boat.x - 750) < 100 && boat.state === 'idle') {
+            const isEnding = currentMap === 4;
+            const dockX = isEnding ? 2600 : 750;
+            const walkMin = isEnding ? 2500 : 0;
+            const walkMax = isEnding ? 4500 : 1100;
+            
+            // Allow disembark if boat is near dock
+            if (Math.abs(boat.x - dockX) < 300 && boat.state === 'idle') {
                 player.state = 'walking';
-                player.x = 950;
+                // Move player to ground area near boat
+                player.x = isEnding ? (boat.x + 200) : 950;
+                player.x = Math.max(walkMin, Math.min(player.x, walkMax));
+                
                 uiManager.showNotification("Disembarked boat.");
             }
         }
@@ -245,7 +274,7 @@ function loop() {
                 }
             }
             else if (playerRelCenterX > bounds.width - zoneWidth) {
-                if (rodMerchant.onBoat) {
+                if (rodMerchant.onBoat || currentMap === 4 || rodMerchant.hasLeftPermanently) {
                     boat.state = boat.state === 'sailing' ? 'idle' : 'sailing';
                 } else {
                     uiManager.showNotification("Wait for the Rod Merchant to board first!");
@@ -262,9 +291,9 @@ function loop() {
     // Update weather/wave HUD every 60 frames (once per second at 60fps)
     if (frame % 60 === 0) {
         updateWeatherDisplay();
-        const wvEl   = document.getElementById('h-wave');
+        const wvEl = document.getElementById('h-wave');
         const windEl = document.getElementById('h-wind');
-        if (wvEl)   wvEl.textContent   = `Waves: ${waveLabel()}`;
+        if (wvEl) wvEl.textContent = `Waves: ${waveLabel()}`;
         if (windEl) windEl.textContent = `Wind: ${Math.round(WeatherSystem.getCurrentWeather().windX * 3)}mph`;
     }
 
@@ -285,29 +314,22 @@ function loop() {
         drawBackground(ctx, cameraX, currentMap);
         drawGround(ctx, cameraX, currentMap, frame);
 
-        
+
         if (currentMap === 0) {
             boatMerchant.draw(ctx, cameraX, player);
         }
 
-if (player.state !== 'onBoat') {
-    player.draw(ctx, cameraX);
-}
+        drawDock(ctx, cameraX, currentMap);
 
-if (!rodMerchant.onBoat) {
-    rodMerchant.draw(ctx, cameraX, player);
-}
+        if (player.state !== 'onBoat' || player.state === 'onBoat') {
+            player.draw(ctx, cameraX);
+        }
 
-drawDock(ctx, cameraX, currentMap);
+        if (!rodMerchant.onBoat || rodMerchant.onBoat) {
+            rodMerchant.draw(ctx, cameraX, player);
+        }
 
-if (player.state === 'onBoat') {
-    player.draw(ctx, cameraX);
-}
-
-if (rodMerchant.onBoat) {
-    rodMerchant.draw(ctx, cameraX, player);
-}
-
+        drawDockOverlay(ctx, cameraX, currentMap);
 
         fishManager.draw(ctx, cameraX);
 
