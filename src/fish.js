@@ -4,8 +4,8 @@ import { getDeepSoilY, getDeepSoilX } from './constants.js';
 export const SPRITE_DATA = {
     // Level 1: Surface
     anchovy: { src: 'assets/fish/anchovyy.png', almanacSrc: 'assets/almanac/almanacAnchovy.png', frames: 4, renderScale: 0.2, name: 'Anchovy', rarity: 'common', price: 10, desc: 'A tiny, silvery fish found swimming in large schools near the surface.' },
-    sardine: { src: 'assets/fish/sardine.png', almanacSrc: 'assets/almanac/almanacSardine.png', frames: 4, renderScale: 0.22, name: 'Sardine', rarity: 'common', price: 12, desc: 'Slightly larger than an anchovy, these quick fish are a staple food for many ocean predators.' },
-    clownfish: { src: 'assets/fish/clownfish.png', almanacSrc: 'assets/almanac/almanacClownfish.png', frames: 4, renderScale: 0.18, name: 'Clownfish', rarity: 'common', price: 15, desc: 'Bright orange with white stripes. Rarely strays far from the safety of its home.' },
+    sardine: { src: 'assets/fish/placeholderfish.png', almanacSrc: 'assets/almanac/almanacPlaceholderfish.png', frames: 3, renderScale: 0.22, name: 'Sardine', rarity: 'common', price: 12, desc: 'Slightly larger than an anchovy, these quick fish are a staple food for many ocean predators.' },
+    clownfish: { src: 'assets/fish/placeholderfish.png', almanacSrc: 'assets/almanac/almanacPlaceholderfish.png', frames: 3, renderScale: 0.18, name: 'Clownfish', rarity: 'common', price: 15, desc: 'Bright orange with white stripes. Rarely strays far from the safety of its home.' },
 
     // Level 2: Mid-Shallows
     devilfish: { src: 'assets/fish/devilfish.png', almanacSrc: 'assets/almanac/almanacDevilfish.png', frames: 6, renderScale: 0.29, name: 'Devilfish', rarity: 'uncommon', price: 30, desc: 'A fast, torpedo-shaped predator built for speed and endurance.' },
@@ -14,17 +14,17 @@ export const SPRITE_DATA = {
 
     // Level 3: Deep
     choifish: { src: 'assets/fish/choifish.png', almanacSrc: 'assets/almanac/almanacChoifish.png', frames: 6, renderScale: 0.45, name: 'Choifish', rarity: 'rare', price: 60, desc: 'A heavy-bodied fish that prefers colder, deeper waters.' },
-    pufferfish: { src: 'assets/fish/pufferfish.png', almanacSrc: 'assets/almanac/almanacPufferfish.png', frames: 6, renderScale: 0.45, name: 'Pufferfish', rarity: 'rare', price: 70, desc: 'A rare fish with a head shaped like blooming petals. Its vibrant colors and elegant movement make it a beautiful sight in calm waters.' },
+    pufferfish: { src: 'assets/fish/placeholderfish.png', almanacSrc: 'assets/almanac/almanacPlaceholderfish.png', frames: 3, renderScale: 0.45, name: 'Pufferfish', rarity: 'rare', price: 70, desc: 'A rare fish with a head shaped like blooming petals. Its vibrant colors and elegant movement make it a beautiful sight in calm waters.' },
     turtle: { src: 'assets/fish/turtle.png', almanacSrc: 'assets/almanac/almanacTurtle.png', frames: 5, renderScale: 0.88, name: 'Turtle', rarity: 'rare', price: 75, desc: 'A bizarre, flattened giant that often basks sideways near the surface, but dives deep for jellyfish.' },
 
     // Level 4: Trench
     halfmoon: { src: 'assets/fish/halfmoon.png', almanacSrc: 'assets/almanac/almanacHalfmoon.png', frames: 6, renderScale: 0.59, name: 'Halfmoon', rarity: 'epic', price: 200, desc: 'A rare deep-sea fish with a glowing crescent tail that resembles a half moon. Known to appear only in calm waters at night, making it a prized catch among legendary anglers.' },
     veiltail: { src: 'assets/fish/veiltail.png', almanacSrc: 'assets/almanac/almanacVeiltail.png', frames: 6, renderScale: 0.39, name: 'Veiltail', rarity: 'epic', price: 180, desc: 'A mysterious deep-sea fish with a flowing veil-like tail. Its glowing lure attracts curious prey in the darkest depths of the ocean.' },
     anglerfish: { src: 'assets/fish/anglerfish.png', almanacSrc: 'assets/almanac/almanacAnglerfish.png', frames: 6, renderScale: 0.35, name: 'Angler', rarity: 'epic', price: 220, desc: 'A deep-sea predator known for the glowing lure that dangles from its head, attracting prey in the dark abyss.' },
-    doomsdayoarfish: { src: 'assets/fish/doomsday-oarfish.png', almanacSrc: 'assets/almanac/almanacDoomsday-oarfish.png', frames: 6, renderScale: 0.90, name: 'Doomsday Oarfish', rarity: 'epic', price: 250, desc: 'A colossal deep-sea creature with a distinctive ribbon-like tail. Its appearance is said to herald the arrival of natural disasters.' },
+    doomsdayoarfish: { src: 'assets/fish/doomsday-oarfish.png', almanacSrc: 'assets/almanac/almanacDoomsdayoarfish.png', frames: 6, renderScale: 0.90, name: 'Doomsday Oarfish', rarity: 'epic', price: 250, desc: 'A colossal deep-sea creature with a distinctive ribbon-like tail. Its appearance is said to herald the arrival of natural disasters.' },
 
     // Level 5 & 6: Abyss
-    Beluga: { src: 'assets/fish/Beluga.png', almanacSrc: 'assets/almanac/almanacBeluga.png', frames: 4, renderScale: 2.5, name: 'Beluga', rarity: 'legendary', price: 800, desc: 'A large beluga whale patrols the cold waters ahead. It is highly aware of movement through sound and vibration, and will approach unfamiliar creatures that enter its territory. Its strong body and quick bursts of speed make close encounters dangerous.' },
+    beluga: { src: 'assets/fish/Beluga.png', almanacSrc: 'assets/almanac/almanacBeluga.png', frames: 4, renderScale: 2.5, name: 'Beluga', rarity: 'legendary', price: 800, desc: 'A large beluga whale patrols the cold waters ahead. It is highly aware of movement through sound and vibration, and will approach unfamiliar creatures that enter its territory. Its strong body and quick bursts of speed make close encounters dangerous.' },
     catfish: { src: 'assets/fish/Catfish.png', almanacSrc: 'assets/almanac/almanacCatfish.png', frames: 4, renderScale: 0.8, name: 'Mekong', rarity: 'legendary', price: 750, desc: 'Mekong Giant Catfish detected. A massive freshwater fish capable of sudden bursts of speed. Its large size and powerful tail can easily knock aside smaller creatures that get too close.' },
     kraken: { src: 'assets/fish/kraken.png', almanacSrc: 'assets/almanac/almanacKraken.png', frames: 4, renderScale: 5, name: 'Kraken', rarity: 'legendary', price: 1000, desc: 'A mythic cephalopod of unimaginable size. Its tentacles can drag ships into the abyss.' }
 };

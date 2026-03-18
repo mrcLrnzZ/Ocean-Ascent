@@ -6,7 +6,6 @@ export class AlmanacManager {
     constructor(uiManager) {
         this.uiManager = uiManager;
         this.almanacPage = 0;
-        this.maxPage = 4; // 15 fishes / 3 per page = 5 pages (0-4)
 
         // Bind for window-level access
         window.closeAlmanacUI = this.closeAlmanacUI.bind(this);
@@ -36,38 +35,65 @@ export class AlmanacManager {
     }
 
     renderAlmanacPage() {
-        const grid = document.getElementById('almanac-grid');
-        if (!grid) return;
-        grid.innerHTML = ''; // clear previous
+        const leftPage = document.getElementById('left-page');
+        const rightPage = document.getElementById('right-page');
+        if (!leftPage || !rightPage) return;
 
         const fishKeys = Object.keys(SPRITE_DATA);
-        const startIndex = this.almanacPage * 3;
-        const pageFishes = fishKeys.slice(startIndex, startIndex + 3);
 
-        pageFishes.forEach((fishId, index) => {
-            const data = SPRITE_DATA[fishId];
-            const count = this.uiManager.player.inventory[fishId] || 0;
-            const hasCaught = count > 0;
-            const isReversed = index === 1; // 2nd row is reversed
+        // 🔥 NEW: 2 fishes per page
+        const totalPages = Math.ceil(fishKeys.length / 2);
+        this.maxPage = totalPages - 1;
 
-            const row = document.createElement('div');
-            row.className = `almanac-row ${hasCaught ? data.rarity : 'unknown'} ${isReversed ? 'reverse' : ''}`;
+        const leftIndex = this.almanacPage * 2;
+        const rightIndex = this.almanacPage * 2 + 1;
 
-            row.innerHTML = `
-                <div class="almanac-img-col">
-                    <img src="${data.almanacSrc}" alt="${hasCaught ? data.name : 'Unknown'}">
-                    <div class="fish-count">Caught: ${count}</div>
-                </div>
-                <div class="almanac-desc-col">
-                    <div class="fish-name">${hasCaught ? data.name : '???'}</div>
-                    <div class="fish-desc">${hasCaught ? data.desc : 'Unknown species. Catch it to reveal its secrets.'}</div>
-                </div>
-            `;
+        const leftFish = fishKeys[leftIndex];
+        const rightFish = fishKeys[rightIndex];
 
-            grid.appendChild(row);
-        });
+        this.renderEntry(leftPage, leftFish);
+        this.renderEntry(rightPage, rightFish);
 
+        // Update footer
         const pageDisplay = document.getElementById('almanac-page-num');
-        if (pageDisplay) pageDisplay.innerText = `${this.almanacPage + 1} / 5`;
+            if (pageDisplay) {
+                pageDisplay.innerText = `${this.almanacPage + 1} / ${totalPages}`;
+            }
+    }
+    renderEntry(container, fishId) {
+        
+        if (!fishId) {
+            container.innerHTML = '';
+            return;
+        }
+
+        const data = SPRITE_DATA[fishId];
+        const count = this.uiManager.player.inventory[fishId] || 0;
+        const hasCaught = count > 0;
+
+        container.innerHTML = `
+            <div class="almanac-entry ${hasCaught ? data.rarity : 'unknown'}">
+
+                <div class="fish-card">
+                    <div class="fish-image">
+                        <img src="${data.almanacSrc}" alt="${hasCaught ? data.name : 'Unknown'}">
+                    </div>
+
+                    <div class="fish-info">
+                        <div class="fish-name">
+                            ${hasCaught ? data.name : '???'}
+                        </div>
+
+                        <div class="fish-desc">
+                            ${hasCaught ? data.desc : 'Unknown species. Catch it to reveal its secrets.'}
+                        </div>
+
+                        ${hasCaught ? `<div class="fish-count">Caught: ${count}</div>` : ''}
+                    </div>
+                </div>
+
+            </div>
+        `;
+        console.log(fishId, this.uiManager.player.inventory);
     }
 }
