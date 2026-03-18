@@ -20,7 +20,7 @@ export class Player {
         this.idleImg = new Image();
         this.throwImg = new Image();
         this.fishIdleImg = new Image();
-        
+
         this.rodLevel = 1;
         this.updateRodSprites();
 
@@ -93,7 +93,7 @@ export class Player {
             } else {
                 if (G.keys['ArrowRight'] || G.keys['d']) {
                     this.vx = speed;
-                   this.facing = 1;
+                    this.facing = 1;
                     this.isMoving = true;
                 } else if (G.keys['ArrowLeft'] || G.keys['a']) {
                     this.vx = -speed;
@@ -107,7 +107,7 @@ export class Player {
 
             // Keep player on boat deck
             this.relBoatX = Math.max(0, Math.min(this.relBoatX, bounds.width - this.frameW * this.scale));
-            
+
             // Sync absolute world position
             this.x = boat.x + this.relBoatX;
 
@@ -119,7 +119,7 @@ export class Player {
             this.y = floatingY - (this.frameH * this.scale) + yOffset + boat.floorYOffset;
 
             // Dynamic rod sink depth for boat
-            this.rod.sinkDepth = 200 + 100 * (boat.level - 1); 
+            this.rod.sinkDepth = 200 + 100 * (boat.level - 1);
         } else {
             this.boatRef = null;
             this.relBoatX = undefined; // Reset when not on boat
@@ -142,7 +142,16 @@ export class Player {
             }
 
             this.x += this.vx * dt;
-            this.x = Math.max(0, Math.min(this.x, PIER_END_X));
+            
+            // Map-specific boundaries for walking
+            const isEnding = currentMap === 4; // Map 4 is Ending
+            let minX = 0;
+            let maxX = PIER_END_X;
+            if (isEnding) {
+                minX = 2500; // Start of the ending shore/dock area
+                maxX = 4000; // End of map
+            }
+            this.x = Math.max(minX, Math.min(this.x, maxX));
             this.y = GROUND_Y - (this.frameH * this.scale);
 
             // Shore rod depth
@@ -214,19 +223,19 @@ export class Player {
             this.idleImg.src = `${folder}idle_red.png`;
             this.throwImg.src = `${folder}fullthrow_red.png`;
             this.fishIdleImg.src = `${folder}fishidle_red.png`;
-        }else if (this.rodLevel === 3) {
+        } else if (this.rodLevel === 3) {
             const folder = 'assets/rod/';
             this.walkImg.src = `${folder}walk_green.png`;
             this.idleImg.src = `${folder}idle_green.png`;
             this.throwImg.src = `${folder}fullthrow_green.png`;
             this.fishIdleImg.src = `${folder}fishidle_green.png`;
-        }else if (this.rodLevel === 4) {
+        } else if (this.rodLevel === 4) {
             const folder = 'assets/rod/';
             this.walkImg.src = `${folder}walk_blue.png`;
             this.idleImg.src = `${folder}idle_blue.png`;
             this.throwImg.src = `${folder}fullthrow_blue.png`;
             this.fishIdleImg.src = `${folder}fishidle_blue.png`;
-        }else if (this.rodLevel === 5) {
+        } else if (this.rodLevel === 5) {
             const folder = 'assets/rod/';
             this.walkImg.src = `${folder}walk_blue.png`;
             this.idleImg.src = `${folder}idle_blue.png`;

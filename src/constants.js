@@ -7,7 +7,7 @@ export const WATER_Y = 600;
 
 export const SHORE_END = 305;
 export const PIER_END_X = 1100;
-export const SHORE_LINE_DEPTH = 100; 
+export const SHORE_LINE_DEPTH = 100;
 export const GRAVITY = 0.5;
 
 // Palette & Colors
@@ -40,12 +40,12 @@ export const THEMES = {
       5: '#00003380'
     }
   },
-  
+
   night: {
     skyTop: '#020210',
     skyBot: '#101030',
     waterTop: '#05102580',
-    waterFoam: '#20406080',
+    waterFoam: '#05102580',
     waterBg: '#051025',
     depthColors: {
       1: '#05102580',
@@ -76,7 +76,7 @@ export const SHORE_LEVEL_LENGTH = 1500;
 export const LEVEL_1_LENGTH = 10000;
 export const LEVEL_2_LENGTH = 10000;
 export const LEVEL_3_LENGTH = 20000;
-export const LEVEL_4_LENGTH = 4000;
+export const LEVEL_4_LENGTH = 3000;
 
 
 // MAP SYSTEM CONFIG
@@ -147,6 +147,16 @@ export const PARALLAX_LAYERS = {
     { y: -30, width: 1900, height: 1400, scale: 0.5, speed: 0.4 },
     { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
+
+    //  { y: 70, width: 1900, height: 1300, scale: 0.5, speed: 0.1 },
+    //  { y: 10, width: 1900, height: 1200, scale: 0.5, speed: 0.2 },
+    //  { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
+    //  { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
+    // { y: 115, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
+    // { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
+    // { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.6 },
+    // { y: -500, width: 1900, height: 1000, scale: 1.5, speed: 0.7 },
+    // { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
     1: [ 
     { y: -30, width: 2500, height: 1000, scale: 0.5, speed: 0.1 },
@@ -157,22 +167,28 @@ export const PARALLAX_LAYERS = {
     { y: -20, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
-  2: [ 
-        { y: 0, width: 1900, height: 1000, scale: 0.5, speed: 0.1 }, // Farthest layer
+  2: [
+    { y: 0, width: 1900, height: 1000, scale: 0.5, speed: 0.1 }, // Farthest layer
     { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 }, // third layer
     { y: 160, width: 1900, height: 1000, scale: 0.5, speed: 0.4 }, // second layer
-    { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 } 
+    { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
-  3: [ 
+  3: [
     { y: 0, width: 1900, height: 1000, scale: 0.5, speed: 0.1 },
     { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
     { y: 160, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
-  4: [ 
-    { y: 0, width: 1900, height: 1000, scale: 0.5, speed: 0.1 },
+  4: [
+
+    { y: 70, width: 1900, height: 1300, scale: 0.5, speed: 0.1 },
+    { y: 10, width: 1900, height: 1200, scale: 0.5, speed: 0.2 },
     { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
-    { y: 160, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
+    { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.3 },
+    { y: 115, width: 1900, height: 1000, scale: 0.5, speed: 0.4 },
+    { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.5 },
+    { y: 100, width: 1900, height: 1000, scale: 0.5, speed: 0.6 },
+    { y: -500, width: 1900, height: 1000, scale: 1.5, speed: 0.7 },
     { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ]
 };
@@ -184,7 +200,7 @@ export const MAPS = [
     backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
   },
-    {
+  {
     id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 5, hasDock: false, length: LEVEL_1_LENGTH,
     theme: 'sunset',
     backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
@@ -194,18 +210,19 @@ export const MAPS = [
     id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 5, hasDock: false, length: LEVEL_2_LENGTH,
     theme: 'default',
     backgrounds: ['assets/sky_clouds.png', 'assets/sky_back_mountain.png', 'assets/sky_front_mountain.png', 'assets/parallax_seav2.png']
-      },
+  },
   {
     id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_3_LENGTH,
     theme: 'night',
     backgrounds: ['assets/moon_back.png', 'assets/moon_mid.png', 'assets/moon_front.png', 'assets/parallax_seanightv3.png']
   },
   {
-    id: 4, name: "Map 4", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_4_LENGTH,
-    theme: 'night',
-    backgrounds: ['assets/parallax_farmountainv2.png', 'assets/parallax_mountainv2.png', 'assets/parallax_seav2.png']
+    id: 4, name: "Ending", requiredBoatLvl: 3, maxDepth: 5, hasDock: true, length: LEVEL_4_LENGTH,
+    theme: 'sunset',
+    backgrounds: ['assets/skycloud.png', 'assets/backhill.png', 'assets/backbuilding1.png', 'assets/backbuilding2.png', 'assets/backbuilding3.png', 'assets/eifeltower.png', 'assets/riversidebuilding.png', 'assets/riverbankwithpeople.png', 'assets/parallax_seav2.png']
+
   }
-  
+
 ];
 
 export function getMapTheme(mapId) {
