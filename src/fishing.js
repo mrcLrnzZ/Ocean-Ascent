@@ -389,7 +389,7 @@ export class Rod {
             const dist = Math.hypot(dx, dy);
 
             // Dynamic reel speed: faster if empty hook (15), slower if fish caught (3)
-            const reelSpeed = this.caughtFish ? 3 : 15;
+            const reelSpeed = this.caughtFish ? 50 : 50;
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
