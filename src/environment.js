@@ -36,6 +36,15 @@ export const waveParams = {
     amp3: 0,  speed3: 0.062, freq3: 0.0019, phase3: Math.random() * Math.PI * 2
 }
 
+// Wave descriptor for HUD
+export function waveLabel() {
+    const amp = Math.round(waveParams.amp1);
+    if (amp <= 6) return 'Calm';
+    if (amp <= 12) return 'Choppy';
+    if (amp <= 20) return 'Rough';
+    return 'Violent';
+}
+
 export function waveSurf(x, frame) {
     const p = waveParams
     return WATER_Y
@@ -163,7 +172,7 @@ export const WeatherSystem = {
     },
 
     // ── Update ────────────────────────────────────────────
-    update(frame) {
+    update(frame, audio = null) {
         if (this.autoWeather) {
             this.weatherTimer++
             if (this.weatherTimer >= this.weatherDuration) {
@@ -179,6 +188,22 @@ export const WeatherSystem = {
 
         const w     = this.getCurrentWeather()
         const count = w.particles === 'storm' ? STORM_COUNT : RAIN_COUNT
+
+        // Weather sound logic
+        if (audio) {
+            if (this._target === 'stormy' || this._target === 'rainy') {
+                if (audio.currentWeatherSound !== 'heavyrain') {
+                    audio.stop('heavyrain');
+                    audio.play('heavyrain');
+                    audio.currentWeatherSound = 'heavyrain';
+                }
+            } else {
+                if (audio.currentWeatherSound === 'heavyrain') {
+                    audio.stop('heavyrain');
+                    audio.currentWeatherSound = null;
+                }
+            }
+        }
 
         // Scroll rain drops
         for (let i = 0; i < count; i++) {
@@ -451,5 +476,236 @@ export const WeatherSystem = {
     rgbToHex,
     lerpColor: lerpHex
 }
+
+// ── Homepage Weather ──────────────────────────────────────
+const HOME_RAIN_CONFIG = {
+    count: 150,
+    windX: 2,
+    rainAlpha: 0.6,
+    dropColor: '#c8dce8'
+};
+
+export const HomeWeather = {
+    canvas: null,
+    ctx: null,
+    drops: [],
+    lightningOverlay: null,
+    active: true,
+    animationId: null,
+    lightningInterval: null,
+
+    init() {
+        this.canvas = document.getElementById('rain-canvas');
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext('2d');
+        this.lightningOverlay = document.getElementById('lightning-overlay');
+        
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+
+        this.drops = Array.from({ length: HOME_RAIN_CONFIG.count }, () => ({
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            len: 7 + Math.random() * 10,
+            speed: 13 + Math.random() * 9
+        }));
+
+        this.startLightning();
+        this.animate();
+    },
+
+    resize() {
+        if (!this.canvas) return;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+    },
+
+    stop() {
+        this.active = false;
+        if (this.animationId) cancelAnimationFrame(this.animationId);
+        if (this.lightningInterval) clearInterval(this.lightningInterval);
+    },
+
+    isNearElement(x, y) {
+        const titleItems = document.querySelectorAll('.game-title');
+        const buttonItems = document.querySelectorAll('.start-button');
+        if (titleItems.length === 0 || buttonItems.length === 0) return null;
+
+        const titleRect = titleItems[0].getBoundingClientRect();
+        const buttonRect = buttonItems[0].getBoundingClientRect();
+
+        if (x > titleRect.left && x < titleRect.right && y > titleRect.top && y < titleRect.bottom) {
+            return { type: 'title', rect: titleRect };
+        }
+        if (x > buttonRect.left && x < buttonRect.right && y > buttonRect.top && y < buttonRect.bottom) {
+            return { type: 'button', rect: buttonRect };
+        }
+        return null;
+    },
+
+    animate() {
+        if (!this.active) return;
+        const ctx = this.ctx;
+        const canvas = this.canvas;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = HOME_RAIN_CONFIG.dropColor;
+        ctx.lineWidth = 1.5;
+
+        for (const d of this.drops) {
+            d.y += d.speed;
+            d.x += HOME_RAIN_CONFIG.windX * 0.3;
+
+            if (d.y > canvas.height + 20) {
+                d.y = -12;
+                d.x = Math.random() * canvas.width;
+            }
+            if (d.x > canvas.width + 20) d.x = -10;
+            if (d.x < -20) d.x = canvas.width + 10;
+
+            const collision = this.isNearElement(d.x, d.y);
+            if (collision) {
+                ctx.globalAlpha = HOME_RAIN_CONFIG.rainAlpha * 0.8;
+                ctx.shadowColor = 'rgba(200, 220, 255, 0.5)';
+                ctx.shadowBlur = 4;
+                ctx.beginPath();
+                ctx.moveTo(d.x, d.y);
+                ctx.lineTo(d.x + HOME_RAIN_CONFIG.windX * 0.5, d.y + d.len);
+                ctx.stroke();
+                ctx.shadowColor = 'transparent';
+            } else {
+                ctx.globalAlpha = HOME_RAIN_CONFIG.rainAlpha;
+                ctx.beginPath();
+                ctx.moveTo(d.x, d.y);
+                ctx.lineTo(d.x + HOME_RAIN_CONFIG.windX * 0.5, d.y + d.len);
+                ctx.stroke();
+            }
+        }
+
+        this.drawWetEffect();
+        this.drawWindStreaks();
+
+        ctx.globalAlpha = 1;
+        this.animationId = requestAnimationFrame(() => this.animate());
+    },
+
+    drawWindStreaks() {
+        const ctx = this.ctx;
+        const canvas = this.canvas;
+        ctx.globalAlpha = HOME_RAIN_CONFIG.rainAlpha * 0.25;
+        ctx.strokeStyle = HOME_RAIN_CONFIG.dropColor;
+        ctx.lineWidth = 2;
+
+        const streakCount = 20;
+        for (let i = 0; i < streakCount; i++) {
+            const y = (i * (canvas.height / streakCount)) % canvas.height;
+            const streakLength = 60 + Math.sin(i * 0.5) * 30;
+            const xOffset = Math.sin(i * 0.3) * 15;
+
+            ctx.beginPath();
+            ctx.moveTo(xOffset, y);
+            ctx.lineTo(xOffset + streakLength, y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(canvas.width + xOffset - streakLength, y + 2);
+            ctx.lineTo(canvas.width + xOffset, y + 2);
+            ctx.stroke();
+        }
+    },
+
+    drawWetEffect() {
+        const titleItems = document.querySelectorAll('.game-title');
+        const buttonItems = document.querySelectorAll('.start-button');
+        if (titleItems.length === 0 || buttonItems.length === 0) return;
+
+        const titleRect = titleItems[0].getBoundingClientRect();
+        const buttonRect = buttonItems[0].getBoundingClientRect();
+
+        this.ctx.globalAlpha = HOME_RAIN_CONFIG.rainAlpha * 0.5;
+        for (let i = 0; i < 5; i++) {
+            const x = titleRect.left + Math.random() * titleRect.width;
+            const y = titleRect.bottom - 5;
+            const radius = 1.5 + Math.random() * 2;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = HOME_RAIN_CONFIG.dropColor;
+            this.ctx.fill();
+        }
+        for (let i = 0; i < 3; i++) {
+            const x = buttonRect.left + Math.random() * buttonRect.width;
+            const y = buttonRect.top + Math.random() * buttonRect.height;
+            const radius = 1 + Math.random() * 1.5;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+            this.ctx.fillStyle = HOME_RAIN_CONFIG.dropColor;
+            this.ctx.fill();
+        }
+    },
+
+    startLightning() {
+        this.lightningInterval = setInterval(() => {
+            if (this.lightningOverlay) {
+                this.lightningOverlay.classList.remove('lightning-flash');
+                void this.lightningOverlay.offsetWidth;
+                this.lightningOverlay.classList.add('lightning-flash');
+            }
+        }, 3000);
+    }
+};
+
+// ── Weather UI & Control ──────────────────────────────────
+export function updateWeatherDisplay() {
+    const weatherNames = { 'clear': '☀ Clear', 'rainy': '🌧 Rainy', 'stormy': '⛈ Stormy', 'foggy': '🌫 Foggy' };
+    const label = weatherNames[WeatherSystem.targetState] || WeatherSystem.targetState;
+    const el1 = document.getElementById('current-weather');
+    const el2 = document.getElementById('h-wx');
+    if (el1) el1.textContent = label;
+    if (el2) el2.textContent = label;
+    
+    // Also update HUD waves/wind
+    const wvEl = document.getElementById('h-wave');
+    const windEl = document.getElementById('h-wind');
+    if (wvEl) wvEl.textContent = `Waves: ${waveLabel()}`;
+    if (windEl) windEl.textContent = `Wind: ${Math.round(WeatherSystem.getCurrentWeather().windX * 3)}mph`;
+}
+
+export function buildWeatherWeightPanel() {
+    const panel = document.getElementById('wx-weights-panel');
+    if (!panel) return;
+    const icons = { clear: '☀', rainy: '🌧', stormy: '⛈', foggy: '🌫' };
+    panel.innerHTML = '';
+    for (const [type, weight] of Object.entries(WeatherSystem.weatherWeights)) {
+        const id = `wx-w-${type}`;
+        const row = document.createElement('div');
+        row.style.cssText = 'margin-bottom:5px;';
+        row.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:1px;">
+                <span>${icons[type] || ''} ${type[0].toUpperCase() + type.slice(1)}</span>
+                <span id="${id}-val" style="color:#ffe;">${weight}</span>
+            </div>
+            <input type="range" min="0" max="100" step="1" value="${weight}"
+                oninput="window.wxSetWeight('${type}',+this.value); document.getElementById('${id}-val').textContent=this.value;"
+                style="width:100%; cursor:pointer; accent-color:#5588cc;">`;
+        panel.appendChild(row);
+    }
+}
+
+// Expose to window for HTML onclick handlers
+window.setWeather = (type) => { WeatherSystem.setWeather(type); updateWeatherDisplay(); };
+window.wxSetAuto     = (en) => { WeatherSystem.autoWeather = en; };
+window.wxSetDuration = (f)  => { 
+    WeatherSystem.weatherDuration = f; WeatherSystem.weatherTimer = 0;
+    const el = document.getElementById('wx-timer-val');
+    if (el) el.textContent = `${Math.round(f / 60)}s`;
+};
+window.wxSetTransition = (f) => {
+    WeatherSystem.transitionDuration = f;
+    const el = document.getElementById('wx-trans-val');
+    if (el) el.textContent = `${Math.round(f / 60)}s`;
+};
+window.wxSetWeight = (type, val) => { WeatherSystem.weatherWeights[type] = +val; };
+
+WeatherSystem.init()
 
 WeatherSystem.init()
