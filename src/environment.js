@@ -395,6 +395,33 @@ export const WeatherSystem = {
                 ctx.fillRect(0, 0, W, H)
             }
 
+            // Wind streaks during stormy weather only
+            if (isStorm && w.windX > 3) {
+                ctx.globalAlpha = w.rainAlpha * 0.35
+                ctx.strokeStyle = '#a0c8d8'
+                ctx.lineWidth = 2.5
+                
+                const windStrength = w.windX
+                const streakCount = 25
+                
+                for (let i = 0; i < streakCount; i++) {
+                    const y = (i * (H / streakCount) + (cameraY % H)) % H
+                    const streakLength = 80 + Math.sin(i * 0.5) * 40
+                    const xOffset = Math.sin(i * 0.3) * 20
+                    
+                    ctx.beginPath()
+                    ctx.moveTo(xOffset, y)
+                    ctx.lineTo(xOffset + streakLength, y)
+                    ctx.stroke()
+                    
+                    // Double streak for extra wind effect
+                    ctx.beginPath()
+                    ctx.moveTo(W + xOffset - streakLength, y + 3)
+                    ctx.lineTo(W + xOffset, y + 3)
+                    ctx.stroke()
+                }
+            }
+
             ctx.restore()
         }
 
