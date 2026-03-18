@@ -27,10 +27,28 @@ export class AlmanacManager {
     }
 
     changeAlmanacPage(dir) {
-        this.almanacPage += dir;
-        if (this.almanacPage < 0) this.almanacPage = 0;
-        if (this.almanacPage > this.maxPage) this.almanacPage = this.maxPage;
-        this.renderAlmanacPage();
+        const left = document.getElementById('left-page');
+        const right = document.getElementById('right-page');
+        
+        // Add flip animation
+        if(dir > 0) {
+            left.classList.add('flip-next');
+            right.classList.add('flip-next');
+        } else if(dir < 0) {
+            left.classList.add('flip-prev');
+            right.classList.add('flip-prev');
+        }
+
+        // Delay page change to let animation play
+        setTimeout(() => {
+            this.almanacPage += dir;
+            if (this.almanacPage < 0) this.almanacPage = 0;
+            if (this.almanacPage > this.maxPage) this.almanacPage = this.maxPage;
+            this.renderAlmanacPage();
+
+            left.classList.remove('flip-next', 'flip-prev');
+            right.classList.remove('flip-next', 'flip-prev');
+        }, 400); // half of CSS transition, tweak for timing
         audio.play('nextpage');
     }
 
@@ -71,6 +89,7 @@ export class AlmanacManager {
         const count = this.uiManager.player.inventory[fishId] || 0;
         const hasCaught = count > 0;
         const scale = data.scale || 1;
+
         container.innerHTML = `
             <div class="almanac-entry ${hasCaught ? data.rarity : 'unknown'}">
 
@@ -94,6 +113,10 @@ export class AlmanacManager {
 
             </div>
         `;
+        if(hasCaught) {
+            const frame = container.querySelector('.fish-image');
+            frame.classList.add(data.rarity); // legendary, epic, etc.
+        }
         console.log(fishId, this.uiManager.player.inventory);
     }
 }

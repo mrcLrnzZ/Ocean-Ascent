@@ -186,3 +186,46 @@
     border-color: rgba(138, 16, 16, 0.5);
     text-decoration: underline;
 }
+.fish-image.common {
+    box-shadow: 0 0 20px 4px rgb(255, 255, 255), inset 0 0 10px rgba(123, 255, 0, 0.3);
+    outline-color: rgb(218, 218, 218);
+}
+.fish-image.uncommon {
+    box-shadow: 0 0 20px 4px rgb(0, 191, 255), inset 0 0 10px rgba(123, 255, 0, 0.3);
+    outline-color: rgb(61, 252, 255);
+}
+.fish-image.rare {
+    box-shadow: 0 0 20px 4px rgb(0, 255, 4), inset 0 0 10px rgba(123, 255, 0, 0.3);
+    outline-color: rgb(21, 255, 0);
+}
+.fish-image.legendary {
+    box-shadow: 0 0 20px 4px gold, inset 0 0 10px rgba(255, 215, 0, 0.3);
+    outline-color: gold;
+}
+
+.fish-image.epic {
+    box-shadow: 0 0 15px 3px violet, inset 0 0 8px rgba(138, 43, 226, 0.3);
+    outline-color: violet;
+}
+
+/* book fip lolszz */ 
+.page-wrapper {
+    perspective: 1200px; /* Gives depth for 3D flip */
+    flex: 1;
+    display: flex;
+}
+
+.almanac-page {
+    width: 100%;
+    transform-origin: left center; /* flip from spine */
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden; /* hides backside during flip */
+}
+
+.flip-next {
+    transform: rotateY(-180deg); /* flips left-to-right */
+}
+
+.flip-prev {
+    transform: rotateY(180deg); /* flips right-to-left */
+}
