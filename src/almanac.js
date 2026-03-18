@@ -27,12 +27,30 @@ export class AlmanacManager {
     }
 
     changeAlmanacPage(dir) {
+    const left = document.getElementById('left-page');
+    const right = document.getElementById('right-page');
+
+    // Determine which page should flip
+        if (dir > 0) {
+            right.classList.add('flip-next');
+        } else if (dir < 0) {
+            left.classList.add('flip-prev');
+        }
+
+    // Delay page content update until flip animation completes
+    setTimeout(() => {
         this.almanacPage += dir;
         if (this.almanacPage < 0) this.almanacPage = 0;
         if (this.almanacPage > this.maxPage) this.almanacPage = this.maxPage;
         this.renderAlmanacPage();
-        audio.play('nextpage');
-    }
+
+        // Clean up classes after animation
+        left.classList.remove('flip-prev', 'flip-next');
+        right.classList.remove('flip-next', 'flip-prev');
+    }, 800); // match your CSS transition duration
+
+    audio.play('nextpage');
+}
 
     renderAlmanacPage() {
         const leftPage = document.getElementById('left-page');
@@ -71,6 +89,7 @@ export class AlmanacManager {
         const count = this.uiManager.player.inventory[fishId] || 0;
         const hasCaught = count > 0;
         const scale = data.scale || 1;
+
         container.innerHTML = `
             <div class="almanac-entry ${hasCaught ? data.rarity : 'unknown'}">
 
@@ -94,6 +113,10 @@ export class AlmanacManager {
 
             </div>
         `;
+        if(hasCaught) {
+            const frame = container.querySelector('.fish-image');
+            frame.classList.add(data.rarity); // legendary, epic, etc.
+        }
         console.log(fishId, this.uiManager.player.inventory);
     }
 }

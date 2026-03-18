@@ -130,10 +130,15 @@
 
             <!-- Items rendered here by JS -->
             <!-- <div id="almanac-grid" class="almanac-grid"></div> -->
-             <div id="almanac-book">
-                <div id="left-page" class="almanac-page"></div>
-                <div id="right-page" class="almanac-page"></div>
-            </div>
+                <div id="almanac-book">
+                    <div class="page-wrapper">
+                        <div id="left-page" class="almanac-page"></div>
+                    </div>
+                    
+                    <div class="page-wrapper">
+                        <div id="right-page" class="almanac-page"></div>
+                    </div>
+                </div>
 
             <div class="almanac-footer">
                 <button onclick="changeAlmanacPage(-1)" class="page-btn">◀ Prev</button>
