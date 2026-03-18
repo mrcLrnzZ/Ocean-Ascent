@@ -70,13 +70,13 @@ export class AlmanacManager {
         const data = SPRITE_DATA[fishId];
         const count = this.uiManager.player.inventory[fishId] || 0;
         const hasCaught = count > 0;
-
+        const scale = data.scale || 1;
         container.innerHTML = `
             <div class="almanac-entry ${hasCaught ? data.rarity : 'unknown'}">
 
                 <div class="fish-card">
                     <div class="fish-image">
-                        <img src="${data.almanacSrc}" alt="${hasCaught ? data.name : 'Unknown'}">
+                        <img src="${data.almanacSrc}" alt="${hasCaught ? data.name : 'Unknown'}" style="transform: scale(${scale})">
                     </div>
 
                     <div class="fish-info">
