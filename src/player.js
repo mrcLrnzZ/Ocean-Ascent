@@ -64,10 +64,10 @@ export class Player {
         // --- Inventory ---
         this.inventory = {
             anchovy: 0, sardine: 0, clownfish: 0,
-            tuna: 0, swordfish: 0, mahi_mahi: 0,
-            cod: 0, pufferfish: 0, sunfish: 0,
-            oarfish: 0, anglerfish: 0, coelacanth: 0,
-            reaper: 0, megalodon: 0, kraken: 0
+            devilfish: 0, swordfish: 0, flowerhead: 0,
+            choifish: 0, pufferfish: 0, turtle: 0,
+            halfmoon: 0, veiltail: 0, anglerfish: 0, doomsdayoarfish: 0,
+            beluga: 0, catfish: 0, kraken: 0
         };
     }
 
@@ -237,10 +237,10 @@ export class Player {
             this.fishIdleImg.src = `${folder}fishidle_blue.png`;
         } else if (this.rodLevel === 5) {
             const folder = 'assets/rod/';
-            this.walkImg.src = `${folder}walk_legendary.png`;
-            this.idleImg.src = `${folder}idle_legendary.png`;
-            this.throwImg.src = `${folder}fullthrow_legendary.png`;
-            this.fishIdleImg.src = `${folder}fishidle_legendary.png`;
+            this.walkImg.src = `${folder}walk_blue.png`;
+            this.idleImg.src = `${folder}idle_blue.png`;
+            this.throwImg.src = `${folder}fullthrow_blue.png`;
+            this.fishIdleImg.src = `${folder}fishidle_blue.png`;
         } else {
             // Default Level 1
             this.walkImg.src = 'assets/Fisherman_walkv2.png';

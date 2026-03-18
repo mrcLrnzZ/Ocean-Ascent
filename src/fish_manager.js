@@ -10,7 +10,7 @@ export class FishManager {
 
     spawnInitialFish() {
         const totalLevels = 5;
-        const fishPerLevel = 30; // Amount of fish to spawn per level
+        const fishPerLevel = 90; // Amount of fish to spawn per level
 
         for (let level = 1; level <= totalLevels; level++) {
             for (let i = 0; i < fishPerLevel; i++) {
@@ -63,30 +63,30 @@ const levelDistributions = {
     2: [ // Mid-Shallows
         { type: 'sardine', prob: 0.20 },
         { type: 'clownfish', prob: 0.20 },
-        { type: 'tuna', prob: 0.30 },
+        { type: 'devilfish', prob: 0.30 },
         { type: 'swordfish', prob: 0.20 },
-        { type: 'mahi_mahi', prob: 0.10 }
+        { type: 'flowerhead', prob: 0.10 }
     ],
     3: [ // Deep
-        { type: 'tuna', prob: 0.20 },
+        { type: 'flowerhead', prob: 0.20 },
+        { type: 'choifish', prob: 0.20 },
+        { type: 'turtle', prob: 0.30 },
         { type: 'swordfish', prob: 0.20 },
-        { type: 'cod', prob: 0.30 },
-        { type: 'pufferfish', prob: 0.20 },
-        { type: 'sunfish', prob: 0.10 }
+        { type: 'halfmoon', prob: 0.10 }
     ],
     4: [ // Trench
-        { type: 'cod', prob: 0.20 },
+        { type: 'halfmoon', prob: 0.20 },
         { type: 'pufferfish', prob: 0.20 },
-        { type: 'sunfish', prob: 0.20 },
-        { type: 'oarfish', prob: 0.20 },
+        { type: 'veiltail', prob: 0.20 },
+        { type: 'doomsdayoarfish', prob: 0.20 },
         { type: 'anglerfish', prob: 0.15 },
-        { type: 'coelacanth', prob: 0.05 }
+        { type: 'flowerhead', prob: 0.05 }
     ],
     5: [ // Abyss
         { type: 'reaper', prob: 0.40 },
-        { type: 'Mekong', prob: 0.20 },
-        { type: 'Beluga', prob: 0.20 },
-        { type: 'kraken', prob: 0.20 }
+        { type: 'catfish', prob: 0.20 },
+        { type: 'beluga', prob: 0.20 },
+        { type: 'kraken', prob: 10.0 }
     ]
 };
 

@@ -23,7 +23,7 @@ audio.play("ocean");
 let gameStarted = false;
 let audioStarted = false;
 const homepage = document.getElementById('homepage');
-const startBtn = document.getElementById('start-btn');
+const startBtn = document.getElementById('startBtn');
 const rainCanvas = document.getElementById('rain-canvas');
 const rainCtx = rainCanvas.getContext('2d');
 
@@ -31,6 +31,7 @@ const rainCtx = rainCanvas.getContext('2d');
 function startHomepageAudio() {
     if (!audioStarted && !gameStarted) {
         audioStarted = true;
+        audio.play("ocean");
         audio.play('heavyrain');
         audio.play('thunder');
     }

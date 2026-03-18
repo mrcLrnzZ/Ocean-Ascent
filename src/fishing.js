@@ -29,7 +29,7 @@ export class Rod {
         this.wasOnBoat = false;
 
         this.baitImg = new Image();
-        this.baitImg.src = 'assets/doomsday-oarfish.png';
+        this.baitImg.src = 'assets/doomsday-oarfishF.png';
         this.baitSize = 16;
 
         this.reeling = false;
@@ -194,7 +194,7 @@ export class Rod {
                     audio.play('splash');
                     // Use a rough frame count for visual splash alignment with waves
                     const approxFrame = Math.floor(Date.now() / 16);
-                    const splashY = waveSurf(this.x, approxFrame); 
+                    const splashY = waveSurf(this.x, approxFrame);
                     effectManager.addSplash(this.x, splashY);
                     if (!this.isBaitInWater) {
                         audio.play('underwater');
@@ -389,7 +389,7 @@ export class Rod {
             const dist = Math.hypot(dx, dy);
 
             // Dynamic reel speed: faster if empty hook (15), slower if fish caught (3)
-            const reelSpeed = this.caughtFish ? 3 : 15;
+            const reelSpeed = this.caughtFish ? 50 : 50;
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
