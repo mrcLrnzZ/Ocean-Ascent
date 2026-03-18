@@ -27,30 +27,30 @@ export class AlmanacManager {
     }
 
     changeAlmanacPage(dir) {
-        const left = document.getElementById('left-page');
-        const right = document.getElementById('right-page');
-        
-        // Add flip animation
-        if(dir > 0) {
-            left.classList.add('flip-next');
+    const left = document.getElementById('left-page');
+    const right = document.getElementById('right-page');
+
+    // Determine which page should flip
+        if (dir > 0) {
             right.classList.add('flip-next');
-        } else if(dir < 0) {
+        } else if (dir < 0) {
             left.classList.add('flip-prev');
-            right.classList.add('flip-prev');
         }
 
-        // Delay page change to let animation play
-        setTimeout(() => {
-            this.almanacPage += dir;
-            if (this.almanacPage < 0) this.almanacPage = 0;
-            if (this.almanacPage > this.maxPage) this.almanacPage = this.maxPage;
-            this.renderAlmanacPage();
+    // Delay page content update until flip animation completes
+    setTimeout(() => {
+        this.almanacPage += dir;
+        if (this.almanacPage < 0) this.almanacPage = 0;
+        if (this.almanacPage > this.maxPage) this.almanacPage = this.maxPage;
+        this.renderAlmanacPage();
 
-            left.classList.remove('flip-next', 'flip-prev');
-            right.classList.remove('flip-next', 'flip-prev');
-        }, 400); // half of CSS transition, tweak for timing
-        audio.play('nextpage');
-    }
+        // Clean up classes after animation
+        left.classList.remove('flip-prev', 'flip-next');
+        right.classList.remove('flip-next', 'flip-prev');
+    }, 800); // match your CSS transition duration
+
+    audio.play('nextpage');
+}
 
     renderAlmanacPage() {
         const leftPage = document.getElementById('left-page');
