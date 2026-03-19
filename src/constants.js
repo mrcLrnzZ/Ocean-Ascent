@@ -83,7 +83,7 @@ export const LEVEL_4_LENGTH = 3000;
 export const MAP_TRANSITION_X_LEFT = 740;
 
 export const DEPTH_LEVEL_HEIGHTS = {
-  1: 300,  // Surface Level
+  1: 1000,  // Surface Level
   2: 3500, // Depth 1
   3: 4500, // Depth 2
   4: 5500, // Depth 3
@@ -195,7 +195,7 @@ export const PARALLAX_LAYERS = {
 
 export const MAPS = [
   {
-    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 2, hasDock: true, length: SHORE_LEVEL_LENGTH,
+    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 1, hasDock: true, length: SHORE_LEVEL_LENGTH,
     theme: 'sunset',
     backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 

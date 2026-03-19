@@ -21,11 +21,12 @@ export const SPRITE_DATA = {
 };
 
 export class Fish {
-    constructor(type, x, y, depthLevel = 1) {
+    constructor(type, x, y, depthLevel = 1, mapId = 0) {
         this.type = type;
         this.x = x;
         this.y = y;
         this.depthLevel = depthLevel;
+        this.mapId = mapId;
 
         // Movement
         this.baseSpeed = (Math.random() * 1.2) + 0.4;
