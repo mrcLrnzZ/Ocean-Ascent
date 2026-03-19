@@ -55,21 +55,37 @@ startBtn.addEventListener('click', () => {
         const introVideo = document.getElementById('introVideo');
         const gameCanvas = document.getElementById('gameCanvas');
 
-        // introVideo.style.display = 'block';
-        // gameCanvas.style.display = 'none';
-        // homepage.style.display = 'none';
-        //
-        // introVideo.play();
-        //
-        // // When video ends, start the game
-        // introVideo.addEventListener('ended', () => {
-        //     introVideo.style.display = 'none';
-        //     gameCanvas.style.display = 'block';
-        //     requestAnimationFrame(loop);
-        // }, { once: true });
+ const banana = false;
+
+        if (banana) {
+
+              introVideo.style.display = 'block';
+        gameCanvas.style.display = 'none';
         homepage.style.display = 'none';
-        gameCanvas.style.display = 'block';
-        requestAnimationFrame(loop);
+
+        introVideo.play();
+
+        // When video ends, start the game
+        introVideo.addEventListener('ended', () => {
+            introVideo.style.display = 'none';
+            gameCanvas.style.display = 'block';
+            requestAnimationFrame(loop);
+        }, { once: true });
+
+        }else{
+            introVideo.style.display = 'none';
+        homepage.style.display = 'none';
+            gameCanvas.style.display = 'block';
+            requestAnimationFrame(loop);
+
+        }
+
+
+
+
+
+
+
     }
 });
 
@@ -286,13 +302,16 @@ function loop() {
 
         drawDockOverlay(ctx, cameraX, currentMap);
 
-        fishManager.draw(ctx, cameraX);
-
+        // Draw fish for this map (depth < 5) before the foreground overlay
+        fishManager.draw(ctx, cameraX, (f) => f.mapId === currentMap && f.depthLevel < 5);
 
         boat.draw(ctx, cameraX, frame, player);
 
         // 6. Foreground layers
         drawWaterForeground(ctx, cameraX, frame, currentMap);
+
+        // Draw Abyss fish (depth 5) for this map after the pitch-black overlay to keep them visible
+        fishManager.draw(ctx, cameraX, (f) => f.mapId === currentMap && f.depthLevel === 5);
         effectManager.draw(ctx, cameraX);
         drawDeepSoil(ctx, cameraX, currentMap);
         ctx.restore();

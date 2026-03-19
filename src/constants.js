@@ -36,8 +36,8 @@ export const THEMES = {
       1: '#0a65c780',
       2: '#0051ff80',
       3: '#0033aa80',
-      4: '#001a6680',
-      5: '#00003380'
+      4: '#00081acc',
+      5: '#000000ff'
     }
   },
 
@@ -51,8 +51,8 @@ export const THEMES = {
       1: '#05102580',
       2: '#020a1a80',
       3: '#01051080',
-      4: '#00020880',
-      5: '#00000080'
+      4: '#000204cc',
+      5: '#000000ff'
     }
   },
     sunset: {
@@ -65,8 +65,8 @@ export const THEMES = {
       1: '#0a65c780',
       2: '#0051ff80',
       3: '#0033aa80',
-      4: '#001a6680',
-      5: '#00003380'
+      4: '#00081acc',
+      5: '#000000ff'
     }
   }
 };
@@ -83,11 +83,11 @@ export const LEVEL_4_LENGTH = 3000;
 export const MAP_TRANSITION_X_LEFT = 740;
 
 export const DEPTH_LEVEL_HEIGHTS = {
-  1: 300,  // Surface Level
-  2: 1500, // Depth 1
-  3: 1500, // Depth 2
-  4: 1500, // Depth 3
-  5: 2500  // Depth 4 (Abyss)
+  1: 1000,  // Surface Level
+  2: 3500, // Depth 1
+  3: 4500, // Depth 2
+  4: 5500, // Depth 3
+  5: 6500  // Depth 4 (Abyss)
 };
 
 export function getDepthStartLine(level) {
@@ -195,7 +195,7 @@ export const PARALLAX_LAYERS = {
 
 export const MAPS = [
   {
-    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 2, hasDock: true, length: SHORE_LEVEL_LENGTH,
+    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 1, hasDock: true, length: SHORE_LEVEL_LENGTH,
     theme: 'sunset',
     backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
