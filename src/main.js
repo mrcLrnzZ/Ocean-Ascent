@@ -301,14 +301,17 @@ function loop() {
         }
 
         drawDockOverlay(ctx, cameraX, currentMap);
-
-        fishManager.draw(ctx, cameraX);
-
+        
+        // Draw normal depth fish (depth < 5) before the foreground overlay
+        fishManager.draw(ctx, cameraX, (f) => f.depthLevel < 5);
 
         boat.draw(ctx, cameraX, frame, player);
 
         // 6. Foreground layers
         drawWaterForeground(ctx, cameraX, frame, currentMap);
+
+        // Draw Abyss fish (depth 5) after the pitch-black overlay to keep them visible
+        fishManager.draw(ctx, cameraX, (f) => f.depthLevel === 5);
         effectManager.draw(ctx, cameraX);
         drawDeepSoil(ctx, cameraX, currentMap);
         ctx.restore();

@@ -28,7 +28,7 @@ export class FishManager {
                 const x = groundX + 100 + Math.random() * xRange;
 
                 const type = getRandomFishTypeForLevel(level);
-                this.fishes.push(new Fish(type, x, y));
+                this.fishes.push(new Fish(type, x, y, level));
             }
         }
 
@@ -37,7 +37,7 @@ export class FishManager {
             const x = Math.random() * 650 + 550;
             // Spawn them slightly below the water surface
             const y = WATER_Y + Math.random() * 80 + 30;
-            this.fishes.push(new Fish('anchovy', x, y));
+            this.fishes.push(new Fish('anchovy', x, y, 1));
         }
     }
 
@@ -47,8 +47,9 @@ export class FishManager {
         }
     }
 
-    draw(ctx, cameraX) {
+    draw(ctx, cameraX, filter = null) {
         for (let fish of this.fishes) {
+            if (filter && !filter(fish)) continue;
             fish.draw(ctx, cameraX);
         }
     }
