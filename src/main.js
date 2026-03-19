@@ -168,7 +168,7 @@ function loop() {
     player.update(1, G, boat, fishManager, currentMap);
     fishManager.update();                    // all fish update
     boatMerchant.update();
-    rodMerchant.update(boat, frame);
+    rodMerchant.update(boat, frame, currentMap);
     effectManager.update();
 
     // --- MAP TRANSITIONS & BOUNDARIES ---
@@ -187,7 +187,7 @@ function loop() {
 
             // Auto-disembark merchant when boat stops at the final dock
             if (rodMerchant.onBoat) {
-                rodMerchant.disembark(5500, true);
+                rodMerchant.disembark(5500, true, currentMap);
             }
         }
     }
@@ -296,7 +296,7 @@ function loop() {
             player.draw(ctx, cameraX);
         }
 
-        if (!rodMerchant.onBoat || rodMerchant.onBoat) {
+        if (rodMerchant.onBoat || rodMerchant.currentMapId === currentMap) {
             rodMerchant.draw(ctx, cameraX, player);
         }
 
