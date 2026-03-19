@@ -65,9 +65,9 @@ export class Player {
         this.inventory = {
             anchovy: 0, sardine: 0, clownfish: 0,
             devilfish: 0, swordfish: 0, flowerhead: 0,
-            choifish: 0, pufferfish: 0, turtle: 0,
-            halfmoon: 0, veiltail: 0, anglerfish: 0, doomsdayoarfish: 0,
-            beluga: 0, catfish: 0, kraken: 0
+            choifish: 0, shark: 0, turtle: 0,
+            halfmoon: 0, orca: 0, veiltail: 0, anglerfish: 0, doomsdayoarfish: 0,
+            vampiresquid: 0, beluga: 0, catfish: 0, kraken: 0
         };
     }
 
