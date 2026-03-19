@@ -707,5 +707,3 @@ window.wxSetTransition = (f) => {
 window.wxSetWeight = (type, val) => { WeatherSystem.weatherWeights[type] = +val; };
 
 WeatherSystem.init()
-
-WeatherSystem.init()
