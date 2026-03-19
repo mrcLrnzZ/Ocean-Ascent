@@ -45,7 +45,7 @@ startBtn.addEventListener('click', () => {
     if (!gameStarted) {
         gameStarted = true;
         HomeWeather.stop(); // Stops homepage rain/lightning
-        
+
         // Stop all homepage sounds while video plays
         audio.stop('ocean');
         audio.stop('heavyrain');
@@ -55,18 +55,21 @@ startBtn.addEventListener('click', () => {
         const introVideo = document.getElementById('introVideo');
         const gameCanvas = document.getElementById('gameCanvas');
 
-        introVideo.style.display = 'block';
-        gameCanvas.style.display = 'none';
+        // introVideo.style.display = 'block';
+        // gameCanvas.style.display = 'none';
+        // homepage.style.display = 'none';
+        //
+        // introVideo.play();
+        //
+        // // When video ends, start the game
+        // introVideo.addEventListener('ended', () => {
+        //     introVideo.style.display = 'none';
+        //     gameCanvas.style.display = 'block';
+        //     requestAnimationFrame(loop);
+        // }, { once: true });
         homepage.style.display = 'none';
-
-        introVideo.play();
-
-        // When video ends, start the game
-        introVideo.addEventListener('ended', () => {
-            introVideo.style.display = 'none';
-            gameCanvas.style.display = 'block';
-            requestAnimationFrame(loop);
-        }, { once: true });
+        gameCanvas.style.display = 'block';
+        requestAnimationFrame(loop);
     }
 });
 
@@ -310,5 +313,3 @@ function loop() {
         console.log(e);
     }
 }
-
-
