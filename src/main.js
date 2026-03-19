@@ -45,7 +45,7 @@ startBtn.addEventListener('click', () => {
     if (!gameStarted) {
         gameStarted = true;
         HomeWeather.stop(); // Stops homepage rain/lightning
-        
+
         // Stop all homepage sounds while video plays
         audio.stop('ocean');
         audio.stop('heavyrain');
@@ -58,7 +58,7 @@ startBtn.addEventListener('click', () => {
  const banana = false;
 
         if (banana) {
-         
+
               introVideo.style.display = 'block';
         gameCanvas.style.display = 'none';
         homepage.style.display = 'none';
@@ -77,12 +77,12 @@ startBtn.addEventListener('click', () => {
         homepage.style.display = 'none';
             gameCanvas.style.display = 'block';
             requestAnimationFrame(loop);
-            
+
         }
 
-      
 
-       
+
+
 
 
 
@@ -301,7 +301,7 @@ function loop() {
         }
 
         drawDockOverlay(ctx, cameraX, currentMap);
-        
+
         // Draw fish for this map (depth < 5) before the foreground overlay
         fishManager.draw(ctx, cameraX, (f) => f.mapId === currentMap && f.depthLevel < 5);
 
@@ -332,5 +332,3 @@ function loop() {
         console.log(e);
     }
 }
-
-

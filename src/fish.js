@@ -75,7 +75,7 @@ export class Fish {
                 this.frameTick = 0;
                 this.frameIndex = (this.frameIndex + 1) % this.frames;
             }
-            return; 
+            return;
         }
 
         // Behavior: Adjust target speed occasionally

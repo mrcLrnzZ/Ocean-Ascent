@@ -1,209 +1,209 @@
-/* --- ALMANAC (Old Book Theme) --- */ 
-.almanac-container { 
-    position: absolute; 
-    top: 50%; left: 50%; 
+/* --- ALMANAC (Old Book Theme) --- */
+.almanac-container {
+    position: absolute;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    background: url('assets/openedAlmanac.png') no-repeat center/contain; /* Adjusted padding to ensure content stays within the "paper" area */ 
-    padding: 70px 110px 90px 110px; 
-    color: #3a2210; 
-    width: 900px; height: 700px; 
-    display: flex; 
-    flex-direction: column; 
-    pointer-events: all; 
-    z-index: 2000; 
-    font-family: 'Georgia', serif; 
-    image-rendering: pixelated; /* Subtle drop shadow for the whole book */ 
-    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5)); 
-} 
-     
-     /* --- HEADER --- */ 
-.almanac-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0 10px; 
-    margin-bottom: 25px; 
-} 
-    
-.almanac-header h2 { 
-    color: #4a3018; 
-    font-size: 26px; 
-    letter-spacing: 4px; 
-    text-transform: uppercase; 
-    font-weight: 400; font-style: italic; /* Ornamental lines on sides of the title */ 
-    display: flex; align-items: center; gap: 15px; 
-} 
-    
-    /* Decorative lines for the title */ 
-.almanac-header h2::before, 
-.almanac-header h2::after { 
-    content: ""; 
-    width: 40px; height: 1px; 
-    background: rgba(58, 34, 16, 0.3); 
-} 
-        
-    /* --- BOOK LAYOUT --- */ 
-#almanac-book { 
-    flex: 1; 
-    display: flex; 
-    justify-content: space-between; 
-    gap: 60px; /* Wider gap for the spine shadow */ 
-} 
+    background: url('assets/openedAlmanac.png') no-repeat center/contain; /* Adjusted padding to ensure content stays within the "paper" area */
+    padding: 70px 110px 90px 110px;
+    color: #3a2210;
+    width: 900px; height: 700px;
+    display: flex;
+    flex-direction: column;
+    pointer-events: all;
+    z-index: 2000;
+    font-family: 'Georgia', serif;
+    image-rendering: pixelated; /* Subtle drop shadow for the whole book */
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
+}
 
-.almanac-page { 
-    flex: 1; display: flex; 
-    flex-direction: column; 
-    padding: 0 10px; /* Subtle inner glow to mimic page curvature */ 
-} 
-    
-/* --- ENTRY CARD --- */ 
-.fish-card { 
-    display: flex; flex-direction: column; 
-    align-items: center; 
-    justify-content: flex-start; 
-    width: 100%; height: 100%; 
-} 
-/* THE ELEGANT BORDER SYSTEM */ 
-.fish-image { 
-    width: 85%; 
-    aspect-ratio: 1 / 1; /* Square frames often look more "encyclopedic" */ 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    margin-bottom: 20px; 
-    
-    /* The "Custom Border" Base */ 
-    border: 1px solid #3a2210; 
-    outline: 4px double #3a2210; 
-    /* Second layer of the border */ 
-    outline-offset: 3px; 
-    background: rgba(255, 255, 255, 0.1); 
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.1); 
-    position: relative; 
-    } 
-    
-    /* Optional: Adding "corner" accents */ 
-.fish-image::before { 
-    content: "◈"; /* Small diamond icon in corners */ 
-    position: absolute; 
-    top: -10px; font-size: 10px; 
-    color: #3a2210; 
-} 
+     /* --- HEADER --- */
+.almanac-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    margin-bottom: 25px;
+}
 
-.fish-image img { 
-    max-width: 85%; max-height: 85%; 
-    object-fit: contain; 
-    image-rendering: pixelated; /* Gives pixel art a slight "printed on paper" look */ 
-    filter: sepia(0.2) contrast(1.1); 
-} 
+.almanac-header h2 {
+    color: #4a3018;
+    font-size: 26px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-weight: 400; font-style: italic; /* Ornamental lines on sides of the title */
+    display: flex; align-items: center; gap: 15px;
+}
 
-/* --- TEXT CONTENT --- */ 
-.fish-info { 
-    text-align: center; 
-    display: flex; flex-direction: column; 
-    gap: 8px; width: 100%; 
-} 
+    /* Decorative lines for the title */
+.almanac-header h2::before,
+.almanac-header h2::after {
+    content: "";
+    width: 40px; height: 1px;
+    background: rgba(58, 34, 16, 0.3);
+}
 
-.fish-name { 
-    font-size: 24px; font-variant: small-caps; /* Professional book look */ 
-    color: #2a1a0d; 
-    margin-bottom: 5px; 
-} 
+    /* --- BOOK LAYOUT --- */
+#almanac-book {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 60px; /* Wider gap for the spine shadow */
+}
 
-.fish-desc { 
-    font-size: 14px; 
-    line-height: 1.4; 
-    font-style: italic; 
-    color: #4a3018; 
-    padding: 0 10px; 
-    opacity: 0.9; 
-} 
+.almanac-page {
+    flex: 1; display: flex;
+    flex-direction: column;
+    padding: 0 10px; /* Subtle inner glow to mimic page curvature */
+}
 
-.fish-count { 
-    font-size: 12px; 
-    color: #8a1010; 
-    font-weight: bold; 
-    margin-top: 10px; 
-    letter-spacing: 1px; /* Makes it look like a rubber stamp */ 
-    border: 1px solid rgba(138, 16, 16, 0.3); 
-    padding: 2px 8px; 
-    display: inline-block; 
-    align-self: center; 
-} 
+/* --- ENTRY CARD --- */
+.fish-card {
+    display: flex; flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%; height: 100%;
+}
+/* THE ELEGANT BORDER SYSTEM */
+.fish-image {
+    width: 85%;
+    aspect-ratio: 1 / 1; /* Square frames often look more "encyclopedic" */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
 
-/* --- UNKNOWN STATE --- */ 
-/* .unknown .fish-image img { 
-filter: brightness(0) opacity(0.2); 
-} 
-.unknown .fish-name { 
-color: rgba(58, 34, 16, 0.4); 
-} */ 
-    
-/* --- FOOTER/PAGINATION --- */ 
-.almanac-footer { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 0 40px; 
-} 
+    /* The "Custom Border" Base */
+    border: 1px solid #3a2210;
+    outline: 4px double #3a2210;
+    /* Second layer of the border */
+    outline-offset: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+    position: relative;
+    }
 
-.page-btn, .close-btn { 
-    background: none; 
-    border: 1px solid transparent; 
-    font-family: 'Georgia', serif; 
-    font-weight: bold; 
-    color: #4a3018; 
-    cursor: pointer; 
-    font-size: 14px; 
-    text-transform: uppercase; 
-    letter-spacing: 1px; 
-    transition: all 0.2s ease; 
-} 
-.page-btn:hover, .close-btn:hover { 
-    color: #8a1010; 
-    border-color: rgba(138, 16, 16, 0.5); 
-    text-decoration: underline; 
-} 
+    /* Optional: Adding "corner" accents */
+.fish-image::before {
+    content: "◈"; /* Small diamond icon in corners */
+    position: absolute;
+    top: -10px; font-size: 10px;
+    color: #3a2210;
+}
+
+.fish-image img {
+    max-width: 85%; max-height: 85%;
+    object-fit: contain;
+    image-rendering: pixelated; /* Gives pixel art a slight "printed on paper" look */
+    filter: sepia(0.2) contrast(1.1);
+}
+
+/* --- TEXT CONTENT --- */
+.fish-info {
+    text-align: center;
+    display: flex; flex-direction: column;
+    gap: 8px; width: 100%;
+}
+
+.fish-name {
+    font-size: 24px; font-variant: small-caps; /* Professional book look */
+    color: #2a1a0d;
+    margin-bottom: 5px;
+}
+
+.fish-desc {
+    font-size: 14px;
+    line-height: 1.4;
+    font-style: italic;
+    color: #4a3018;
+    padding: 0 10px;
+    opacity: 0.9;
+}
+
+.fish-count {
+    font-size: 12px;
+    color: #8a1010;
+    font-weight: bold;
+    margin-top: 10px;
+    letter-spacing: 1px; /* Makes it look like a rubber stamp */
+    border: 1px solid rgba(138, 16, 16, 0.3);
+    padding: 2px 8px;
+    display: inline-block;
+    align-self: center;
+}
+
+/* --- UNKNOWN STATE --- */
+.unknown .fish-image img { 
+filter: brightness(0) opacity(0.2);
+}
+.unknown .fish-name {
+color: rgba(58, 34, 16, 0.4);
+}
+
+/* --- FOOTER/PAGINATION --- */
+.almanac-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+}
+
+.page-btn, .close-btn {
+    background: none;
+    border: 1px solid transparent;
+    font-family: 'Georgia', serif;
+    font-weight: bold;
+    color: #4a3018;
+    cursor: pointer;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+}
+.page-btn:hover, .close-btn:hover {
+    color: #8a1010;
+    border-color: rgba(138, 16, 16, 0.5);
+    text-decoration: underline;
+}
 
   /* fishda border color  */
 
-.fish-image.common { 
-    box-shadow: 0 0 20px 4px rgb(255, 255, 255), inset 0 0 10px rgba(250, 255, 246, 0.826); 
-    outline-color: rgb(218, 218, 218); 
+.fish-image.common {
+    box-shadow: 0 0 20px 4px rgb(255, 255, 255), inset 0 0 10px rgba(250, 255, 246, 0.826);
+    outline-color: rgb(218, 218, 218);
 }
-.fish-image.uncommon { 
-    box-shadow: 0 0 20px 4px rgb(0, 191, 255), inset 0 0 10px rgba(123, 255, 0, 0.3); 
-    outline-color: rgb(61, 252, 255); 
+.fish-image.uncommon {
+    box-shadow: 0 0 20px 4px rgb(0, 191, 255), inset 0 0 10px rgba(123, 255, 0, 0.3);
+    outline-color: rgb(61, 252, 255);
 }
-.fish-image.rare { 
-    box-shadow: 0 0 20px 4px rgb(0, 255, 4), inset 0 0 10px rgba(123, 255, 0, 0.3); 
-    outline-color: rgb(165, 255, 123); 
+.fish-image.rare {
+    box-shadow: 0 0 20px 4px rgb(0, 255, 4), inset 0 0 10px rgba(123, 255, 0, 0.3);
+    outline-color: rgb(165, 255, 123);
 }
-.fish-image.epic { 
-    box-shadow: 0 0 15px 3px violet, inset 0 0 8px rgba(138, 43, 226, 0.3); 
-    outline-color: violet; 
-} 
-.fish-image.legendary { 
-    box-shadow: 0 0 20px 4px gold, inset 0 0 10px rgba(255, 215, 0, 0.3); 
-    outline-color: gold; 
-} 
-/* book fip lolszz */ 
-.page-wrapper { 
-    perspective: 1200px; 
-    /* Gives depth for 3D flip */ 
-    flex: 1; display: flex; 
-} 
+.fish-image.epic {
+    box-shadow: 0 0 15px 3px violet, inset 0 0 8px rgba(138, 43, 226, 0.3);
+    outline-color: violet;
+}
+.fish-image.legendary {
+    box-shadow: 0 0 20px 4px gold, inset 0 0 10px rgba(255, 215, 0, 0.3);
+    outline-color: gold;
+}
+/* book fip lolszz */
+.page-wrapper {
+    perspective: 1200px;
+    /* Gives depth for 3D flip */
+    flex: 1; display: flex;
+}
 
-.almanac-page { 
-    width: 100%; 
-    transform-origin: left center; 
-    /* flip from spine */ 
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
-    backface-visibility: hidden; /* hides backside during flip */ 
-} 
+.almanac-page {
+    width: 100%;
+    transform-origin: left center;
+    /* flip from spine */
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden; /* hides backside during flip */
+}
 
-.flip-next { transform: rotateY(-180deg); /* flips left-to-right */ } 
+.flip-next { transform: rotateY(-180deg); /* flips left-to-right */ }
 .flip-prev { transform: rotateY(180deg); /* flips right-to-left */ }
-    
+
 #left-page { transform-origin: right center; /* flips from spine */ }
 #right-page { transform-origin: left center;  /* flips from spine */ }
