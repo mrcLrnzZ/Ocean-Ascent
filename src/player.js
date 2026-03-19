@@ -3,6 +3,7 @@ import { GROUND_Y, PIER_END_X } from './constants.js';
 import { waveSurf } from './environment.js';
 import { Rod } from './fishing.js';
 
+
 export class Player {
     constructor(fishManager) {
         // --- Graphics ---
@@ -61,21 +62,40 @@ export class Player {
         // --- Fishing ---
         this.rod = new Rod(this, fishManager);
 
-        // --- Inventory ---
-        this.inventory = {
-            anchovy: 0, sardine: 0, clownfish: 0,
-            devilfish: 0, swordfish: 0, flowerhead: 0,
-            choifish: 0, pufferfish: 0, turtle: 0,
-            halfmoon: 0, veiltail: 0, anglerfish: 0, doomsdayoarfish: 0,
-            beluga: 0, catfish: 0, kraken: 0
-        };
+        // --- Inventory (Bag) ---
+        // Each entry: { type: string, name: string, hungerValue: number, sellValue: number }
+        this.inventory = [];
+        this.maxInventory = 20; // ← change this to set the bag capacity limit
+
+        // --- Survival System ---
+        this.maxHealth = 10;    // 10 hearts
+        this.health = 10;
+        this.maxHunger = 5;     // 5 hunger units
+        this.hunger = 5;
+
+        // Hunger drain timer (hunger decreases every 30 seconds during play)
+        this._hungerTimer = 0;
+        this._hungerDrainInterval = 2; // seconds between each -0.5 hunger
+        this._hungerDrainAmount = 0.5;
+
+        // Starvation: -0.5 HP every 5 seconds when hunger = 0
+        this._starvationTimer = 0;
+        this._starvationInterval = 5;  // seconds
+        this._starvationDamage = 0.5;
+        this._isStarving = false;
+
+        // Prevent stacking multiple starvation loops
+        this._starvationActive = false;
     }
 
     update(dt, G, boat, fishManager, currentMap = 0) {
+        // --- Survival tick ---
+        this.updateSurvival(dt);
+
         this.lastState = this.isMoving;
         this.isMoving = false;
 
-        const speed = 30;
+        const speed = 300;
 
         if (this.state === 'onBoat' && boat) {
             this.boatRef = boat;
@@ -211,6 +231,147 @@ export class Player {
         } else {
             if (this.frameTimer >= 12) { this.currentFrame = (this.currentFrame + 1) % 4; this.frameTimer = 0; }
         }
+    }
+
+    /**
+     * Survival system update — called every frame (dt in seconds from the game loop).
+     * Handles hunger drain, starvation damage, and death.
+     */
+    updateSurvival(dt) {
+        // --- Hunger drain over time ---
+        this._hungerTimer += dt;
+        if (this._hungerTimer >= this._hungerDrainInterval) {
+            this._hungerTimer = 0;
+            this.hunger = Math.max(0, this.hunger - this._hungerDrainAmount);
+        }
+
+        // --- Starvation mechanic ---
+        if (this.hunger <= 0) {
+            this._isStarving = true;
+            this._starvationTimer += dt;
+            if (this._starvationTimer >= this._starvationInterval) {
+                this._starvationTimer = 0;
+                this.health = Math.max(0, this.health - this._starvationDamage);
+                // Trigger game-over or death when health hits 0
+                if (this.health <= 0) {
+                    this._onDeath();
+                }
+            }
+        } else {
+            // Hunger restored — stop starvation
+            this._isStarving = false;
+            this._starvationTimer = 0;
+        }
+
+        // Update HTML UI survival bars
+        this._updateSurvivalUI();
+    }
+
+    _updateSurvivalUI() {
+        // Throttle DOM rebuild to every ~6 frames (~100ms at 60fps) to stay performant.
+        // We still update the starvation warning each frame.
+        this._survivalUITick = (this._survivalUITick || 0) + 1;
+        const shouldRebuild = this._survivalUITick % 6 === 0;
+
+        // --- Starvation warning (every frame) ---
+        const starvWarn = document.getElementById('starvation-warning');
+        if (starvWarn) starvWarn.style.display = this._isStarving ? 'flex' : 'none';
+
+        if (!shouldRebuild) return;
+
+        // ── HEARTS ────────────────────────────────────────────────────────────
+        // maxHealth = 10  →  10 heart icons, each represents 1 HP
+        // health tracks in 0.5 increments
+        const healthRow = document.getElementById('health-icons');
+        if (healthRow) {
+            let html = '';
+            for (let i = 0; i < this.maxHealth; i++) {
+                // filled fraction for this slot: [i .. i+1]
+                const filled = Math.max(0, Math.min(1, this.health - i));
+                let src;
+                if (filled >= 1)      src = 'assets/fullheart.png';
+                else if (filled >= 0.5) src = 'assets/halftheart.png';   // filename has extra 't'
+                else                   src = 'assets/emptyheart.png';
+                html += `<img src="${src}" class="stat-icon heart-icon" alt="heart" width="25" height="27">`;
+            }
+            healthRow.innerHTML = html;
+        }
+
+        // ── HUNGER ─────────────────────────────────────────────────────────────
+        // maxHunger = 5  →  5 hunger icons, each represents 1 unit
+        // hunger tracks in 0.5 increments
+        const hungerRow = document.getElementById('hunger-icons');
+        if (hungerRow) {
+            let html = '';
+            // Add blink class to the container when hungry/starving
+            let rowClass = 'survival-row';
+            if (this.hunger <= 0)      rowClass += ' hunger-row-empty';
+            else if (this.hunger <= 1) rowClass += ' hunger-row-low';
+            hungerRow.className = rowClass;
+
+            for (let i = 0; i < this.maxHunger; i++) {
+                const filled = Math.max(0, Math.min(1, this.hunger - i));
+                let src;
+                if (filled >= 1)        src = 'assets/fullhunger.png';
+                else if (filled >= 0.5) src = 'assets/halfhunger.png';
+                else                    src = 'assets/emptyhunger.png';
+                html += `<img src="${src}" class="stat-icon hunger-icon" alt="hunger" width="55" height="59">`;
+            }
+            hungerRow.innerHTML = html;
+        }
+    }
+
+    /**
+     * Eat a fish from the inventory by its index.
+     * Restores hunger, removes fish from inventory.
+     */
+    eatFish(index) {
+        if (index < 0 || index >= this.inventory.length) return;
+        const fish = this.inventory[index];
+        const restore = fish.hungerValue || 1;
+        this.hunger = Math.min(this.maxHunger, this.hunger + restore);
+        this.inventory.splice(index, 1);
+        this._updateSurvivalUI();
+        // Re-render bag
+        import('./ui.js').then(m => m.uiManager.renderBag());
+    }
+
+    /**
+     * Sell a fish from the inventory by its index.
+     */
+    sellFish(index) {
+        if (index < 0 || index >= this.inventory.length) return;
+        const fish = this.inventory[index];
+        this.money += fish.sellValue || 0;
+        this.inventory.splice(index, 1);
+        // Re-render bag + HUD
+        import('./ui.js').then(m => {
+            m.uiManager.renderBag();
+            m.uiManager.updateHUD();
+        });
+    }
+
+    _onDeath() {
+        // Stop survival timers so the loop doesn't keep firing
+        this.health   = 0;
+        this._isStarving = false;
+        this._starvationTimer = 0;
+        this._hungerTimer     = 0;
+
+        // Populate stats on the game-over screen
+        const moneyEl = document.getElementById('gameover-money');
+        const fishEl  = document.getElementById('gameover-fish');
+        if (moneyEl) moneyEl.textContent = `💰 Money earned: $${this.money}`;
+        if (fishEl)  fishEl.textContent  = `🎣 Fish in bag: ${this.inventory.length}`;
+
+        // Show the game-over overlay
+        const screen = document.getElementById('gameover-screen');
+        if (screen) {
+            screen.classList.add('visible');
+        }
+
+        // Signal the game loop to pause (checked in main.js)
+        window._gameOver = true;
     }
 
     updateRodSprites() {

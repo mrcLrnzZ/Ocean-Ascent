@@ -73,6 +73,7 @@
 
         <button id="almanac-btn">📖 Almanac</button>
         <button id="fs-btn" title="Toggle Fullscreen">⛶</button>
+        <button id="bag-btn" onclick="openBag()">🎒 Bag</button>
 
         <div id="power-wrap">
             <div class="lbl">PWR</div>
@@ -121,6 +122,30 @@
         <div id="notif"></div>
         <div id="popup"></div>
 
+        <!-- Survival HUD: Health + Hunger (Minecraft-style icon rows) -->
+        <div id="survival-hud">
+            <div class="survival-row" id="health-icons"></div>
+            <div class="survival-row" id="hunger-icons"></div>
+        </div>
+
+        <!-- Starvation Warning Overlay -->
+        <div id="starvation-warning">
+            <div id="starvation-warning-inner">
+                ⚠️ STARVING! Eat a fish!
+            </div>
+        </div>
+
+        <!-- Bag / Inventory Popup -->
+        <div id="bag-popup">
+            <div id="bag-popup-inner">
+                <div id="bag-header">
+                    <h2>🎒 Fish Bag</h2>
+                    <button id="bag-close-btn" onclick="closeBag()">✖ Close</button>
+                </div>
+                <div id="bag-grid"></div>
+            </div>
+        </div>
+
         <!-- Almanac UI -->
         <div id="almanac-popup" class="almanac-container" style="display: none;">
             <div class="almanac-header">
@@ -150,6 +175,23 @@
         <div id="zone-warn">
             <h3>⚠ Danger Zone!</h3>
             <p id="zone-warn-msg"></p>
+        </div>
+
+        <!-- You Starved! Game Over Screen -->
+        <div id="gameover-screen">
+            <div id="gameover-inner">
+                <div id="gameover-skull">💀</div>
+                <h1 id="gameover-title">YOU STARVED</h1>
+                <p id="gameover-msg">You forgot to eat and wasted away at sea.<br>The ocean remembers no empty stomachs.</p>
+                <div id="gameover-stats">
+                    <span id="gameover-money"></span>
+                    <span id="gameover-fish"></span>
+                </div>
+                <div id="gameover-buttons">
+                    <button id="gameover-retry-btn" onclick="gameRetry()">🔄 Retry</button>
+                    <button id="gameover-home-btn"  onclick="gameHome()">🏠 Back to Home</button>
+                </div>
+            </div>
         </div>
     </div>
 

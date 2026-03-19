@@ -393,32 +393,46 @@ export class Rod {
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
-                    // Log catch to Player Inventory
-                    const fishId = this.caughtFish.type;
-                    if (this.player.inventory[fishId] !== undefined) {
-                        this.player.inventory[fishId] += 1;
+                    const fishId   = this.caughtFish.type;
+                    const fishData = SPRITE_DATA[fishId] || {};
+
+                    // --- Bag capacity check ---
+                    if (this.player.inventory.length >= this.player.maxInventory) {
+                        // Bag is full — release the fish and notify
+                        import('./ui.js').then(module => {
+                            module.uiManager.showNotification(`🎒 Bag full! (${this.player.maxInventory}/${this.player.maxInventory}) Eat or sell fish to make room.`, 4000);
+                        });
+                        this.caughtFish.caught = false; // release back into the world
+                        this.caughtFish = null;
+                        this.reset();
+                        return;
                     }
 
-                    // Add money from fish price
-                    const fishPrice = SPRITE_DATA[fishId]?.price || 10;
-                    this.player.money += fishPrice;
+                    // Log catch to Player Inventory (array bag)
+                    this.player.inventory.push({
+                        type:        fishId,
+                        name:        fishData.name        || fishId,
+                        hungerValue: fishData.hungerValue || 1,
+                        sellValue:   fishData.price       || 10,
+                        rarity:      fishData.rarity      || 'common',
+                    });
 
                     this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
-                    console.log(`Landed a ${this.caughtFish.type}! Earned $${fishPrice}`);
+                    console.log(`Landed a ${this.caughtFish.type}! Added to bag. (${this.player.inventory.length}/${this.player.maxInventory})`);
                     audio.play('success');
                     setTimeout(() => {
                         this.reset();
                     }, 100);
-                    // Update caught notification ui
-                    // uiManager.showNotification(`Caught a ${this.caughtFish.name}!`); // you can enable this later
 
-                    // Update HUD to reflect new total catch count and money
+                    // Update HUD to reflect new total catch count
                     import('./ui.js').then(module => {
                         module.uiManager.updateHUD();
+                        module.uiManager.renderBag();
                     });
 
                     this.caughtFish = null;
                 }
+
                 this.reset();
             } else {
                 const angle = Math.atan2(dy, dx);

@@ -12,9 +12,13 @@ export class UIManager {
         this.isOpen = false;
 
         // Define missing functions correctly on the window to retain HTML onClick handlers
-        window.buyBoat = this.buyBoat.bind(this);
-        window.buyRod = this.buyRod.bind(this);
-        window.closeUI = this.closeUI.bind(this);
+        window.buyBoat  = this.buyBoat.bind(this);
+        window.buyRod   = this.buyRod.bind(this);
+        window.closeUI  = this.closeUI.bind(this);
+        window.openBag  = this.openBag.bind(this);
+        window.closeBag = this.closeBag.bind(this);
+        window.eatFish  = (index) => { if (this.player) this.player.eatFish(index); };
+        window.sellFish = (index) => { if (this.player) this.player.sellFish(index); };
         
         this.almanac = new AlmanacManager(this);
     }
@@ -35,16 +39,11 @@ export class UIManager {
     updateHUD() {
         if (!this.player) return;
         document.getElementById('h-money').textContent = `$${this.player.money}`;
-        document.getElementById('h-rod').textContent = rodNames[this.player.rodLevel];
-        document.getElementById('h-boat').textContent = this.player.boatLevel === 0 ? "None" : `Level ${this.player.boatLevel} Boat`;
+        document.getElementById('h-rod').textContent   = rodNames[this.player.rodLevel];
+        document.getElementById('h-boat').textContent  = this.player.boatLevel === 0 ? "None" : `Level ${this.player.boatLevel} Boat`;
 
-        // Calculate total catches from inventory
-        let totalCaught = 0;
-        if (this.player.inventory) {
-            for (let count of Object.values(this.player.inventory)) {
-                totalCaught += count;
-            }
-        }
+        // Total catches from array inventory
+        const totalCaught = Array.isArray(this.player.inventory) ? this.player.inventory.length : 0;
         document.getElementById('h-catch').textContent = `${totalCaught} fish`;
     }
 
@@ -129,6 +128,72 @@ export class UIManager {
         document.getElementById('popup').style.display = 'none';
         setTimeout(() => this.isOpen = false, 100);
         audio.play('click');
+    }
+
+    /** Open the bag (fish inventory) popup */
+    openBag() {
+        if (this.isOpen) return;  // block if another popup is open
+        this.isOpen = true;
+        this.renderBag();
+        document.getElementById('bag-popup').style.display = 'flex';
+        audio.play('click');
+    }
+
+    /** Close the bag popup */
+    closeBag() {
+        document.getElementById('bag-popup').style.display = 'none';
+        setTimeout(() => this.isOpen = false, 100);
+        audio.play('click');
+    }
+
+    /** Render bag contents into the bag-popup element */
+    renderBag() {
+        if (!this.player) return;
+        const grid = document.getElementById('bag-grid');
+        if (!grid) return;
+
+        const inv    = this.player.inventory;
+        const max    = this.player.maxInventory || 20;
+        const isFull = inv.length >= max;
+
+        // Update header title with capacity counter
+        const titleEl = document.querySelector('#bag-header h2');
+        if (titleEl) {
+            const countColor = isFull ? '#ff6666' : 'rgba(180, 255, 150, 0.9)';
+            titleEl.innerHTML = `🎒 Fish Bag <span style="font-size:13px; color:${countColor};">(${inv.length}/${max})</span>`;
+        }
+
+        if (!inv || inv.length === 0) {
+            grid.innerHTML = '<div class="bag-empty">Your bag is empty.<br>Go catch some fish! 🎣</div>';
+            return;
+        }
+
+
+        const rarityColors = {
+            common:    '#a0c8ff',
+            uncommon:  '#88ff99',
+            rare:      '#aa88ff',
+            epic:      '#ffaa44',
+            legendary: '#ffd700',
+        };
+
+        grid.innerHTML = inv.map((fish, i) => {
+            const color  = rarityColors[fish.rarity] || '#ccc';
+            const rLabel = fish.rarity ? fish.rarity.charAt(0).toUpperCase() + fish.rarity.slice(1) : '';
+            return `
+            <div class="bag-item" id="bag-item-${i}">
+                <div class="bag-item-name" style="color:${color}">${fish.name}</div>
+                <div class="bag-item-rarity" style="color:${color}">${rLabel}</div>
+                <div class="bag-item-stats">
+                    <span>🍖 +${fish.hungerValue}</span>
+                    <span>💰 $${fish.sellValue}</span>
+                </div>
+                <div class="bag-item-actions">
+                    <button class="bag-eat-btn"   onclick="eatFish(${i})">🍽 Eat</button>
+                    <button class="bag-sell-btn"  onclick="sellFish(${i})">💵 Sell</button>
+                </div>
+            </div>`;
+        }).join('');
     }
 
     updateDepthMeter(cameraCenterY, waterY, getDepthEndLineFunc) {
