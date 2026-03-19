@@ -75,8 +75,8 @@ const levelDistributions = {
         { type: 'halfmoon', prob: 0.10 }
     ],
     4: [ // Trench
-        { type: 'halfmoon', prob: 0.20 },
-        { type: 'pufferfish', prob: 0.20 },
+        { type: 'orca', prob: 0.20 },
+        { type: 'shark', prob: 0.20 },
         { type: 'veiltail', prob: 0.20 },
         { type: 'doomsdayoarfish', prob: 0.20 },
         { type: 'anglerfish', prob: 0.15 },

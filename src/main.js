@@ -55,7 +55,11 @@ startBtn.addEventListener('click', () => {
         const introVideo = document.getElementById('introVideo');
         const gameCanvas = document.getElementById('gameCanvas');
 
-        introVideo.style.display = 'block';
+ const banana = false;
+
+        if (banana) {
+         
+              introVideo.style.display = 'block';
         gameCanvas.style.display = 'none';
         homepage.style.display = 'none';
 
@@ -67,6 +71,21 @@ startBtn.addEventListener('click', () => {
             gameCanvas.style.display = 'block';
             requestAnimationFrame(loop);
         }, { once: true });
+
+        }else{
+            introVideo.style.display = 'none';
+        homepage.style.display = 'none';
+            gameCanvas.style.display = 'block';
+            requestAnimationFrame(loop);
+            
+        }
+
+      
+
+       
+
+
+
     }
 });
 
