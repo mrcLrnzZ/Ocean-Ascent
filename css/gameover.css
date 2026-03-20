@@ -1,0 +1,152 @@
+/* ============================================================
+   GAME OVER — YOU STARVED SCREEN
+   ============================================================ */
+#gameover-screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+    pointer-events: all;
+}
+
+#gameover-screen.visible {
+    display: flex;
+    background: rgba(5, 0, 12, 0.82);
+    backdrop-filter: blur(10px);
+    animation: go-fade-in 0.5s ease forwards;
+}
+
+@keyframes go-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+#gameover-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    background: linear-gradient(160deg, rgba(30, 5, 5, 0.97) 0%, rgba(18, 0, 0, 0.97) 100%);
+    border: 2px solid rgba(200, 50, 50, 0.5);
+    border-radius: 20px;
+    padding: 44px 56px 40px;
+    max-width: 480px;
+    width: 90vw;
+    box-shadow: 0 0 60px rgba(180, 0, 0, 0.35), 0 16px 48px rgba(0,0,0,0.7);
+    animation: go-slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes go-slide-up {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+#gameover-skull {
+    font-size: 80px;
+    line-height: 1;
+    filter: drop-shadow(0 0 24px rgba(255, 50, 50, 0.65));
+    animation: skull-pulse 2s ease-in-out infinite;
+}
+
+@keyframes skull-pulse {
+    0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 20px rgba(255,50,50,0.55)); }
+    50%       { transform: scale(1.08); filter: drop-shadow(0 0 38px rgba(255,80,80,0.85)); }
+}
+
+#gameover-title {
+    font-family: 'upheaval', cursive;
+    font-size: 48px;
+    color: #cc2222;
+    text-shadow: 0 0 24px rgba(255, 40, 40, 0.7), 0 4px 8px rgba(0,0,0,0.8);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin: 0;
+    animation: title-flicker 3s ease-in-out infinite;
+}
+
+@keyframes title-flicker {
+    0%, 100% { opacity: 1; }
+    92%       { opacity: 1; }
+    93%       { opacity: 0.6; }
+    94%       { opacity: 1; }
+    96%       { opacity: 0.7; }
+    97%       { opacity: 1; }
+}
+
+#gameover-msg {
+    font-family: 'upheaval', cursive;
+    font-size: 13px;
+    color: rgba(200, 160, 160, 0.8);
+    text-align: center;
+    line-height: 1.8;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+#gameover-stats {
+    display: flex;
+    gap: 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(200, 80, 80, 0.25);
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-family: 'upheaval', cursive;
+    font-size: 13px;
+    color: rgba(220, 200, 200, 0.85);
+    letter-spacing: 0.5px;
+}
+
+#gameover-buttons {
+    display: flex;
+    gap: 14px;
+    margin-top: 6px;
+}
+
+#gameover-retry-btn,
+#gameover-home-btn {
+    font-family: 'upheaval', cursive;
+    font-size: 14px;
+    padding: 12px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    pointer-events: all;
+}
+
+#gameover-retry-btn {
+    background: linear-gradient(135deg, rgba(30, 80, 40, 0.95) 0%, rgba(20, 60, 30, 0.95) 100%);
+    border: 2px solid rgba(80, 200, 100, 0.6);
+    color: rgba(140, 255, 150, 0.9);
+    box-shadow: 0 4px 18px rgba(40, 160, 60, 0.25);
+}
+
+#gameover-retry-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(60, 200, 80, 0.4);
+    filter: brightness(1.15);
+}
+
+#gameover-retry-btn:active {
+    transform: translateY(0);
+}
+
+#gameover-home-btn {
+    background: linear-gradient(135deg, rgba(25, 45, 80, 0.95) 0%, rgba(18, 32, 65, 0.95) 100%);
+    border: 2px solid rgba(80, 140, 220, 0.55);
+    color: rgba(130, 190, 255, 0.9);
+    box-shadow: 0 4px 18px rgba(40, 80, 180, 0.2);
+}
+
+#gameover-home-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(60, 120, 220, 0.35);
+    filter: brightness(1.15);
+}
+
+#gameover-home-btn:active {
+    transform: translateY(0);
+}
