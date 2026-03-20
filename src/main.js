@@ -16,8 +16,6 @@ import { RadioManager } from './radio.js';
 export const audio = new AudioManager();
 export const radio = new RadioManager();
 
-audio.play("ocean");
-
 
 let gameStarted = false;
 let audioStarted = false;
@@ -160,6 +158,7 @@ updateWeatherDisplay();
 function loop(timestamp) {
     frame++;
 
+    audio.play("ocean");
     // Real delta time in seconds (capped at 0.1s to prevent large jumps on tab-switch)
     if (_lastTime === null) _lastTime = timestamp;
     const dt = Math.min((timestamp - _lastTime) / 1000, 0.1);

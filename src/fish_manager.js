@@ -9,7 +9,7 @@ export class FishManager {
     }
 
     spawnInitialFish() {
-        const fishPerLevel = 90; // Amount of fish to spawn per depth level per map
+        const fishPerLevel = 200; // Amount of fish to spawn per depth level per map
 
         for (const map of MAPS) {
             const mapId = map.id;
@@ -28,9 +28,15 @@ export class FishManager {
                     // X spawn range varies per map — map 0 (shore) stays near origin,
                     // later maps extend far into the world
                     const groundX = getDeepSoilX(y);
-                    const mapStartX = mapId === 0 ? 0 : 0;   // all maps share one world-space
-                    const xRange = 8000 - groundX;
-                    const x = groundX + 100 + Math.random() * xRange;
+
+                    const margin = 200;      // avoid edges
+                    const safeOffset = 80;   // avoid terrain
+
+                    const minX = Math.max(groundX + safeOffset, margin);
+                    const maxX = map.length - margin;
+                    // prevent negative range edge case
+                    if (maxX <= minX) continue;
+                    const x = Math.random() * (maxX - minX) + minX;
 
                     const type = getSpawnType(mapId, depth);
                     if (!type) continue; // no entry for this map/depth combo — skip
@@ -81,14 +87,14 @@ const mapSpawnTable = {
     // ── MAP 0: Shore ─────────────────────────────────────────────────────────
     0: {
         1: [ // Surface — very shallow, common schooling fish
-            { type: 'anchovy',   prob: 0.55 },
-            { type: 'sardine',   prob: 0.35 },
-            { type: 'clownfish', prob: 0.10 }
+            { type: 'anchovy',   prob: 0.34 },
+            { type: 'sardine',   prob: 0.33 },
+            { type: 'clownfish', prob: 0.33 }
         ],
         2: [ // Mid-water — slightly deeper, still safe
-            { type: 'sardine',   prob: 0.40 },
-            { type: 'clownfish', prob: 0.35 },
-            { type: 'devilfish', prob: 0.25 }
+            { type: 'sardine',   prob: 0.20 },
+            { type: 'clownfish', prob: 0.40 },
+            { type: 'devilfish', prob: 0.40 }
         ]
         // Depths 3-5 are not accessible on Shore (maxDepth: 2)
     },
@@ -102,8 +108,8 @@ const mapSpawnTable = {
             { type: 'bluetang',  prob: 0.25 }
         ],
         2: [ // Shallows
-            { type: 'sardine',    prob: 0.25 },
-            { type: 'clownfish',  prob: 0.25 },
+            { type: 'sardine',    prob: 0.10 },
+            { type: 'clownfish',  prob: 0.40 },
             { type: 'devilfish',  prob: 0.30 },
             { type: 'swordfish',  prob: 0.20 }
         ],
@@ -116,8 +122,8 @@ const mapSpawnTable = {
         ],
         4: [ // Deep Trench
             { type: 'turtle',     prob: 0.25 },
-            { type: 'shark',      prob: 0.30 },
-            { type: 'flowerhead', prob: 0.20 },
+            { type: 'shark',      prob: 0.20 },
+            { type: 'flowerhead', prob: 0.30 },
             { type: 'choifish',   prob: 0.25 }
         ],
         5: [ // Deep — NO abyssal legendaries yet on Map 1
@@ -130,32 +136,34 @@ const mapSpawnTable = {
     // ── MAP 2: Ocean 2 ───────────────────────────────────────────────────────
     2: {
         1: [ // Surface
-            { type: 'sardine',    prob: 0.40 },
-            { type: 'clownfish',  prob: 0.30 },
-            { type: 'devilfish',  prob: 0.30 }
+            { type: 'sardine',    prob: 0.34 },
+            { type: 'clownfish',  prob: 0.33 },
+            { type: 'devilfish',  prob: 0.33 }
         ],
         2: [ // Shallows
-            { type: 'devilfish',  prob: 0.30 },
-            { type: 'swordfish',  prob: 0.35 },
-            { type: 'flowerhead', prob: 0.35 }
+            { type: 'devilfish',  prob: 0.20 },
+            { type: 'swordfish',  prob: 0.25 },
+            { type: 'flowerhead', prob: 0.25 },
+            { type: 'choifish',   prob: 0.30 }
         ],
         3: [ // Mid-Deep
-            { type: 'flowerhead', prob: 0.25 },
+            { type: 'flowerhead', prob: 0.30 },
             { type: 'choifish',   prob: 0.25 },
             { type: 'turtle',     prob: 0.25 },
-            { type: 'shark',      prob: 0.25 }
+            { type: 'shark',      prob: 0.20 }
         ],
         4: [ // Trench — epic fish start appearing
             { type: 'shark',            prob: 0.25 },
-            { type: 'orca',             prob: 0.20 },
-            { type: 'veiltail',         prob: 0.25 },
-            { type: 'doomsdayoarfish',  prob: 0.30 }
+            { type: 'orca',             prob: 0.15 },
+            { type: 'veiltail',         prob: 0.30 },
+            { type: 'doomsdayoarfish',  prob: 0.15 },
+            { type: 'halfmoon',          prob: 0.15 }
         ],
         5: [ // Abyss — dangerous, but Kraken not yet here
-            { type: 'anglerfish',       prob: 0.30 },
-            { type: 'doomsdayoarfish',  prob: 0.25 },
-            { type: 'veiltail',         prob: 0.20 },
-            { type: 'catfish',          prob: 0.25 }
+            { type: 'anglerfish',       prob: 0.35 },
+            { type: 'doomsdayoarfish',  prob: 0.20 },
+            { type: 'veiltail',         prob: 0.25 },
+            { type: 'catfish',          prob: 0.20 }
         ]
     },
 
@@ -180,17 +188,17 @@ const mapSpawnTable = {
             { type: 'doomsdayoarfish',  prob: 0.25 }
         ],
         4: [ // Trench — heavy predators
-            { type: 'orca',             prob: 0.25 },
-            { type: 'veiltail',         prob: 0.20 },
+            { type: 'orca',             prob: 0.20 },
+            { type: 'veiltail',         prob: 0.25 },
             { type: 'anglerfish',       prob: 0.25 },
             { type: 'doomsdayoarfish',  prob: 0.20 },
             { type: 'beluga',           prob: 0.10 }
         ],
         5: [ // Abyss — full legendary spawns, Kraken exclusive to Map 3 Depth 5
-            { type: 'anglerfish',  prob: 0.20 },
-            { type: 'beluga',      prob: 0.20 },
-            { type: 'catfish',     prob: 0.20 },
-            { type: 'kraken',      prob: 0.40 }  // Kraken ONLY spawns here
+            { type: 'anglerfish',  prob: 0.30 },
+            { type: 'beluga',      prob: 0.25 },
+            { type: 'catfish',     prob: 0.30 },
+            { type: 'kraken',      prob: 0.15 }  // Kraken ONLY spawns here
         ]
     },
 

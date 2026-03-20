@@ -72,7 +72,7 @@ export const THEMES = {
 };
 
 // Level Distance Configuration
-export const SHORE_LEVEL_LENGTH = 1500;
+export const SHORE_LEVEL_LENGTH = 5000;
 export const LEVEL_1_LENGTH = 10000;
 export const LEVEL_2_LENGTH = 10000;
 export const LEVEL_3_LENGTH = 20000;
