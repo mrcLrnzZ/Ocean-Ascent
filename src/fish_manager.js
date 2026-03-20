@@ -87,12 +87,13 @@ const mapSpawnTable = {
     // ── MAP 0: Shore ─────────────────────────────────────────────────────────
     0: {
         1: [ // Surface — very shallow, common schooling fish
-            { type: 'anchovy',   prob: 0.34 },
-            { type: 'sardine',   prob: 0.33 },
-            { type: 'clownfish', prob: 0.33 }
+            { type: 'anchovy',   prob: 0.42 },
+            { type: 'flowerhead',   prob: 0.28 },
+            { type: 'clownfish', prob: 0.30 },
+            { type: 'bluetang',   prob: 0.10 } 
         ],
         2: [ // Mid-water — slightly deeper, still safe
-            { type: 'sardine',   prob: 0.20 },
+            { type: 'bluetang',   prob: 0.20 },
             { type: 'clownfish', prob: 0.40 },
             { type: 'devilfish', prob: 0.40 }
         ]
@@ -103,12 +104,11 @@ const mapSpawnTable = {
     1: {
         1: [ // Surface
             { type: 'anchovy',    prob: 0.40 },
-            { type: 'sardine',    prob: 0.35 },
+            { type: 'bluetang',    prob: 0.35 },
             { type: 'clownfish',  prob: 0.25 },
-            { type: 'bluetang',  prob: 0.25 }
         ],
         2: [ // Shallows
-            { type: 'sardine',    prob: 0.10 },
+            { type: 'bluetang',    prob: 0.10 },
             { type: 'clownfish',  prob: 0.40 },
             { type: 'devilfish',  prob: 0.30 },
             { type: 'swordfish',  prob: 0.20 }
@@ -116,9 +116,9 @@ const mapSpawnTable = {
         3: [ // Mid-Deep
             { type: 'swordfish',  prob: 0.30 },
             { type: 'flowerhead', prob: 0.30 },
-            { type: 'choifish',   prob: 0.25 },
+            { type: 'choifish',   prob: 0.30 },
             { type: 'turtle',     prob: 0.15 },
-            { type: 'sunfish',  prob: 0.25 }
+            { type: 'sunfish',  prob: 0.20 }
         ],
         4: [ // Deep Trench
             { type: 'turtle',     prob: 0.25 },
@@ -136,7 +136,7 @@ const mapSpawnTable = {
     // ── MAP 2: Ocean 2 ───────────────────────────────────────────────────────
     2: {
         1: [ // Surface
-            { type: 'sardine',    prob: 0.34 },
+            { type: 'bluetang',    prob: 0.34 },
             { type: 'clownfish',  prob: 0.33 },
             { type: 'devilfish',  prob: 0.33 }
         ],
@@ -170,7 +170,7 @@ const mapSpawnTable = {
     // ── MAP 3: Ocean 3 ───────────────────────────────────────────────────────
     3: {
         1: [ // Surface (night sky)
-            { type: 'sardine',    prob: 0.35 },
+            { type: 'bluetang',    prob: 0.35 },
             { type: 'clownfish',  prob: 0.25 },
             { type: 'devilfish',  prob: 0.25 },
             { type: 'swordfish',  prob: 0.15 }
@@ -188,11 +188,12 @@ const mapSpawnTable = {
             { type: 'doomsdayoarfish',  prob: 0.25 }
         ],
         4: [ // Trench — heavy predators
-            { type: 'orca',             prob: 0.20 },
-            { type: 'veiltail',         prob: 0.25 },
+            { type: 'orca',             prob: 0.10 },
+            { type: 'veiltail',         prob: 0.30 },
             { type: 'anglerfish',       prob: 0.25 },
             { type: 'doomsdayoarfish',  prob: 0.20 },
-            { type: 'beluga',           prob: 0.10 }
+            { type: 'beluga',           prob: 0.05 },
+            { type: 'sunfish',           prob: 0.10 }
         ],
         5: [ // Abyss — full legendary spawns, Kraken exclusive to Map 3 Depth 5
             { type: 'anglerfish',  prob: 0.30 },
