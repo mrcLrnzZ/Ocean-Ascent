@@ -495,6 +495,7 @@ button:hover {
 }
 
 .radio-btn {
+    opacity: 0;
     background: #151515;
     border: 1px solid #444;
     color: #aaa;
@@ -726,7 +727,7 @@ button:hover {
    ============================================================ */
 #survival-hud {
     position: absolute;
-    bottom: 16px;
+    bottom: 56px;
     left: 16px;
     display: flex;
     flex-direction: column;
@@ -736,7 +737,6 @@ button:hover {
     z-index: 1000;
     padding: 8px 10px;
     backdrop-filter: blur(4px);
-    box-shadow: 0 4px 18px rgba(0, 80, 150, 0.2);
 
     /* ↓↓ SCALE THE HUD HERE ↓↓ — change the number to resize (1 = 100%, 1.5 = 150%, 0.8 = 80%) */
     transform: scale(1.5);
@@ -834,164 +834,164 @@ button:hover {
 /* ============================================================
    BAG POPUP (Inventory)
    ============================================================ */
+/* ============================================================
+   BAG POPUP (Inventory System - 3x2 Grid)
+   ============================================================ */
 #bag-popup {
+    background: url('assets/inventory.png') no-repeat center/contain;
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    display: none;                      /* shown via JS */
+    top: 35%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 600px;
+    display: none;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    image-rendering: pixelated;
     z-index: 2000;
     pointer-events: all;
-    background: rgba(0, 10, 25, 0.65);
-    backdrop-filter: blur(5px);
 }
 
 #bag-popup-inner {
-    background: linear-gradient(135deg, rgba(25, 50, 75, 0.97) 0%, rgba(18, 38, 62, 0.97) 100%);
-    border: 2px solid rgba(100, 200, 255, 0.5);
-    border-radius: 18px;
-    padding: 24px 28px;
-    width: min(680px, 92vw);
-    max-height: 78vh;
+    width: 100%;
+    height: 100%;
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    box-shadow: 0 12px 48px rgba(0, 80, 180, 0.35);
-}
-
-#bag-header {
-    display: flex;
     align-items: center;
-    justify-content: space-between;
 }
 
-#bag-header h2 {
-    font-family: 'upheaval', cursive;
-    font-size: 20px;
-    color: rgba(180, 255, 150, 0.9);
-    text-shadow: 0 0 8px rgba(120, 200, 100, 0.4);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin: 0;
-}
-
-#bag-close-btn {
-    padding: 6px 16px;
-    font-size: 11px;
-    color: rgba(255, 150, 150, 0.9);
-    border-color: rgba(220, 100, 100, 0.5);
-}
-
-#bag-close-btn:hover {
-    background: rgba(90, 30, 30, 0.85);
-    border-color: rgba(255, 120, 120, 0.7);
-    color: #ff8888;
-}
-
-#bag-grid {
-    overflow-y: auto;
+#new-bag-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 12px;
-    padding-right: 4px;
+    grid-template-columns: repeat(3, 200px);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 40px;
+    margin-top: 210px;
+    margin-left: 40px;
+    width: 90%;
 }
 
-#bag-grid::-webkit-scrollbar          { width: 6px; }
-#bag-grid::-webkit-scrollbar-track    { background: rgba(0,0,0,0.2); border-radius: 3px; }
-#bag-grid::-webkit-scrollbar-thumb    { background: rgba(100,180,255,0.4); border-radius: 3px; }
-
-.bag-empty {
-    grid-column: 1 / -1;
-    text-align: center;
-    color: rgba(150, 200, 255, 0.6);
-    font-family: 'upheaval', cursive;
-    font-size: 14px;
-    padding: 40px 0;
-    line-height: 2;
-}
-
-.bag-item {
-    background: rgba(30, 60, 90, 0.7);
-    border: 1px solid rgba(100, 180, 255, 0.3);
-    border-radius: 12px;
-    padding: 14px 12px;
+.inv-slot {
+    width: 210px;
+    height: 140px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px dashed rgba(100, 100, 100, 0.1);
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
 }
 
-.bag-item:hover {
-    border-color: rgba(150, 230, 255, 0.6);
-    box-shadow: 0 4px 18px rgba(80, 160, 255, 0.2);
-    transform: translateY(-2px);
+.inv-slot:hover {
+    background: rgba(0, 0, 0, 0.1);
 }
 
-.bag-item-name {
+.inv-slot.active {
+    background: rgba(255, 255, 255, 0.2);
+    border: 3px solid #ffcc00;
+}
+
+.inv-fish-img {
+    width: 100px;
+    height: 100px;
+    image-rendering: pixelated;
+    object-fit: contain;
+}
+
+.inv-fish-qty {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
     font-family: 'upheaval', cursive;
-    font-size: 13px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 0 #000;
 }
 
-.bag-item-rarity {
-    font-family: 'upheaval', cursive;
-    font-size: 10px;
-    opacity: 0.8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+#eat-sell-panel {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2001;
 }
 
-.bag-item-stats {
+#eat-sell-bg {
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    position: absolute;
+    top: 0; left: 0;
+    z-index: -1;
+}
+
+.eat-sell-buttons {
+    opacity: 0;
+
     display: flex;
     justify-content: space-between;
-    font-family: 'upheaval', cursive;
-    font-size: 11px;
-    color: rgba(200, 230, 255, 0.85);
-    margin-top: 2px;
+    width: 90%;
+    height: 90px;
+    margin-top: 15px;
+    gap: 10px;
 }
 
-.bag-item-actions {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-}
-
-.bag-eat-btn,
-.bag-sell-btn {
+.eat-sell-buttons button {
     flex: 1;
-    padding: 5px 0;
-    font-size: 10px;
-    font-family: 'upheaval', cursive;
-    border-radius: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    pointer-events: all;
     cursor: pointer;
 }
 
-.bag-eat-btn {
-    background: linear-gradient(135deg, rgba(40, 80, 50, 0.85) 0%, rgba(30, 65, 40, 0.85) 100%);
-    border: 1px solid rgba(100, 200, 100, 0.5);
-    color: rgba(150, 255, 130, 0.9);
+
+
+#fish-info-panel {
+    border-radius: 10px;
+    padding-top: 0px;
+    margin-top: 25px; /* Reduced to align better with eatselloption.png buttons */
+    width: 105%;
+    padding-right: 20px;
+    margin-left: 90px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 100px;
+    color: #ffd18a;
+    font-family: 'upheaval', cursive;
+    pointer-events: none;
 }
 
-.bag-eat-btn:hover {
-    background: linear-gradient(135deg, rgba(60, 110, 70, 0.95) 0%, rgba(50, 90, 60, 0.95) 100%);
-    border-color: rgba(140, 255, 140, 0.7);
-    color: #aaffaa;
+#info-hunger {
+    font-size: x-large;
+
+    color: #ffaa44;
 }
 
-.bag-sell-btn {
-    background: linear-gradient(135deg, rgba(75, 62, 30, 0.85) 0%, rgba(60, 48, 20, 0.85) 100%);
-    border: 1px solid rgba(200, 160, 60, 0.5);
-    color: rgba(230, 190, 80, 0.9);
+#info-coins {
+    font-size: x-large;
+    color: #ffd700;
 }
 
-.bag-sell-btn:hover {
-    background: linear-gradient(135deg, rgba(100, 82, 40, 0.95) 0%, rgba(80, 65, 30, 0.95) 100%);
-    border-color: rgba(240, 200, 100, 0.7);
-    color: #ffd966;
+#bag-footer {
+    position: absolute;
+    bottom: 40px;
+}
+
+#bag-close-btn {
+        all: unset;
+    transform: translate(320px, -460px);
+    padding: 8px 24px;
+    font-size: xx-large;
+    cursor: pointer;
+    color: rgb(228, 156, 0);
 }
 
 /* ============================================================

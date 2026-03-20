@@ -353,7 +353,7 @@ window.gameRetry = function () {
 
     // Reset position and inventory
     player.x         = 100;
-    player.inventory = [];
+    player.inventory = new Array(6).fill(null);
     player.money     = 2000;
 
     // Reset map & boat

@@ -62,10 +62,10 @@ export class Player {
         // --- Fishing ---
         this.rod = new Rod(this, fishManager);
 
-        // --- Inventory (Bag) ---
-        // Each entry: { type: string, name: string, hungerValue: number, sellValue: number }
-        this.inventory = [];
-        this.maxInventory = 20; // ← change this to set the bag capacity limit
+        // --- Inventory (6 Slots, Stacking) ---
+        // Each slot: null or { type: string, count: number, name: string, hungerValue: number, sellValue: number, rarity: string, almanacSrc: string }
+        this.inventory = new Array(6).fill(null);
+        this.maxSlots = 6;
 
         // --- Survival System ---
         this.maxHealth = 10;    // 10 hearts
@@ -75,7 +75,7 @@ export class Player {
 
         // Hunger drain timer (hunger decreases every 30 seconds during play)
         this._hungerTimer = 0;
-        this._hungerDrainInterval = 2; // seconds between each -0.5 hunger
+        this._hungerDrainInterval = 20; // seconds between each -0.5 hunger
         this._hungerDrainAmount = 0.5;
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
@@ -88,6 +88,80 @@ export class Player {
         this._starvationActive = false;
     }
 
+    /**
+     * Add a fish to the inventory with stacking and 6-slot limit logic.
+     * Returns true if successfully added, false otherwise.
+     */
+    addFish(fishId, fishData) {
+        // 1. Check if it already exists to stack
+        for (let i = 0; i < this.maxSlots; i++) {
+            if (this.inventory[i] && this.inventory[i].type === fishId) {
+                this.inventory[i].count++;
+                return true;
+            }
+        }
+
+        // 2. Not found, find an empty slot
+        for (let i = 0; i < this.maxSlots; i++) {
+            if (this.inventory[i] === null) {
+                this.inventory[i] = {
+                    type: fishId,
+                    count: 1,
+                    name: fishData.name || fishId,
+                    hungerValue: fishData.hungerValue || 1,
+                    sellValue: fishData.price || 10,
+                    rarity: fishData.rarity || 'common',
+                    almanacSrc: fishData.almanacSrc || 'assets/almanac/almanacPlaceholderfish.png'
+                };
+                return true;
+            }
+        }
+
+        // 3. No space
+        return false;
+    }
+
+    /**
+     * Eat a fish from a specific slot index.
+     */
+    eatFish(slotIndex) {
+        const slot = this.inventory[slotIndex];
+        if (!slot) return;
+
+        const restore = slot.hungerValue || 1;
+        this.hunger = Math.min(this.maxHunger, this.hunger + restore);
+        
+        slot.count--;
+        if (slot.count <= 0) {
+            this.inventory[slotIndex] = null;
+        }
+
+        this._updateSurvivalUI();
+        // Re-render inventory
+        import('./ui.js').then(m => m.uiManager.renderBag());
+    }
+
+    /**
+     * Sell a fish from a specific slot index.
+     */
+    sellFish(slotIndex) {
+        const slot = this.inventory[slotIndex];
+        if (!slot) return;
+
+        this.money += slot.sellValue || 0;
+        
+        slot.count--;
+        if (slot.count <= 0) {
+            this.inventory[slotIndex] = null;
+        }
+
+        // Re-render bag + HUD
+        import('./ui.js').then(m => {
+            m.uiManager.renderBag();
+            m.uiManager.updateHUD();
+        });
+    }
+
     update(dt, G, boat, fishManager, currentMap = 0) {
         // --- Survival tick ---
         this.updateSurvival(dt);
@@ -95,7 +169,7 @@ export class Player {
         this.lastState = this.isMoving;
         this.isMoving = false;
 
-        const speed = 300;
+        const speed = 150;
 
         if (this.state === 'onBoat' && boat) {
             this.boatRef = boat;
@@ -166,13 +240,13 @@ export class Player {
             // Map-specific boundaries for walking
             const isEnding = currentMap === 4; // Map 4 is Ending
             let minX = 0;
-            let maxX = PIER_END_X;
+            let maxX = 1100; // PIER_END_X
             if (isEnding) {
                 minX = 2500; // Start of the ending shore/dock area
                 maxX = 4000; // End of map
             }
             this.x = Math.max(minX, Math.min(this.x, maxX));
-            this.y = GROUND_Y - (this.frameH * this.scale);
+            this.y = 500 - (this.frameH * this.scale); // GROUND_Y
 
             // Shore rod depth
             this.rod.sinkDepth = 100;
@@ -319,36 +393,6 @@ export class Player {
             }
             hungerRow.innerHTML = html;
         }
-    }
-
-    /**
-     * Eat a fish from the inventory by its index.
-     * Restores hunger, removes fish from inventory.
-     */
-    eatFish(index) {
-        if (index < 0 || index >= this.inventory.length) return;
-        const fish = this.inventory[index];
-        const restore = fish.hungerValue || 1;
-        this.hunger = Math.min(this.maxHunger, this.hunger + restore);
-        this.inventory.splice(index, 1);
-        this._updateSurvivalUI();
-        // Re-render bag
-        import('./ui.js').then(m => m.uiManager.renderBag());
-    }
-
-    /**
-     * Sell a fish from the inventory by its index.
-     */
-    sellFish(index) {
-        if (index < 0 || index >= this.inventory.length) return;
-        const fish = this.inventory[index];
-        this.money += fish.sellValue || 0;
-        this.inventory.splice(index, 1);
-        // Re-render bag + HUD
-        import('./ui.js').then(m => {
-            m.uiManager.renderBag();
-            m.uiManager.updateHUD();
-        });
     }
 
     _onDeath() {

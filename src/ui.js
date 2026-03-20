@@ -42,8 +42,13 @@ export class UIManager {
         document.getElementById('h-rod').textContent   = rodNames[this.player.rodLevel];
         document.getElementById('h-boat').textContent  = this.player.boatLevel === 0 ? "None" : `Level ${this.player.boatLevel} Boat`;
 
-        // Total catches from array inventory
-        const totalCaught = Array.isArray(this.player.inventory) ? this.player.inventory.length : 0;
+        // Total catches (sum of counts in slots)
+        let totalCaught = 0;
+        if (Array.isArray(this.player.inventory)) {
+            this.player.inventory.forEach(slot => {
+                if (slot) totalCaught += slot.count;
+            });
+        }
         document.getElementById('h-catch').textContent = `${totalCaught} fish`;
     }
 
@@ -134,9 +139,14 @@ export class UIManager {
     openBag() {
         if (this.isOpen) return;  // block if another popup is open
         this.isOpen = true;
+        this.selectedSlot = null;
         this.renderBag();
         document.getElementById('bag-popup').style.display = 'flex';
         audio.play('click');
+
+        // Hide eat/sell panel on open
+        const panel = document.getElementById('eat-sell-panel');
+        if (panel) panel.style.display = 'none';
     }
 
     /** Close the bag popup */
@@ -149,51 +159,67 @@ export class UIManager {
     /** Render bag contents into the bag-popup element */
     renderBag() {
         if (!this.player) return;
-        const grid = document.getElementById('bag-grid');
-        if (!grid) return;
+        const slots = document.querySelectorAll('.inv-slot');
+        if (!slots || slots.length === 0) return;
 
-        const inv    = this.player.inventory;
-        const max    = this.player.maxInventory || 20;
-        const isFull = inv.length >= max;
+        const inv = this.player.inventory;
 
-        // Update header title with capacity counter
-        const titleEl = document.querySelector('#bag-header h2');
-        if (titleEl) {
-            const countColor = isFull ? '#ff6666' : 'rgba(180, 255, 150, 0.9)';
-            titleEl.innerHTML = `🎒 Fish Bag <span style="font-size:13px; color:${countColor};">(${inv.length}/${max})</span>`;
+        slots.forEach((slotEl, i) => {
+            const fish = inv[i];
+            slotEl.innerHTML = '';
+            slotEl.className = fish ? 'inv-slot occupied' : 'inv-slot empty';
+            if (this.selectedSlot === i) slotEl.classList.add('active');
+
+            if (fish) {
+                slotEl.innerHTML = `
+                    <img src="${fish.almanacSrc}" class="inv-fish-img">
+                    <span class="inv-fish-qty">x${fish.count}</span>
+                `;
+            }
+
+            // Remove old listener and add new one
+            slotEl.onclick = () => this.onSlotClick(i);
+        });
+
+        // Update info panel if something is selected
+        if (this.selectedSlot !== null && inv[this.selectedSlot]) {
+            this.updateInfoPanel(inv[this.selectedSlot]);
+        } else {
+            const panel = document.getElementById('eat-sell-panel');
+            if (panel) panel.style.display = 'none';
         }
+    }
 
-        if (!inv || inv.length === 0) {
-            grid.innerHTML = '<div class="bag-empty">Your bag is empty.<br>Go catch some fish! 🎣</div>';
-            return;
+    onSlotClick(index) {
+        const inv = this.player.inventory;
+        const fish = inv[index];
+        
+        if (!fish) {
+            this.selectedSlot = null;
+            document.getElementById('eat-sell-panel').style.display = 'none';
+        } else {
+            this.selectedSlot = index;
+            document.getElementById('eat-sell-panel').style.display = 'flex';
+            this.updateInfoPanel(fish);
         }
+        
+        this.renderBag();
+        audio.play('click');
+    }
 
-
-        const rarityColors = {
-            common:    '#a0c8ff',
-            uncommon:  '#88ff99',
-            rare:      '#aa88ff',
-            epic:      '#ffaa44',
-            legendary: '#ffd700',
+    updateInfoPanel(fish) {
+        document.getElementById('info-hunger').textContent = `+${fish.hungerValue} Hunger`;
+        document.getElementById('info-coins').textContent = `+$${fish.sellValue} Coins`;
+        
+        // Update buttons
+        document.getElementById('eat-btn').onclick = () => {
+            this.player.eatFish(this.selectedSlot);
+            audio.play('click');
         };
-
-        grid.innerHTML = inv.map((fish, i) => {
-            const color  = rarityColors[fish.rarity] || '#ccc';
-            const rLabel = fish.rarity ? fish.rarity.charAt(0).toUpperCase() + fish.rarity.slice(1) : '';
-            return `
-            <div class="bag-item" id="bag-item-${i}">
-                <div class="bag-item-name" style="color:${color}">${fish.name}</div>
-                <div class="bag-item-rarity" style="color:${color}">${rLabel}</div>
-                <div class="bag-item-stats">
-                    <span>🍖 +${fish.hungerValue}</span>
-                    <span>💰 $${fish.sellValue}</span>
-                </div>
-                <div class="bag-item-actions">
-                    <button class="bag-eat-btn"   onclick="eatFish(${i})">🍽 Eat</button>
-                    <button class="bag-sell-btn"  onclick="sellFish(${i})">💵 Sell</button>
-                </div>
-            </div>`;
-        }).join('');
+        document.getElementById('sell-btn').onclick = () => {
+            this.player.sellFish(this.selectedSlot);
+            audio.play('click');
+        };
     }
 
     updateDepthMeter(cameraCenterY, waterY, getDepthEndLineFunc) {

@@ -72,7 +72,6 @@
         </div>
 
         <button id="almanac-btn">📖 Almanac</button>
-        <button id="fs-btn" title="Toggle Fullscreen">⛶</button>
         <button id="bag-btn" onclick="openBag()">🎒 Bag</button>
 
         <div id="power-wrap">
@@ -138,11 +137,34 @@
         <!-- Bag / Inventory Popup -->
         <div id="bag-popup">
             <div id="bag-popup-inner">
-                <div id="bag-header">
-                    <h2>🎒 Fish Bag</h2>
-                    <button id="bag-close-btn" onclick="closeBag()">✖ Close</button>
+                <!-- 3x2 Grid (6 slots) -->
+                <div id="new-bag-grid">
+                    <div class="inv-slot" data-index="0"></div>
+                    <div class="inv-slot" data-index="1"></div>
+                    <div class="inv-slot" data-index="2"></div>
+                    <div class="inv-slot" data-index="3"></div>
+                    <div class="inv-slot" data-index="4"></div>
+                    <div class="inv-slot" data-index="5"></div>
                 </div>
-                <div id="bag-grid"></div>
+
+                <!-- Bag Control -->
+                 <div id="bag-footer">
+                    <button id="bag-close-btn" onclick="closeBag()">✖</button>
+                 </div>
+
+                <!-- Eat/Sell Options Panel (Positioned below inventory) -->
+                <div id="eat-sell-panel" style="display: none;">
+                    <img src="assets/eatselloption.png" id="eat-sell-bg" alt="Options">
+                    <div class="eat-sell-buttons">
+                        <button id="eat-btn">Eat</button>
+                        <button id="sell-btn">Sell</button>
+                    </div>
+                    <!-- Wooden-style info panel below buttons -->
+                    <div id="fish-info-panel">
+                        <div id="info-hunger">+0 Hunger</div>
+                        <div id="info-coins">+0 Coins</div>
+                    </div>
+                </div>
             </div>
         </div>
 

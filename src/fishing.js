@@ -39,7 +39,7 @@ export class Rod {
         this.landedX = null;
         this.landedXOffset = 0;
         this.landedY = null;
-        this.sinkSpeed = 0.8;
+        this.sinkSpeed = 10.8;
         this.sinkDepth = SHORE_LINE_DEPTH;
         this.depthOffset = 0;
         this.maxDepthOffset = 0;
@@ -389,18 +389,20 @@ export class Rod {
             const dist = Math.hypot(dx, dy);
 
             // Dynamic reel speed: faster if empty hook (15), slower if fish caught (3)
-            const reelSpeed = this.caughtFish ? 3 : 10;
+            const reelSpeed = this.caughtFish ? 5 : 10;
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
                     const fishId   = this.caughtFish.type;
                     const fishData = SPRITE_DATA[fishId] || {};
 
-                    // --- Bag capacity check ---
-                    if (this.player.inventory.length >= this.player.maxInventory) {
+                    // --- Bag check ---
+                    const added = this.player.addFish(fishId, fishData);
+                    
+                    if (!added) {
                         // Bag is full — release the fish and notify
                         import('./ui.js').then(module => {
-                            module.uiManager.showNotification(`🎒 Bag full! (${this.player.maxInventory}/${this.player.maxInventory}) Eat or sell fish to make room.`, 4000);
+                            module.uiManager.showNotification(`🎒 Bag full! (6/6) Eat or sell fish to make room.`, 4000);
                         });
                         this.caughtFish.caught = false; // release back into the world
                         this.caughtFish = null;
@@ -408,17 +410,8 @@ export class Rod {
                         return;
                     }
 
-                    // Log catch to Player Inventory (array bag)
-                    this.player.inventory.push({
-                        type:        fishId,
-                        name:        fishData.name        || fishId,
-                        hungerValue: fishData.hungerValue || 1,
-                        sellValue:   fishData.price       || 10,
-                        rarity:      fishData.rarity      || 'common',
-                    });
-
                     this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
-                    console.log(`Landed a ${this.caughtFish.type}! Added to bag. (${this.player.inventory.length}/${this.player.maxInventory})`);
+                    console.log(`Landed a ${this.caughtFish.type}! Added to bag.`);
                     audio.play('success');
                     setTimeout(() => {
                         this.reset();

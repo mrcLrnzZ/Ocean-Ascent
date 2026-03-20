@@ -98,7 +98,8 @@ const mapSpawnTable = {
         1: [ // Surface
             { type: 'anchovy',    prob: 0.40 },
             { type: 'sardine',    prob: 0.35 },
-            { type: 'clownfish',  prob: 0.25 }
+            { type: 'clownfish',  prob: 0.25 },
+            { type: 'bluetang',  prob: 0.25 }
         ],
         2: [ // Shallows
             { type: 'sardine',    prob: 0.25 },
@@ -110,7 +111,8 @@ const mapSpawnTable = {
             { type: 'swordfish',  prob: 0.30 },
             { type: 'flowerhead', prob: 0.30 },
             { type: 'choifish',   prob: 0.25 },
-            { type: 'turtle',     prob: 0.15 }
+            { type: 'turtle',     prob: 0.15 },
+            { type: 'sunfish',  prob: 0.25 }
         ],
         4: [ // Deep Trench
             { type: 'turtle',     prob: 0.25 },
