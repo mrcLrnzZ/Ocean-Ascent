@@ -111,6 +111,7 @@ let currentMap = 0;
 let eWasUp = true;
 let rWasUp = true;
 let hasReachedEndingDock = false;
+let _lastTime = null; // for real delta-time
 
 uiManager.init(player, boat);
 
@@ -156,8 +157,13 @@ buildWeatherWeightPanel();
 updateWeatherDisplay();
 
 // 5. MAIN LOOP
-function loop() {
+function loop(timestamp) {
     frame++;
+
+    // Real delta time in seconds (capped at 0.1s to prevent large jumps on tab-switch)
+    if (_lastTime === null) _lastTime = timestamp;
+    const dt = Math.min((timestamp - _lastTime) / 1000, 0.1);
+    _lastTime = timestamp;
 
     // Game state object
     const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame, currentMap };
@@ -165,10 +171,10 @@ function loop() {
     // --- UPDATE LOGIC ---
     boat.update(G, rodMerchant);
     WeatherSystem.update(frame, audio);
-    player.update(1, G, boat, fishManager, currentMap);
+    player.update(dt, G, boat, fishManager, currentMap);
     fishManager.update();                    // all fish update
     boatMerchant.update();
-    rodMerchant.update(boat, frame);
+    rodMerchant.update(boat, frame, currentMap);
     effectManager.update();
 
     // --- MAP TRANSITIONS & BOUNDARIES ---
@@ -187,7 +193,7 @@ function loop() {
 
             // Auto-disembark merchant when boat stops at the final dock
             if (rodMerchant.onBoat) {
-                rodMerchant.disembark(5500, true);
+                rodMerchant.disembark(5500, true, currentMap);
             }
         }
     }
@@ -296,7 +302,7 @@ function loop() {
             player.draw(ctx, cameraX);
         }
 
-        if (!rodMerchant.onBoat || rodMerchant.onBoat) {
+        if (rodMerchant.onBoat || rodMerchant.currentMapId === currentMap) {
             rodMerchant.draw(ctx, cameraX, player);
         }
 
@@ -323,12 +329,51 @@ function loop() {
             drawTransition(ctx, transitionManager.progress, transitionManager.direction, transitionManager.sweepDir);
         }
 
-        if (!uiManager.isOpen) {
-            requestAnimationFrame(loop);
-        } else {
+        if (!window._gameOver) {
             requestAnimationFrame(loop);
         }
     } catch (e) {
         console.log(e);
     }
 }
+
+// ── Game-Over helpers (called from gameover-screen buttons) ──────────────────
+window.gameRetry = function () {
+    // Hide screen & clear flag
+    document.getElementById('gameover-screen').classList.remove('visible');
+    window._gameOver = false;
+
+    // Reset player survival
+    player.health           = player.maxHealth;
+    player.hunger           = player.maxHunger;
+    player._hungerTimer     = 0;
+    player._starvationTimer = 0;
+    player._isStarving      = false;
+    player._survivalUITick  = 0;
+
+    // Reset position and inventory
+    player.x         = 100;
+    player.inventory = new Array(6).fill(null);
+    player.money     = 2000;
+
+    // Reset map & boat
+    currentMap = 0;
+    boat.x     = 750;
+    boat.state = 'idle';
+    player.state = 'walking';
+
+    // Reset delta-time so first frame isn't huge
+    _lastTime = null;
+
+    // Update HUD
+    uiManager.updateHUD();
+    uiManager.renderBag();
+
+    // Resume loop
+    requestAnimationFrame(loop);
+};
+
+window.gameHome = function () {
+    // Full page reload — simplest and most reliable way to return to start screen
+    window.location.reload();
+};
