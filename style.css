@@ -495,6 +495,7 @@ button:hover {
 }
 
 .radio-btn {
+    opacity: 0;
     background: #151515;
     border: 1px solid #444;
     color: #aaa;
@@ -719,4 +720,429 @@ button:hover {
 
 .homepage-container.hidden {
     display: none;
+}
+
+/* ============================================================
+   SURVIVAL HUD  (Minecraft-style icon rows)
+   ============================================================ */
+#survival-hud {
+    position: absolute;
+    bottom: 56px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    pointer-events: none;
+    z-index: 1000;
+    padding: 8px 10px;
+    backdrop-filter: blur(4px);
+
+    /* ↓↓ SCALE THE HUD HERE ↓↓ — change the number to resize (1 = 100%, 1.5 = 150%, 0.8 = 80%) */
+    transform: scale(1.5);
+    transform-origin: bottom left;
+}
+
+
+.survival-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Individual icon images */
+.stat-icon {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+    flex-shrink: 0;
+}
+
+/* Heart icons: 25x27 */
+.heart-icon {
+    width: 25px;
+    height: 27px;
+}
+
+/* Hunger icons: 55x59 – scale down to not be massive in the HUD */
+.hunger-icon {
+    width: 27px;   /* display at roughly half the raw size so the row is similar width to hearts */
+    height: 29px;
+}
+
+/* ── Hunger warning blink animations on the row container ── */
+.hunger-row-low {
+    animation: hunger-blink 1s ease-in-out infinite;
+}
+
+.hunger-row-empty {
+    animation: hunger-blink 0.45s ease-in-out infinite;
+}
+
+@keyframes hunger-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+}
+
+
+/* ============================================================
+   STARVATION WARNING OVERLAY
+   ============================================================ */
+#starvation-warning {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: none;               /* shown via JS */
+    align-items: flex-start;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1100;
+}
+
+#starvation-warning-inner {
+    margin-top: 160px;
+    font-family: 'upheaval', cursive;
+    font-size: 22px;
+    color: #ff4400;
+    text-shadow: 0 0 12px rgba(255, 80, 0, 0.9), 0 0 30px rgba(255,40,0,0.5);
+    background: rgba(80, 0, 0, 0.55);
+    border: 2px solid rgba(255, 80, 0, 0.6);
+    border-radius: 12px;
+    padding: 10px 28px;
+    animation: starv-pulse 0.8s ease-in-out infinite;
+    backdrop-filter: blur(4px);
+}
+
+@keyframes starv-pulse {
+    0%, 100% { transform: scale(1);    opacity: 1;   }
+    50%       { transform: scale(1.05); opacity: 0.75; }
+}
+
+/* ============================================================
+   BAG BUTTON
+   ============================================================ */
+#bag-btn {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    margin-left: 110px;
+    transform: translateX(-50%);
+    padding: 4px 14px;
+    font-size: 11px;
+}
+
+/* ============================================================
+   BAG POPUP (Inventory)
+   ============================================================ */
+/* ============================================================
+   BAG POPUP (Inventory System - 3x2 Grid)
+   ============================================================ */
+#bag-popup {
+    background: url('assets/inventory.png') no-repeat center/contain;
+    position: absolute;
+    top: 35%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 600px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    image-rendering: pixelated;
+    z-index: 2000;
+    pointer-events: all;
+}
+
+#bag-popup-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#new-bag-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 40px;
+    margin-top: 210px;
+    margin-left: 40px;
+    width: 90%;
+}
+
+.inv-slot {
+    width: 210px;
+    height: 140px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px dashed rgba(100, 100, 100, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.inv-slot:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.inv-slot.active {
+    background: rgba(255, 255, 255, 0.2);
+    border: 3px solid #ffcc00;
+}
+
+.inv-fish-img {
+    width: 100px;
+    height: 100px;
+    image-rendering: pixelated;
+    object-fit: contain;
+}
+
+.inv-fish-qty {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'upheaval', cursive;
+    text-shadow: 1px 1px 0 #000;
+}
+
+#eat-sell-panel {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2001;
+}
+
+#eat-sell-bg {
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    position: absolute;
+    top: 0; left: 0;
+    z-index: -1;
+}
+
+.eat-sell-buttons {
+    opacity: 0;
+
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    height: 90px;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.eat-sell-buttons button {
+    flex: 1;
+    cursor: pointer;
+}
+
+
+
+#fish-info-panel {
+    border-radius: 10px;
+    padding-top: 0px;
+    margin-top: 25px; /* Reduced to align better with eatselloption.png buttons */
+    width: 105%;
+    padding-right: 20px;
+    margin-left: 90px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 100px;
+    color: #ffd18a;
+    font-family: 'upheaval', cursive;
+    pointer-events: none;
+}
+
+#info-hunger {
+    font-size: x-large;
+
+    color: #ffaa44;
+}
+
+#info-coins {
+    font-size: x-large;
+    color: #ffd700;
+}
+
+#bag-footer {
+    position: absolute;
+    bottom: 40px;
+}
+
+#bag-close-btn {
+        all: unset;
+    transform: translate(320px, -460px);
+    padding: 8px 24px;
+    font-size: xx-large;
+    cursor: pointer;
+    color: rgb(228, 156, 0);
+}
+
+/* ============================================================
+   GAME OVER — YOU STARVED SCREEN
+   ============================================================ */
+#gameover-screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9000;
+    pointer-events: all;
+}
+
+#gameover-screen.visible {
+    display: flex;
+    background: rgba(5, 0, 12, 0.82);
+    backdrop-filter: blur(10px);
+    animation: go-fade-in 0.5s ease forwards;
+}
+
+@keyframes go-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+#gameover-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    background: linear-gradient(160deg, rgba(30, 5, 5, 0.97) 0%, rgba(18, 0, 0, 0.97) 100%);
+    border: 2px solid rgba(200, 50, 50, 0.5);
+    border-radius: 20px;
+    padding: 44px 56px 40px;
+    max-width: 480px;
+    width: 90vw;
+    box-shadow: 0 0 60px rgba(180, 0, 0, 0.35), 0 16px 48px rgba(0,0,0,0.7);
+    animation: go-slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes go-slide-up {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+#gameover-skull {
+    font-size: 80px;
+    line-height: 1;
+    filter: drop-shadow(0 0 24px rgba(255, 50, 50, 0.65));
+    animation: skull-pulse 2s ease-in-out infinite;
+}
+
+@keyframes skull-pulse {
+    0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 20px rgba(255,50,50,0.55)); }
+    50%       { transform: scale(1.08); filter: drop-shadow(0 0 38px rgba(255,80,80,0.85)); }
+}
+
+#gameover-title {
+    font-family: 'upheaval', cursive;
+    font-size: 48px;
+    color: #cc2222;
+    text-shadow: 0 0 24px rgba(255, 40, 40, 0.7), 0 4px 8px rgba(0,0,0,0.8);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin: 0;
+    animation: title-flicker 3s ease-in-out infinite;
+}
+
+@keyframes title-flicker {
+    0%, 100% { opacity: 1; }
+    92%       { opacity: 1; }
+    93%       { opacity: 0.6; }
+    94%       { opacity: 1; }
+    96%       { opacity: 0.7; }
+    97%       { opacity: 1; }
+}
+
+#gameover-msg {
+    font-family: 'upheaval', cursive;
+    font-size: 13px;
+    color: rgba(200, 160, 160, 0.8);
+    text-align: center;
+    line-height: 1.8;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+#gameover-stats {
+    display: flex;
+    gap: 24px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(200, 80, 80, 0.25);
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-family: 'upheaval', cursive;
+    font-size: 13px;
+    color: rgba(220, 200, 200, 0.85);
+    letter-spacing: 0.5px;
+}
+
+#gameover-buttons {
+    display: flex;
+    gap: 14px;
+    margin-top: 6px;
+}
+
+#gameover-retry-btn,
+#gameover-home-btn {
+    font-family: 'upheaval', cursive;
+    font-size: 14px;
+    padding: 12px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    pointer-events: all;
+}
+
+#gameover-retry-btn {
+    background: linear-gradient(135deg, rgba(30, 80, 40, 0.95) 0%, rgba(20, 60, 30, 0.95) 100%);
+    border: 2px solid rgba(80, 200, 100, 0.6);
+    color: rgba(140, 255, 150, 0.9);
+    box-shadow: 0 4px 18px rgba(40, 160, 60, 0.25);
+}
+
+#gameover-retry-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(60, 200, 80, 0.4);
+    filter: brightness(1.15);
+}
+
+#gameover-retry-btn:active {
+    transform: translateY(0);
+}
+
+#gameover-home-btn {
+    background: linear-gradient(135deg, rgba(25, 45, 80, 0.95) 0%, rgba(18, 32, 65, 0.95) 100%);
+    border: 2px solid rgba(80, 140, 220, 0.55);
+    color: rgba(130, 190, 255, 0.9);
+    box-shadow: 0 4px 18px rgba(40, 80, 180, 0.2);
+}
+
+#gameover-home-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(60, 120, 220, 0.35);
+    filter: brightness(1.15);
+}
+
+#gameover-home-btn:active {
+    transform: translateY(0);
 }

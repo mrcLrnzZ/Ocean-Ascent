@@ -12,9 +12,13 @@ export class UIManager {
         this.isOpen = false;
 
         // Define missing functions correctly on the window to retain HTML onClick handlers
-        window.buyBoat = this.buyBoat.bind(this);
-        window.buyRod = this.buyRod.bind(this);
-        window.closeUI = this.closeUI.bind(this);
+        window.buyBoat  = this.buyBoat.bind(this);
+        window.buyRod   = this.buyRod.bind(this);
+        window.closeUI  = this.closeUI.bind(this);
+        window.openBag  = this.openBag.bind(this);
+        window.closeBag = this.closeBag.bind(this);
+        window.eatFish  = (index) => { if (this.player) this.player.eatFish(index); };
+        window.sellFish = (index) => { if (this.player) this.player.sellFish(index); };
         
         this.almanac = new AlmanacManager(this);
     }
@@ -35,15 +39,15 @@ export class UIManager {
     updateHUD() {
         if (!this.player) return;
         document.getElementById('h-money').textContent = `$${this.player.money}`;
-        document.getElementById('h-rod').textContent = rodNames[this.player.rodLevel];
-        document.getElementById('h-boat').textContent = this.player.boatLevel === 0 ? "None" : `Level ${this.player.boatLevel} Boat`;
+        document.getElementById('h-rod').textContent   = rodNames[this.player.rodLevel];
+        document.getElementById('h-boat').textContent  = this.player.boatLevel === 0 ? "None" : `Level ${this.player.boatLevel} Boat`;
 
-        // Calculate total catches from inventory
+        // Total catches (sum of counts in slots)
         let totalCaught = 0;
-        if (this.player.inventory) {
-            for (let count of Object.values(this.player.inventory)) {
-                totalCaught += count;
-            }
+        if (Array.isArray(this.player.inventory)) {
+            this.player.inventory.forEach(slot => {
+                if (slot) totalCaught += slot.count;
+            });
         }
         document.getElementById('h-catch').textContent = `${totalCaught} fish`;
     }
@@ -129,6 +133,93 @@ export class UIManager {
         document.getElementById('popup').style.display = 'none';
         setTimeout(() => this.isOpen = false, 100);
         audio.play('click');
+    }
+
+    /** Open the bag (fish inventory) popup */
+    openBag() {
+        if (this.isOpen) return;  // block if another popup is open
+        this.isOpen = true;
+        this.selectedSlot = null;
+        this.renderBag();
+        document.getElementById('bag-popup').style.display = 'flex';
+        audio.play('click');
+
+        // Hide eat/sell panel on open
+        const panel = document.getElementById('eat-sell-panel');
+        if (panel) panel.style.display = 'none';
+    }
+
+    /** Close the bag popup */
+    closeBag() {
+        document.getElementById('bag-popup').style.display = 'none';
+        setTimeout(() => this.isOpen = false, 100);
+        audio.play('click');
+    }
+
+    /** Render bag contents into the bag-popup element */
+    renderBag() {
+        if (!this.player) return;
+        const slots = document.querySelectorAll('.inv-slot');
+        if (!slots || slots.length === 0) return;
+
+        const inv = this.player.inventory;
+
+        slots.forEach((slotEl, i) => {
+            const fish = inv[i];
+            slotEl.innerHTML = '';
+            slotEl.className = fish ? 'inv-slot occupied' : 'inv-slot empty';
+            if (this.selectedSlot === i) slotEl.classList.add('active');
+
+            if (fish) {
+                slotEl.innerHTML = `
+                    <img src="${fish.almanacSrc}" class="inv-fish-img">
+                    <span class="inv-fish-qty">x${fish.count}</span>
+                `;
+            }
+
+            // Remove old listener and add new one
+            slotEl.onclick = () => this.onSlotClick(i);
+        });
+
+        // Update info panel if something is selected
+        if (this.selectedSlot !== null && inv[this.selectedSlot]) {
+            this.updateInfoPanel(inv[this.selectedSlot]);
+        } else {
+            const panel = document.getElementById('eat-sell-panel');
+            if (panel) panel.style.display = 'none';
+        }
+    }
+
+    onSlotClick(index) {
+        const inv = this.player.inventory;
+        const fish = inv[index];
+        
+        if (!fish) {
+            this.selectedSlot = null;
+            document.getElementById('eat-sell-panel').style.display = 'none';
+        } else {
+            this.selectedSlot = index;
+            document.getElementById('eat-sell-panel').style.display = 'flex';
+            this.updateInfoPanel(fish);
+        }
+        
+        this.renderBag();
+        audio.play('click');
+    }
+
+    updateInfoPanel(fish) {
+        document.getElementById('info-hunger').textContent = `+${fish.hungerValue} Hunger`;
+        document.getElementById('info-coins').textContent = `+$${fish.sellValue} Coins`;
+        
+        // Update buttons
+        document.getElementById('eat-btn').onclick = () => {
+            this.player.eatFish(this.selectedSlot);
+            audio.play('click');
+        };
+        document.getElementById('sell-btn').onclick = () => {
+            this.player.sellFish(this.selectedSlot);
+            audio.play('click');
+        };
     }
 
     updateDepthMeter(cameraCenterY, waterY, getDepthEndLineFunc) {

@@ -86,7 +86,9 @@ export class AlmanacManager {
         }
 
         const data = SPRITE_DATA[fishId];
-        const count = this.uiManager.player.inventory[fishId] || 0;
+        // Inventory is now an array of {type, ...} objects; count matches
+        const inv   = this.uiManager.player.inventory;
+        const count = Array.isArray(inv) ? inv.reduce((sum, f) => sum + (f && f.type === fishId ? f.count : 0), 0) : (inv[fishId] || 0);
         const hasCaught = count > 0;
         const scale = data.scale || 1;
 
@@ -117,6 +119,5 @@ export class AlmanacManager {
             const frame = container.querySelector('.fish-image');
             frame.classList.add(data.rarity); // legendary, epic, etc.
         }
-        console.log(fishId, this.uiManager.player.inventory);
     }
 }

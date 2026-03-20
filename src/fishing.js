@@ -39,7 +39,7 @@ export class Rod {
         this.landedX = null;
         this.landedXOffset = 0;
         this.landedY = null;
-        this.sinkSpeed = 20.8;
+        this.sinkSpeed = 10.8;
         this.sinkDepth = SHORE_LINE_DEPTH;
         this.depthOffset = 0;
         this.maxDepthOffset = 0;
@@ -148,7 +148,19 @@ export class Rod {
                 if (this.angle < minAngle) this.angle = minAngle;
                 if (this.angle > maxAngle) this.angle = maxAngle;
             }
-            if (keys[' ']) this.power = Math.min(this.power + 0.3, this.maxPower);
+            if (keys[' ']) {
+                const isFull = this.player.inventory.every(s => s !== null);
+                if (isFull) {
+                    if (!this._warnedFull) {
+                        import('./ui.js').then(m => m.uiManager.showNotification("🎒 Inventory full! Sell or eat fish first."));
+                        this._warnedFull = true;
+                    }
+                    return;
+                }
+                this.power = Math.min(this.power + 0.3, this.maxPower);
+            } else {
+                this._warnedFull = false;
+            }
 
             if (!keys[' '] && this.power > 0) {
                 const projectedX = originX + Math.cos(this.angle) * this.power * 10;
@@ -389,36 +401,43 @@ export class Rod {
             const dist = Math.hypot(dx, dy);
 
             // Dynamic reel speed: faster if empty hook (15), slower if fish caught (3)
-            const reelSpeed = this.caughtFish ? 53 : 50;
+            const reelSpeed = this.caughtFish ? 5 : 10;
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
-                    // Log catch to Player Inventory
-                    const fishId = this.caughtFish.type;
-                    if (this.player.inventory[fishId] !== undefined) {
-                        this.player.inventory[fishId] += 1;
+                    const fishId   = this.caughtFish.type;
+                    const fishData = SPRITE_DATA[fishId] || {};
+
+                    // --- Bag check ---
+                    const added = this.player.addFish(fishId, fishData);
+                    
+                    if (!added) {
+                        // Bag is full — release the fish and notify
+                        import('./ui.js').then(module => {
+                            module.uiManager.showNotification(`🎒 Bag full! (6/6) Eat or sell fish to make room.`, 4000);
+                        });
+                        this.caughtFish.caught = false; // release back into the world
+                        this.caughtFish = null;
+                        this.reset();
+                        return;
                     }
 
-                    // Add money from fish price
-                    const fishPrice = SPRITE_DATA[fishId]?.price || 10;
-                    this.player.money += fishPrice;
-
                     this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
-                    console.log(`Landed a ${this.caughtFish.type}! Earned $${fishPrice}`);
+                    console.log(`Landed a ${this.caughtFish.type}! Added to bag.`);
                     audio.play('success');
                     setTimeout(() => {
                         this.reset();
                     }, 100);
-                    // Update caught notification ui
-                    // uiManager.showNotification(`Caught a ${this.caughtFish.name}!`); // you can enable this later
 
-                    // Update HUD to reflect new total catch count and money
+                    // Update HUD to reflect new total catch count
                     import('./ui.js').then(module => {
                         module.uiManager.updateHUD();
+                        module.uiManager.renderBag();
                     });
 
                     this.caughtFish = null;
                 }
+
                 this.reset();
             } else {
                 const angle = Math.atan2(dy, dx);

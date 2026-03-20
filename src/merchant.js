@@ -17,6 +17,7 @@ export class Merchant {
         this.frameTimer = 0;
         this.interactionRadius = 150;
         this.facing = 1;
+        this.isVisible = true;
     }
 
     update() {
@@ -34,6 +35,7 @@ export class Merchant {
     }
 
     draw(ctx, cx, player) {
+        if (!this.isVisible) return;
         if (!this.img.complete || this.img.naturalWidth === 0) {
             ctx.fillStyle = this.type === "boat" ? "purple" : "blue";
             ctx.fillRect(this.x - cx, this.y - (this.frameH * this.scale), this.frameW * this.scale, this.frameH * this.scale);
@@ -88,26 +90,30 @@ export class RodMerchant extends Merchant {
         this.disembarkState = 'idle'; // 'idle', 'waiting', 'walking'
         this.disembarkWaitTimer = 0;
         this.hasLeftPermanently = false;
+        this.currentMapId = 0; // The map they are currently stationed on
     }
 
-    disembark(targetX, shouldWait = false) {
+    disembark(targetX, shouldWait = false, mapId = 0) {
         this.onBoat = false;
         this.disembarked = true;
         this.targetDisembarkX = targetX;
         this.y = GROUND_Y;
+        this.currentMapId = mapId;
         
         if (shouldWait) {
             this.disembarkState = 'waiting';
             this.disembarkWaitTimer = 120; // 2 seconds at 60fps
             this.img = this.idleImg;
             this.hasLeftPermanently = true; // Mark as permanent exit
+            // They are leaving from the current map they disembarked on
         } else {
             this.disembarkState = 'walking';
         }
     }
 
 
-    update(boat, frame) {
+    update(boat, frame, mapId = 0) {
+        this.currentMap = mapId; // Just for knowing what map player is on if needed
         if (this.onBoat) {
             const bounds = boat.getBounds();
             // Middle of the boat
@@ -158,6 +164,9 @@ export class RodMerchant extends Merchant {
                     this.targetDisembarkX = null;
                     this.disembarkState = 'idle';
                     this.img = this.idleImg;
+                    if (this.hasLeftPermanently) {
+                        this.isVisible = false; // Thanos snap, Vanish forever
+                    }
                 }
             }
         } else if (boat.isPurchased && !this.hasLeftPermanently) {
