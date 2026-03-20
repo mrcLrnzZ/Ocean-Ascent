@@ -1,5 +1,5 @@
 // src/fish.js
-import { getDeepSoilY, getDeepSoilX } from './constants.js';
+import { getDeepSoilY, getDeepSoilX, MAPS } from './constants.js';
 
 export const SPRITE_DATA = {
     
@@ -99,9 +99,12 @@ export class Fish {
         this.speed += (this.targetSpeed - this.speed) * 0.05;
 
         // X Movement Boundaries (Let them go far into the map)
-        if (this.x < 100) {
+        const mapLength = MAPS[this.mapId].length;
+        const margin = 100;
+
+        if (this.x < margin) {
             this.direction = 1;
-        } else if (this.x > 8000) {
+        } else if (this.x > mapLength - margin) {
             this.direction = -1;
         }
 
