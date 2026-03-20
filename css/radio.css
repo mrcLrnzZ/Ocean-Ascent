@@ -118,12 +118,22 @@
 }
 
 #radio-toggle-btn {
+    all: unset;
+    background-color: #bd6b00;
+    color: #3a2300;
+font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     position: absolute;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
     bottom: 12px;
     right: 250px;
-    padding: 6px 14px;
-    font-size: 12px;
+    padding: 0px 14px;
+    font-size: 22px;
+    opacity: 0.5;
+    transform: translateY(20px);
+    height: 40px;
     z-index: 1001;
+    pointer-events: all;
 }
 
 #introVideo {

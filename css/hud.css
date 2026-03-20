@@ -169,7 +169,7 @@
    ============================================================ */
 #survival-hud {
     position: absolute;
-    bottom: 56px;
+    bottom: 16px;
     left: 16px;
     display: flex;
     flex-direction: column;
@@ -204,7 +204,7 @@
 /* Heart icons: 25x27 */
 .heart-icon {
     width: 25px;
-    height: 27px;
+    height: 24px;
 }
 
 /* Hunger icons: 55x59 – scale down to not be massive in the HUD */
