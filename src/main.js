@@ -16,8 +16,6 @@ import { RadioManager } from './radio.js';
 export const audio = new AudioManager();
 export const radio = new RadioManager();
 
-audio.play("ocean");
-
 
 let gameStarted = false;
 let audioStarted = false;
@@ -159,6 +157,7 @@ updateWeatherDisplay();
 function loop() {
     frame++;
 
+    audio.play("ocean");
     // Game state object
     const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame, currentMap };
 

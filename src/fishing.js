@@ -39,7 +39,7 @@ export class Rod {
         this.landedX = null;
         this.landedXOffset = 0;
         this.landedY = null;
-        this.sinkSpeed = 0.8;
+        this.sinkSpeed = 20.8;
         this.sinkDepth = SHORE_LINE_DEPTH;
         this.depthOffset = 0;
         this.maxDepthOffset = 0;
@@ -389,7 +389,7 @@ export class Rod {
             const dist = Math.hypot(dx, dy);
 
             // Dynamic reel speed: faster if empty hook (15), slower if fish caught (3)
-            const reelSpeed = this.caughtFish ? 3 : 10;
+            const reelSpeed = this.caughtFish ? 53 : 50;
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
