@@ -148,7 +148,19 @@ export class Rod {
                 if (this.angle < minAngle) this.angle = minAngle;
                 if (this.angle > maxAngle) this.angle = maxAngle;
             }
-            if (keys[' ']) this.power = Math.min(this.power + 0.3, this.maxPower);
+            if (keys[' ']) {
+                const isFull = this.player.inventory.every(s => s !== null);
+                if (isFull) {
+                    if (!this._warnedFull) {
+                        import('./ui.js').then(m => m.uiManager.showNotification("🎒 Inventory full! Sell or eat fish first."));
+                        this._warnedFull = true;
+                    }
+                    return;
+                }
+                this.power = Math.min(this.power + 0.3, this.maxPower);
+            } else {
+                this._warnedFull = false;
+            }
 
             if (!keys[' '] && this.power > 0) {
                 const projectedX = originX + Math.cos(this.angle) * this.power * 10;
