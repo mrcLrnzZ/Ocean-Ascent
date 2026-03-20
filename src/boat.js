@@ -12,7 +12,7 @@ export class Boat {
         this.img = new Image();
         this.img.src = 'assets/boatlvl1.png';
 
-        this.floorYOffset = 150; // Adjust this to move player up/down on boat deck
+        this.floorYOffset = 140; // Adjust this to move player up/down on boat deck
 
         this.isPurchased = false;
         this.level = 0;
@@ -24,9 +24,30 @@ export class Boat {
     setLevel(lvl) {
         this.isPurchased = true;
         this.level = lvl;
-        if (lvl === 1) { this.img.src = 'assets/boatlvl1.png'; this.speed = 20; }
-        if (lvl === 2) { this.img.src = 'assets/boatlvl2.png'; this.speed = 8; }
-        if (lvl === 3) { this.img.src = 'assets/boatlvl3.png'; this.speed = 30; }
+        if (lvl === 1) { 
+            this.img.src = 'assets/boatlvl1.png'; 
+            this.speed = 20;
+            this.scale = 6;
+            this.width = 80;
+            this.height = 40;
+            this.floorYOffset = 140;
+        }
+        if (lvl === 2) { 
+            this.img.src = 'assets/boatlvl2.png'; 
+            this.speed = 8;
+            this.scale = 4;
+            this.width = 128;
+            this.height = 128;
+            this.floorYOffset = 370;
+        }
+        if (lvl === 3) { 
+            this.img.src = 'assets/boatlvl3.png'; 
+            this.speed = 30;
+            this.scale = 6;
+            this.width = 128;
+            this.height = 128;
+            this.floorYOffset = 500;
+        }
     }
 
     getBounds() {
