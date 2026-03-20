@@ -209,7 +209,12 @@ function loop(timestamp) {
         if (player.state === 'walking') {
             if (boat.isPurchased && Math.abs(player.x - boat.x) < 200) {
                 player.state = 'onBoat';
-                player.x = boat.x + (boat.width * boat.scale) / 2;
+                // Position player at front for boat 3, center for others
+                if (boat.level === 3) {
+                    player.x = boat.x + (boat.width * boat.scale) * 0.75;
+                } else {
+                    player.x = boat.x + (boat.width * boat.scale) / 2;
+                }
                 uiManager.showNotification("You are on the boat. [E] to Fish/Sail, [R] to Disembark.");
             }
         } else if (player.state === 'onBoat') {
