@@ -88,7 +88,7 @@ export class AlmanacManager {
         const data = SPRITE_DATA[fishId];
         // Inventory is now an array of {type, ...} objects; count matches
         const inv   = this.uiManager.player.inventory;
-        const count = Array.isArray(inv) ? inv.filter(f => f.type === fishId).length : (inv[fishId] || 0);
+        const count = Array.isArray(inv) ? inv.reduce((sum, f) => sum + (f && f.type === fishId ? f.count : 0), 0) : (inv[fishId] || 0);
         const hasCaught = count > 0;
         const scale = data.scale || 1;
 
