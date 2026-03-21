@@ -46,7 +46,7 @@ export class Boat {
             this.scale = 6;
             this.width = 128;
             this.height = 128;
-            this.floorYOffset = 500;
+            this.floorYOffset = 530;
         }
     }
 
