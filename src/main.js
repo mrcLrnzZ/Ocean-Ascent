@@ -42,6 +42,7 @@ HomeWeather.init();
 startBtn.addEventListener('click', () => {
     if (!gameStarted) {
         gameStarted = true;
+        uiManager.isOpen = false;
         HomeWeather.stop(); // Stops homepage rain/lightning
 
         // Stop all homepage sounds while video plays
@@ -114,9 +115,7 @@ let _lastTime = null; // for real delta-time
 uiManager.init(player, boat);
 
 // 3. INPUT LISTENERS
-window.addEventListener('keydown', e => {
-    if (!uiManager.isOpen) keys[e.key] = true;
-});
+window.addEventListener('keydown', e => keys[e.key] = true);
 window.addEventListener('keyup', e => keys[e.key] = false);
 
 // Debug Camera logic
@@ -165,7 +164,12 @@ function loop(timestamp) {
     _lastTime = timestamp;
 
     // Game state object
-    const G = { keys: transitionManager.active ? {} : keys, state: player.state || 'walking', frame, currentMap };
+    const G = { 
+        keys: (transitionManager.active || uiManager.isOpen) ? {} : keys, 
+        state: player.state || 'walking', 
+        frame, 
+        currentMap 
+    };
 
     // --- UPDATE LOGIC ---
     boat.update(G, rodMerchant);

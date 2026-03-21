@@ -80,7 +80,7 @@ export class Player {
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 1;  // seconds
+        this._starvationInterval = 100000;  // seconds
         this._starvationDamage = 1.5;
         this._isStarving = false;
 
