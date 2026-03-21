@@ -252,12 +252,15 @@ export class Rod {
 
                 this.y = WATER_Y + this.depthOffset;
 
-                // Deep soil slope bound
-                const groundY = getDeepSoilY(this.x);
-                if (this.y >= groundY) {
-                    this.y = groundY;
-                    this.depthOffset = this.y - WATER_Y;
-                    this.isSinking = false; // hit the ground, stop sinking
+                // Deep soil slope bound - Only on maps WITH a dock (like shore/ending)
+                const mapData = MAPS[currentMap];
+                if (mapData && mapData.hasDock) {
+                    const groundY = getDeepSoilY(this.x);
+                    if (this.y >= groundY) {
+                        this.y = groundY;
+                        this.depthOffset = this.y - WATER_Y;
+                        this.isSinking = false; // hit the ground, stop sinking
+                    }
                 }
 
                 this.landedY = this.y;
@@ -295,10 +298,13 @@ export class Rod {
                 this.y = WATER_Y + this.depthOffset;
 
                 // Deep soil slope bound
-                const groundY = getDeepSoilY(this.x);
-                if (this.y >= groundY) {
-                    this.y = groundY;
-                    this.depthOffset = this.y - WATER_Y;
+                const mapData = MAPS[currentMap];
+                if (mapData && mapData.hasDock) {
+                    const groundY = getDeepSoilY(this.x);
+                    if (this.y >= groundY) {
+                        this.y = groundY;
+                        this.depthOffset = this.y - WATER_Y;
+                    }
                 }
 
                 this.landedY = this.y;

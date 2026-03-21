@@ -25,17 +25,15 @@ export class Player {
         this.rodLevel = 1;
         this.updateRodSprites();
 
-        // Throw spritesheet: varies, 94px tall, each frame 127px wide
         this.throwFrameW = 127;
         this.throwFrameH = 94;
         this.throwFrameCount = 10;
         this.throwspeed = 1;
 
-        // Fish-idle spritesheet: 508x94, 4 frames (127px each)
-        this.fishIdleFrameW = 127; // 508 / 4
+        this.fishIdleFrameW = 127; 
         this.fishIdleFrameH = 94;
         this.fishIdleFrameCount = 4;
-        this.fishIdleFrameSpeed = 10; // ticks per frame (~6 fps)
+        this.fishIdleFrameSpeed = 10; 
         this.isFishIdle = false;
         this.fishIdleFrame = 0;
         this.fishIdleTimer = 0;
@@ -45,25 +43,20 @@ export class Player {
         this.isMoving = false;
         this.lastState = false;
 
-        // Throw animation state
         this.isThrowAnim = false;
         this.throwFrame = 0;
         this.throwTimer = 0;
-        // 1 second total / 10 frames = 6 ticks per frame at 60fps
-        this.throwFrameDuration = Math.ceil((this.throwspeed * 60) / this.throwFrameCount); // 6 ticks
-        // Pending cast data stored when spacebar released, used after anim
+        this.throwFrameDuration = Math.ceil((this.throwspeed * 60) / this.throwFrameCount); 
         this._pendingCast = null;
 
         // --- Game state ---
-        this.state = 'walking'; // 'walking', 'onBoat'
-        this.money = 20;
+        this.state = 'walking'; 
+        this.money = 20000;
         this.boatLevel = 0;
 
         // --- Fishing ---
         this.rod = new Rod(this, fishManager);
 
-        // --- Inventory (6 Slots, Stacking) ---
-        // Each slot: null or { type: string, count: number, name: string, hungerValue: number, sellValue: number, rarity: string, almanacSrc: string }
         this.inventory = new Array(6).fill(null);
         this.maxSlots = 6;
 
@@ -75,12 +68,12 @@ export class Player {
 
         // Hunger drain timer (hunger decreases every 30 seconds during play)
         this._hungerTimer = 0;
-        this._hungerDrainInterval = 1; // seconds between each -0.5 hunger
+        this._hungerDrainInterval = 100000; // seconds between each -0.5 hunger
         this._hungerDrainAmount = 1.5;
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 100000;  // seconds
+        this._starvationInterval = 1;  // seconds
         this._starvationDamage = 1.5;
         this._isStarving = false;
 
@@ -404,11 +397,11 @@ export class Player {
 
         // Populate stats on the game-over screen
         const moneyEl = document.getElementById('gameover-money');
-        if (moneyEl) moneyEl.textContent = `💰 Money earned: $${this.money}`;
+        if (moneyEl) moneyEl.textContent = `Money earned: $${this.money}`;
         const fishEl = document.getElementById('gameover-fish');
         if (fishEl) {
             const count = this.inventory.filter(slot => slot !== null).length;
-            fishEl.textContent = `🎣 Fish in bag: ${count}`;
+            fishEl.textContent = `Fish in bag: ${count}`;
         }
 
         // Show the game-over overlay

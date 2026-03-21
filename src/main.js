@@ -3,7 +3,7 @@ import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, dra
 import { Player } from './player.js';
 import { Merchant, RodMerchant } from './merchant.js';
 import { Boat } from './boat.js';
-import { GROUND_Y, WATER_Y, W, H, getDepthEndLine } from './constants.js';
+import { GROUND_Y, WATER_Y, W, H, getDepthEndLine, MAPS } from './constants.js';
 import { debugCam, toggleDebugCam } from './debugcam.js';
 import { FishManager } from './fish_manager.js';
 import { uiManager } from './ui.js';
@@ -73,10 +73,14 @@ startBtn.addEventListener('click', () => {
 
         }else{
             introVideo.style.display = 'none';
-        homepage.style.display = 'none';
+            homepage.style.display = 'none';
             gameCanvas.style.display = 'block';
-            requestAnimationFrame(loop);
+            
+            // Show initial map notification
+            const initialMap = MAPS[0];
+            uiManager.showLevelPopup(initialMap.name);
 
+            requestAnimationFrame(loop);
         }
 
 
@@ -192,7 +196,7 @@ function loop(timestamp) {
             boat.x = 2900;
             boat.state = 'idle';
             hasReachedEndingDock = true;
-            uiManager.showNotification("You've reached the end. [R] to Disembark.");
+            uiManager.showNotification("You've reached the end. Congrats!");
 
             // Auto-disembark merchant when boat stops at the final dock
             if (rodMerchant.onBoat) {
@@ -223,21 +227,26 @@ function loop(timestamp) {
             }
         } else if (player.state === 'onBoat') {
             const isEnding = currentMap === 4;
-            const dockX = isEnding ? 2600 : 750;
-            const walkMin = isEnding ? 2500 : 0;
-            const walkMax = isEnding ? 4500 : 1100;
+            const hasDock = MAPS[currentMap].hasDock;
+            const dockX = isEnding ? 2900 : 750; // Align with Constants/RenderMap dock positions
 
-            // Allow disembark if boat is near dock
-            if (Math.abs(boat.x - dockX) < 300 && boat.state === 'idle') {
+            // Allow disembark if boat is near dock AND the map actually has a dock
+            if (hasDock && Math.abs(boat.x - dockX) < 500 && boat.state === 'idle') {
                 player.state = 'walking';
+                
                 // Move player to ground area near boat
+                const walkMin = isEnding ? 2500 : 0;
+                const walkMax = isEnding ? 4500 : 1100;
                 player.x = isEnding ? (boat.x + 200) : 950;
                 player.x = Math.max(walkMin, Math.min(player.x, walkMax));
 
                 uiManager.showNotification("Disembarked boat.");
+            } else if (!hasDock) {
+                uiManager.showNotification("");
             }
         }
     }
+
 
     if (ePressedNow && !uiManager.isOpen) {
         audio.play('opentrade');

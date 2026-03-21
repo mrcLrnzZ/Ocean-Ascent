@@ -10,6 +10,7 @@ export const rodNames = ["", "Bamboo Rod", "Fiberglass Rod", "Graphite Rod", "Ca
 export class UIManager {
     constructor() {
         this.isOpen = false;
+        this.currentDepthLevel = 1;
 
         // Define missing functions correctly on the window to retain HTML onClick handlers
         window.buyBoat  = this.buyBoat.bind(this);
@@ -281,18 +282,44 @@ export class UIManager {
                 }
 
                 depthMeter.textContent = `Depth: ${metersDeep}m (Level ${levelNum})`;
+
+                // Show level change notification
+               
             } else {
                 depthMeter.style.display = 'none';
             }
         }
     }
 
+
+
+
     showNotification(msg, duration = 3000) {
         const notif = document.getElementById('notif');
         if (notif) {
             notif.textContent = msg;
             notif.style.opacity = "1";
-            setTimeout(() => notif.style.opacity = "0", duration);
+            
+            if (this.notifTimeout) clearTimeout(this.notifTimeout);
+            this.notifTimeout = setTimeout(() => {
+                notif.style.opacity = "0";
+            }, duration);
+        }
+    }
+
+    showLevelPopup(title, duration = 4000) {
+        const notif = document.getElementById('level-notif');
+        if (notif) {
+            notif.innerHTML = `<div style="font-size: 16px; opacity: 0.8; margin-bottom: 5px; letter-spacing: 5px; font-weight: 100;">NOW ENTERING</div>
+                               <div style="font-size: 48px; text-transform: uppercase; font-weight: bold;">${title}</div>`;
+            notif.classList.add('show');
+
+            if (this.levelNotifTimeout) clearTimeout(this.levelNotifTimeout);
+
+            this.levelNotifTimeout = setTimeout(() => {
+                notif.classList.remove('show');
+                setTimeout(() => { if (!notif.classList.contains('show')) notif.innerHTML = ""; }, 1200);
+            }, duration);
         }
     }
 }

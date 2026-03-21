@@ -42,7 +42,7 @@ export class Boat {
         }
         if (lvl === 3) { 
             this.img.src = 'assets/boatlvl3.png'; 
-            this.speed = 30;
+            this.speed = 300;
             this.scale = 6;
             this.width = 128;
             this.height = 128;
