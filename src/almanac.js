@@ -27,30 +27,36 @@ export class AlmanacManager {
     }
 
     changeAlmanacPage(dir) {
-    const left = document.getElementById('left-page');
-    const right = document.getElementById('right-page');
+        if ((this.almanacPage + dir) < 0 || (this.almanacPage + dir) > this.maxPage) return;
 
-    // Determine which page should flip
+        const left = document.getElementById('left-page');
+        const right = document.getElementById('right-page');
+
+        // Apply flip classes and z-index to bring the flipping page on top
         if (dir > 0) {
+            right.style.zIndex = "10";
             right.classList.add('flip-next');
         } else if (dir < 0) {
+            left.style.zIndex = "10";
             left.classList.add('flip-prev');
         }
 
-    // Delay page content update until flip animation completes
-    setTimeout(() => {
-        this.almanacPage += dir;
-        if (this.almanacPage < 0) this.almanacPage = 0;
-        if (this.almanacPage > this.maxPage) this.almanacPage = this.maxPage;
-        this.renderAlmanacPage();
+        // Half-way through (90 deg), update the content so it's "ready" when it finishes
+        setTimeout(() => {
+            this.almanacPage += dir;
+            this.renderAlmanacPage();
+        }, 400); 
 
-        // Clean up classes after animation
-        left.classList.remove('flip-prev', 'flip-next');
-        right.classList.remove('flip-next', 'flip-prev');
-    }, 800); // match your CSS transition duration
+        // Animation done
+        setTimeout(() => {
+            left.classList.remove('flip-prev', 'flip-next');
+            right.classList.remove('flip-next', 'flip-prev');
+            left.style.zIndex = "1";
+            right.style.zIndex = "1";
+        }, 800); 
 
-    audio.play('nextpage');
-}
+        audio.play('nextpage');
+    }
 
     renderAlmanacPage() {
         const leftPage = document.getElementById('left-page');
