@@ -227,18 +227,22 @@ function loop(timestamp) {
             }
         } else if (player.state === 'onBoat') {
             const isEnding = currentMap === 4;
-            const dockX = isEnding ? 2600 : 750;
-            const walkMin = isEnding ? 2500 : 0;
-            const walkMax = isEnding ? 4500 : 1100;
+            const hasDock = MAPS[currentMap].hasDock;
+            const dockX = isEnding ? 2900 : 750; // Align with Constants/RenderMap dock positions
 
-            // Allow disembark if boat is near dock
-            if (Math.abs(boat.x - dockX) < 300 && boat.state === 'idle') {
+            // Allow disembark if boat is near dock AND the map actually has a dock
+            if (hasDock && Math.abs(boat.x - dockX) < 500 && boat.state === 'idle') {
                 player.state = 'walking';
+                
                 // Move player to ground area near boat
+                const walkMin = isEnding ? 2500 : 0;
+                const walkMax = isEnding ? 4500 : 1100;
                 player.x = isEnding ? (boat.x + 200) : 950;
                 player.x = Math.max(walkMin, Math.min(player.x, walkMax));
 
                 uiManager.showNotification("Disembarked boat.");
+            } else if (!hasDock) {
+                uiManager.showNotification("");
             }
         }
     }
