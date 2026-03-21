@@ -135,7 +135,7 @@ export class Boat {
                 const isAtEndingDock = Math.abs(this.x - 2600) < 200;
                 const isAtStartingDock = Math.abs(this.x - 750) < 100;
                 if (isAtEndingDock || isAtStartingDock) {
-                    ctx.fillText("Press [R] to Disembark", screenX + bounds.width / 2, floatingY - 20);
+                    ctx.fillText("Press [R] to Disembark", screenX + bounds.width / 2, floatingY - 60);
                 }
             }
         } else if (Math.abs(player.x - this.x) < 100 && player.state === 'walking') {

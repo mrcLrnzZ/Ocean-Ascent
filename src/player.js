@@ -56,7 +56,7 @@ export class Player {
 
         // --- Game state ---
         this.state = 'walking'; // 'walking', 'onBoat'
-        this.money = 2000;
+        this.money = 20;
         this.boatLevel = 0;
 
         // --- Fishing ---
