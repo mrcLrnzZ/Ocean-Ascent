@@ -8,166 +8,335 @@
     overflow: hidden;
     z-index: 9999;
     pointer-events: all;
-    background: linear-gradient(180deg, #0a1e3a 0%, #1a3a5a 30%, #2a4a7a 50%, #1a3a5a 70%, #0a1e3a 100%);
+    background-color: #1a6fa0; /* Fallback ocean color to prevent any brown showing */
 }
 
-.ocean{
+/* Parallax Layer Setup */
+.parallax-layer {
     position: absolute;
-    bottom: 0;
     left: 0;
-    width: 100%;
-    height: 150%;
-    background-repeat: no-repeat;
-    background-position: bottom;
-    background-size: contain;
-    z-index: 4;
-}
-
-.mountain{
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 200%;
-    background-repeat: no-repeat;
-    background-position: bottom;
-    background-size: contain;
-    z-index: 3;
-}
-
-.sky{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 45%;
-    background-repeat:repeat;
-    background-position: top;
-    background-size: auto 100%;
-    z-index: 1;
-}
-
-.backmountain {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 70%;
+    width: 200vw;
+    height: 135vh; /* 5vh overfill at bottom */
     background-repeat: repeat-x;
-    background-position: top;
+    background-position: bottom center !important;
     background-size: auto 100%;
+    pointer-events: none;
+    will-change: transform;
+}
+
+@keyframes scrollParallax {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.layer-0 {
+    z-index: 1;
+    width: 150vw;
+    height: 110vh;
+    background-image: url('../assets/0_ocean_sky_and_sun.png');
+    background-size: cover !important;
+    background-position: center bottom !important;
+    image-rendering: auto;
+    animation: none;
+}
+
+.layer-mountains {
     z-index: 2;
+    height: 110vh;
+
+    animation: scrollParallax 30s linear infinite;
+}
+
+.layer-clouds {
+    height: 170vh;
+    z-index: 3;
+    background-position: top !important;
+    /* Clouds are in sky */
+    background-size: auto 50%;
+    animation: scrollParallax 60s linear infinite;
+}
+
+/* FIX: Sea layer anchored to bottom to cover brown strip */
+.layer-sea {
+    z-index: 4;
+    top: auto; /* Override the inherited -30vh top */
+    bottom: -150px; /* Anchor flush to bottom, slight overflow to eliminate gap */
+    height: 105vh; /* Tall enough to fill from horizon down */
+    width: 200vw;
+    background-size: cover !important;
+    background-position: bottom center !important;
+    animation: scrollParallax 5s linear infinite;
+}
+
+/* Boat and Fisherman Floating Animation */
+.home-boat-container {
+    position: absolute;
+    bottom: 15%; /* Higher visually for balance on horizon */
+    left: 30%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 240px;
+    height: 200px;
+    pointer-events: none;
+    animation: floatBoat 4s ease-in-out infinite;
+}
+
+.home-boat {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+    z-index: 10;
+    scale: 1.5;
+    transform: translate(-20vh, 5vh);
+}
+
+.home-fisherman {
+    position: absolute;
+    bottom: 70%;
+    /* Positioned on the boat */
+    left: 185%;
+    width: 60px;
+    /* Adjust based on original scale */
+    height: 60px;
+    transform: translate(-8vh, 1vh);
+    overflow: hidden;
+    scale: 5;
+    /* Hide other frames */
+}
+
+.fisherman-sprite {
+    height: 100%;
+    width: 240px;
+    /* 4 frames * 60px */
+    image-rendering: pixelated;
+    animation: playSprite 1s steps(4) infinite;
+}
+
+@keyframes floatBoat {
+    0% {
+        transform: translateX(-50%) translateY(0) rotate(-1deg);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-10px) rotate(1deg);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0) rotate(-1deg);
+    }
+}
+
+@keyframes playSprite {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-240px);
+    }
+
+    /* Shifts the entire 4-frame width over */
+}
+
+/* Water Waves Overlay */
+.water-waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(to top, rgba(255, 160, 60, 0.4) 0%, rgba(255, 160, 60, 0) 100%);
+    z-index: 6;
+    pointer-events: none;
+    animation: waveOpacity 10s ease-in-out infinite;
+}
+
+@keyframes waveOpacity {
+
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 0.9;
+    }
 }
 
 .homepage-content {
     position: absolute;
-    top: 50%;
+    top: 38%;
+    /* Raised higher so it doesn't obstruct the boat below */
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
     z-index: 100;
     pointer-events: all;
-}
-
-/* Weather Effects */
-.weather-effects {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 99;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-#rain-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 99;
-    pointer-events: none;
-}
-
-.rain-container {
-    display: none;
-}
-
-#lightning-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 100;
-    pointer-events: none;
-    background: rgba(255, 255, 255, 0);
-    animation: none;
-}
-
-#lightning-overlay.lightning-flash {
-    animation: lightningFlash 0.15s ease-out;
-}
-
-@keyframes lightningFlash {
-    0% {
-        background: rgba(255, 255, 255, 0);
-    }
-    50% {
-        background: rgba(255, 255, 255, 0.8);
-    }
-    100% {
-        background: rgba(255, 255, 255, 0);
-    }
-}
-
-.lightning-overlay {
-    display: block;
-}
-
-.storm-overlay {
-    display: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    /* prevent overflow on small screens */
 }
 
 .game-title {
-    margin-top: 5px;
+    position: relative;
     font-family: 'upheaval', cursive;
-    font-size: 224px;
-    color: #1100ff;
-    text-shadow: 4px 9px 4px rgb(0, 0, 0);
-    margin-bottom: 50px;
-    letter-spacing: 10px;
+    font-size: clamp(50px, 12vw, 220px);
+    color: #dff6ff;
+    display: inline-block;
+    transform: scaleY(1.5);
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+
+    animation: titlePulse 4s ease-in-out infinite;
+
+    text-shadow:
+        /* blue outline */
+        -3px -3px 0 #0b2a4a,
+         3px -3px 0 #0b2a4a,
+        -3px  3px 0 #0b2a4a,
+         3px  3px 0 #0b2a4a,
+         0   -3px 0 #0b2a4a,
+         0    3px 0 #0b2a4a,
+        -3px  0   0 #0b2a4a,
+         3px  0   0 #0b2a4a,
+
+        /* depth shadow */
+         6px  8px 0 rgba(0, 40, 80, 0.6),
+
+        /* glow */
+         0    0  20px rgba(120, 200, 255, 0.9),
+         0    0  50px rgba(80, 170, 255, 0.7),
+         0    0 100px rgba(40, 140, 255, 0.5);
 }
 
+/* ✨ Shine Effect */
+.game-title::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 
+    font-family: inherit;
+    font-size: inherit;
+    letter-spacing: inherit;
+    transform: scaleY(1.5);
 
-.start-button {
+    background: linear-gradient(
+        110deg,
+        transparent 30%,
+        rgba(200, 240, 255, 0.8) 48%,
+        rgba(255, 255, 255, 0.95) 50%,
+        rgba(200, 240, 255, 0.8) 52%,
+        transparent 70%
+    );
+
+    background-size: 200% 100%;
+    background-repeat: no-repeat;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    opacity: 0;
+    animation: shineSwipe 3s ease-in-out infinite;
+
+    pointer-events: none;
+}
+
+/* ⚡ Shine Animation */
+@keyframes shineSwipe {
+    0% {
+        background-position: -150% 0;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    50% {
+        background-position: 150% 0;
+        opacity: 1;
+    }
+    60% {
+        opacity: 0;
+    }
+    100% {
+        background-position: 150% 0;
+        opacity: 0;
+    }
+}
+
+/* 🌊 Blue Glow Pulse */
+@keyframes titlePulse {
+    0%, 100% {
+        text-shadow:
+            -3px -3px 0 #0b2a4a,  3px -3px 0 #0b2a4a,
+            -3px  3px 0 #0b2a4a,  3px  3px 0 #0b2a4a,
+             0   -3px 0 #0b2a4a,  0    3px 0 #0b2a4a,
+            -3px  0   0 #0b2a4a,  3px  0   0 #0b2a4a,
+             6px  8px 0 rgba(0, 40, 80, 0.6),
+             0    0  20px rgba(120, 200, 255, 0.9),
+             0    0  50px rgba(80, 170, 255, 0.7),
+             0    0 100px rgba(40, 140, 255, 0.5);
+    }
+    50% {
+        text-shadow:
+            -3px -3px 0 #0b2a4a,  3px -3px 0 #0b2a4a,
+            -3px  3px 0 #0b2a4a,  3px  3px 0 #0b2a4a,
+             0   -3px 0 #0b2a4a,  0    3px 0 #0b2a4a,
+            -3px  0   0 #0b2a4a,  3px  0   0 #0b2a4a,
+             6px  8px 0 rgba(0, 40, 80, 0.6),
+             0    0  30px rgba(160, 220, 255, 1),
+             0    0  70px rgba(100, 190, 255, 0.8),
+             0    0 130px rgba(60, 150, 255, 0.6);
+    }
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    transform: translate(30vw,30vh);
+}
+
+.menu-button {
+    all: unset;
     font-family: 'upheaval', cursive;
-    padding: 18px 60px;
-    font-size: 24px;
+    font-size: 104px;
     font-weight: bold;
-    background: rgb(0, 225, 255);
-    border: 3px solid #020066;
-    color: #000000;
+    color: #ffa237; /* Dark brown for contrast on cream */
     cursor: pointer;
     border-radius: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     pointer-events: all;
+    width: 200%;
 }
 
-.start-button:hover {
-    background: linear-gradient(135deg, #6ec5e0 0%, #5eb3d6 50%, #4a9fd8 100%);
-    border-color: #5eb3d6;
+.menu-button:hover {
+    background: linear-gradient(135deg, #04eeff 0%, #0479ff 50%, #003f88 100%);
+    border-color: #ffffff;
+    color: #ffffff;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
     transform: translateY(-2px);
 }
 
-.start-button:active {
+.menu-button:active {
     transform: translateY(0);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }

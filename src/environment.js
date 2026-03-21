@@ -479,9 +479,9 @@ export const WeatherSystem = {
 
 // ── Homepage Weather ──────────────────────────────────────
 const HOME_RAIN_CONFIG = {
-    count: 150,
-    windX: 2,
-    rainAlpha: 0.6,
+    count: 0,
+    windX: 0,
+    rainAlpha: 0,
     dropColor: '#c8dce8'
 };
 

@@ -12,28 +12,33 @@
     font-style: normal;
 }
 
-body {
+html, body {
     background: #000;
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
-    font-family: 'Courier New', monospace;
+    overflow: hidden !important;
+    margin: 0;
+    padding: 0;
+    position: fixed; /* absolute lock */
 }
 
 /* Canvas fills the screen exactly */
 #gameCanvas {
     display: block;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }
 
 #overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     pointer-events: none;
 }
