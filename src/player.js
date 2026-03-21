@@ -75,13 +75,13 @@ export class Player {
 
         // Hunger drain timer (hunger decreases every 30 seconds during play)
         this._hungerTimer = 0;
-        this._hungerDrainInterval = 20; // seconds between each -0.5 hunger
-        this._hungerDrainAmount = 0.5;
+        this._hungerDrainInterval = 1; // seconds between each -0.5 hunger
+        this._hungerDrainAmount = 1.5;
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 5;  // seconds
-        this._starvationDamage = 0.5;
+        this._starvationInterval = 1;  // seconds
+        this._starvationDamage = 1.5;
         this._isStarving = false;
 
         // Prevent stacking multiple starvation loops
@@ -130,7 +130,7 @@ export class Player {
 
         const restore = slot.hungerValue || 1;
         this.hunger = Math.min(this.maxHunger, this.hunger + restore);
-        
+
         slot.count--;
         if (slot.count <= 0) {
             this.inventory[slotIndex] = null;
@@ -149,7 +149,7 @@ export class Player {
         if (!slot) return;
 
         this.money += slot.sellValue || 0;
-        
+
         slot.count--;
         if (slot.count <= 0) {
             this.inventory[slotIndex] = null;
@@ -236,7 +236,7 @@ export class Player {
             }
 
             this.x += this.vx * dt;
-            
+
             // Map-specific boundaries for walking
             const isEnding = currentMap === 4; // Map 4 is Ending
             let minX = 0;
@@ -363,9 +363,9 @@ export class Player {
                 // filled fraction for this slot: [i .. i+1]
                 const filled = Math.max(0, Math.min(1, this.health - i));
                 let src;
-                if (filled >= 1)      src = 'assets/fullheart.png';
+                if (filled >= 1) src = 'assets/fullheart.png';
                 else if (filled >= 0.5) src = 'assets/halftheart.png';   // filename has extra 't'
-                else                   src = 'assets/emptyheart.png';
+                else src = 'assets/emptyheart.png';
                 html += `<img src="${src}" class="stat-icon heart-icon" alt="heart" width="25" height="27">`;
             }
             healthRow.innerHTML = html;
@@ -379,16 +379,16 @@ export class Player {
             let html = '';
             // Add blink class to the container when hungry/starving
             let rowClass = 'survival-row';
-            if (this.hunger <= 0)      rowClass += ' hunger-row-empty';
+            if (this.hunger <= 0) rowClass += ' hunger-row-empty';
             else if (this.hunger <= 1) rowClass += ' hunger-row-low';
             hungerRow.className = rowClass;
 
             for (let i = 0; i < this.maxHunger; i++) {
                 const filled = Math.max(0, Math.min(1, this.hunger - i));
                 let src;
-                if (filled >= 1)        src = 'assets/fullhunger.png';
+                if (filled >= 1) src = 'assets/fullhunger.png';
                 else if (filled >= 0.5) src = 'assets/halfhunger.png';
-                else                    src = 'assets/emptyhunger.png';
+                else src = 'assets/emptyhunger.png';
                 html += `<img src="${src}" class="stat-icon hunger-icon" alt="hunger" width="55" height="59">`;
             }
             hungerRow.innerHTML = html;
@@ -397,16 +397,19 @@ export class Player {
 
     _onDeath() {
         // Stop survival timers so the loop doesn't keep firing
-        this.health   = 0;
+        this.health = 0;
         this._isStarving = false;
         this._starvationTimer = 0;
-        this._hungerTimer     = 0;
+        this._hungerTimer = 0;
 
         // Populate stats on the game-over screen
         const moneyEl = document.getElementById('gameover-money');
-        const fishEl  = document.getElementById('gameover-fish');
         if (moneyEl) moneyEl.textContent = `💰 Money earned: $${this.money}`;
-        if (fishEl)  fishEl.textContent  = `🎣 Fish in bag: ${this.inventory.length}`;
+        const fishEl = document.getElementById('gameover-fish');
+        if (fishEl) {
+            const count = this.inventory.filter(slot => slot !== null).length;
+            fishEl.textContent = `🎣 Fish in bag: ${count}`;
+        }
 
         // Show the game-over overlay
         const screen = document.getElementById('gameover-screen');

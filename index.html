@@ -18,11 +18,23 @@
 <body>
     <!-- Homepage with Parallax -->
     <div id="homepage" class="homepage-container">
-       
-        <div class="mountain" style="background-image: url('assets/sky_front_mountain.png');"></div>
-        <div class="ocean" style="background-image: url('assets/parallax_seav2.png');"></div>
-        <div class="sky" style="background-image: url('assets/sky_clouds.png');"></div>
-        <div class="backmountain" style="background-image: url('assets/sky_back_mountain.png');"></div>
+
+        <!-- Parallax Background Layers -->
+        <div class="parallax-layer layer-0" style="background-image: url('assets/0_ocean_sky_and_sun.png');"></div>
+        <div class="parallax-layer layer-mountains" style="background-image: url('assets/4_ocean_back_mountain.png');"></div>
+        <div class="parallax-layer layer-clouds" style="background-image: url('assets/3_ocean_clouds.png');"></div>
+        <div class="parallax-layer layer-sea" style="background-image: url('assets/1_ocean_sea.png');"></div>
+
+        <!-- Boat and Fisherman -->
+        <div class="home-boat-container">
+            <img src="assets/boatlvl1.png" class="home-boat" alt="Level 1 Boat">
+            <div class="home-fisherman">
+                <img src="assets/Fishermanred_idlev2.png" class="fisherman-sprite" alt="Fisherman">
+            </div>
+        </div>
+
+        <!-- Gentle Water Waves Overlay for immersion -->
+        <div class="water-waves"></div>
 
         <!-- Weather Effects -->
         <canvas id="rain-canvas" class="weather-effects"></canvas>
@@ -31,14 +43,17 @@
         <!-- Homepage Content -->
         <div class="homepage-content">
             <h1 class="game-title">Ocean Ascent</h1>
-            <button id="startBtn" class="start-button">START FISHING</button>
+            <div class="menu-buttons">
+                <button id="startBtn" class="menu-button">[ PLAY ]</button>
+            </div>
         </div>
 
         <!-- Floating particles -->
         <div class="particles"></div>
     </div>
 
-    <video id="introVideo" width="100%" height="100%" style="display:none; position:fixed; top:0; left:0; z-index:100; object-fit:cover;">
+    <video id="introVideo" width="100%" height="100%"
+        style="display:none; position:fixed; top:0; left:0; z-index:100; object-fit:cover;">
         <source src="assets/intro.mp4" type="video/mp4">
     </video>
     <canvas id="gameCanvas"></canvas>
@@ -52,7 +67,7 @@
                     <span id="song-name">Now Playing: Coastal Breeze</span>
                 </div>
             </div>
-            
+
             <img src="assets/radio.png" id="radio-img" alt="Radio">
 
             <!-- Control Buttons -->
@@ -152,9 +167,9 @@
                 </div>
 
                 <!-- Bag Control -->
-                 <div id="bag-footer">
+                <div id="bag-footer">
                     <button id="bag-close-btn" onclick="closeBag()">✖</button>
-                 </div>
+                </div>
 
                 <!-- Eat/Sell Options Panel (Positioned below inventory) -->
                 <div id="eat-sell-panel" style="display: none;">
@@ -181,15 +196,15 @@
 
             <!-- Items rendered here by JS -->
             <!-- <div id="almanac-grid" class="almanac-grid"></div> -->
-                <div id="almanac-book">
-                    <div class="page-wrapper">
-                        <div id="left-page" class="almanac-page"></div>
-                    </div>
-                    
-                    <div class="page-wrapper">
-                        <div id="right-page" class="almanac-page"></div>
-                    </div>
+            <div id="almanac-book">
+                <div class="page-wrapper">
+                    <div id="left-page" class="almanac-page"></div>
                 </div>
+
+                <div class="page-wrapper">
+                    <div id="right-page" class="almanac-page"></div>
+                </div>
+            </div>
 
             <div class="almanac-footer">
                 <button onclick="changeAlmanacPage(-1)" class="page-btn">◀ Prev</button>
@@ -206,16 +221,13 @@
         <!-- You Starved! Game Over Screen -->
         <div id="gameover-screen">
             <div id="gameover-inner">
-                <div id="gameover-skull">💀</div>
-                <h1 id="gameover-title">YOU STARVED</h1>
-                <p id="gameover-msg">You forgot to eat and wasted away at sea.<br>The ocean remembers no empty stomachs.</p>
+                <img src="assets/gameover.png" id="gameover-img" alt="Game Over">
                 <div id="gameover-stats">
                     <span id="gameover-money"></span>
                     <span id="gameover-fish"></span>
                 </div>
                 <div id="gameover-buttons">
-                    <button id="gameover-retry-btn" onclick="gameRetry()">🔄 Retry</button>
-                    <button id="gameover-home-btn"  onclick="gameHome()">🏠 Back to Home</button>
+                    <button id="gameover-home-btn" onclick="gameHome()">Back to Home</button>
                 </div>
             </div>
         </div>

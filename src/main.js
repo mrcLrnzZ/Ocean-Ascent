@@ -342,41 +342,6 @@ function loop(timestamp) {
 }
 
 // ── Game-Over helpers (called from gameover-screen buttons) ──────────────────
-window.gameRetry = function () {
-    // Hide screen & clear flag
-    document.getElementById('gameover-screen').classList.remove('visible');
-    window._gameOver = false;
-
-    // Reset player survival
-    player.health           = player.maxHealth;
-    player.hunger           = player.maxHunger;
-    player._hungerTimer     = 0;
-    player._starvationTimer = 0;
-    player._isStarving      = false;
-    player._survivalUITick  = 0;
-
-    // Reset position and inventory
-    player.x         = 100;
-    player.inventory = new Array(6).fill(null);
-    player.money     = 2000;
-
-    // Reset map & boat
-    currentMap = 0;
-    boat.x     = 750;
-    boat.state = 'idle';
-    player.state = 'walking';
-
-    // Reset delta-time so first frame isn't huge
-    _lastTime = null;
-
-    // Update HUD
-    uiManager.updateHUD();
-    uiManager.renderBag();
-
-    // Resume loop
-    requestAnimationFrame(loop);
-};
-
 window.gameHome = function () {
     // Full page reload — simplest and most reliable way to return to start screen
     window.location.reload();
