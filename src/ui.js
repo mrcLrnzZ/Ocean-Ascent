@@ -49,7 +49,6 @@ export class UIManager {
                 if (slot) totalCaught += slot.count;
             });
         }
-        document.getElementById('h-catch').textContent = `${totalCaught} fish`;
     }
 
     openMerchantUI(type = "boat", keys = null) {
@@ -63,38 +62,72 @@ export class UIManager {
         }
 
         const popup = document.getElementById('popup');
-        let html = `<h2>${type === "boat" ? "Boat Dealer" : "Rod Specialist"}</h2>`;
+        popup.classList.add('dialogue-mode');
+        popup.innerHTML = `<div id="dialogue-text"></div>`;
+        popup.style.display = 'block';
+
+        const textContainer = document.getElementById('dialogue-text');
+
+        let price = null;
+        let nextLevel = null;
+        let textToType = "";
+        let onBuy = null;
 
         if (type === "boat") {
             // Boat Upgrades
             if (this.player.boatLevel < 3) {
-                const nextBoat = this.player.boatLevel + 1;
-                const price = boatPrices[nextBoat];
-                html += `<div class="row">
-                    Level ${nextBoat} Boat - $${price}
-                    <button onclick="buyBoat(${nextBoat}, ${price})" class="gold">Buy</button>
-                </div>`;
+                nextLevel = this.player.boatLevel + 1;
+                price = boatPrices[nextLevel];
+                textToType = `Ah, a sailor! Want to upgrade to a Level ${nextLevel} Boat for $${price}? [Y] Buy   [N] Leave`;
+                onBuy = () => { this.cleanupMerchantUI(); this.buyBoat(nextLevel, price); };
             } else {
-                html += `<div class="row">Boat: Fully Upgraded!</div>`;
+                textToType = `Your boat is fully upgraded! You're a true master of the seas! [N] Leave`;
             }
         } else {
             // Rod Upgrades
             if (this.player.rodLevel < 5) {
-                const nextRod = this.player.rodLevel + 1;
-                const price = rodPrices[nextRod];
-                const name = rodNames[nextRod];
-                html += `<div class="row">
-                    ${name} - $${price}
-                    <button onclick="buyRod(${nextRod}, ${price})" class="gold">Buy</button>
-                </div>`;
+                nextLevel = this.player.rodLevel + 1;
+                price = rodPrices[nextLevel];
+                let name = rodNames[nextLevel];
+                textToType = `Need better gear? I can sell you a ${name} for $${price}.         [Y] Buy   [N] Leave`;
+                onBuy = () => { this.cleanupMerchantUI(); this.buyRod(nextLevel, price); };
             } else {
-                html += `<div class="row">Rod: Fully Upgraded!</div>`;
+                textToType = `You have the best rod I can offer! Good luck out there! [N] Leave`;
             }
         }
 
-        html += `<button onclick="closeUI()" style="margin-top:15px">Close</button>`;
-        popup.innerHTML = html;
-        popup.style.display = 'block';
+        this.cleanupMerchantUI();
+
+        let charIndex = 0;
+        this.typewriterInterval = setInterval(() => {
+            if (charIndex < textToType.length) {
+                textContainer.innerHTML += textToType.charAt(charIndex);
+                charIndex++;
+            } else {
+                clearInterval(this.typewriterInterval);
+            }
+        }, 20);
+
+        this.merchantKeyListener = (e) => {
+            const key = e.key.toLowerCase();
+            if (key === 'y' && onBuy) {
+                onBuy();
+            } else if (key === 'n') {
+                this.closeUI();
+            }
+        };
+        window.addEventListener('keydown', this.merchantKeyListener);
+    }
+
+    cleanupMerchantUI() {
+        if (this.typewriterInterval) {
+            clearInterval(this.typewriterInterval);
+            this.typewriterInterval = null;
+        }
+        if (this.merchantKeyListener) {
+            window.removeEventListener('keydown', this.merchantKeyListener);
+            this.merchantKeyListener = null;
+        }
     }
 
     buyBoat(level, price) {
@@ -107,10 +140,11 @@ export class UIManager {
                 this.boat.isPurchased = true;
             }
             this.updateHUD();
-            this.openMerchantUI("boat");
+            this.closeUI();
             if (this.onUpdateHUD) this.onUpdateHUD();
         } else {
-            alert("Not enough money!");
+            this.showNotification("Not enough money!");
+            this.closeUI();
         }
     }
 
@@ -122,15 +156,19 @@ export class UIManager {
             this.player.rod.maxPower = 5 + level * 3.5; // pampalakas ng bato based sa level
             this.player.updateRodSprites();
             this.updateHUD();
-            this.openMerchantUI("rod");
+            this.closeUI();
             if (this.onUpdateHUD) this.onUpdateHUD();
         } else {
-            alert("Not enough money!");
+            this.showNotification("Not enough money!");
+            this.closeUI();
         }
     }
 
     closeUI() {
-        document.getElementById('popup').style.display = 'none';
+        const popup = document.getElementById('popup');
+        popup.style.display = 'none';
+        popup.classList.remove('dialogue-mode');
+        this.cleanupMerchantUI();
         setTimeout(() => this.isOpen = false, 100);
         audio.play('click');
     }

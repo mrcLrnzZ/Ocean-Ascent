@@ -1,24 +1,37 @@
-/* --- HUD PANELS --- */
-#hud-left,
-#hud-right {
+#hud-stats-v2 {
     position: absolute;
-    top: 12px;
-    background: linear-gradient(135deg, rgba(30, 60, 85, 0.8) 0%, rgba(25, 50, 75, 0.8) 100%);
-    border: 2px solid rgba(100, 200, 255, 0.6);
-    border-radius: 12px;
-    padding: 14px 20px;
-    font-size: 12px;
-    line-height: 2;
-    color: rgba(150, 220, 255, 0.9);
-    image-rendering: pixelated;
-    font-family: 'upheaval', cursive;
-    text-shadow: 0 0 8px rgba(100, 200, 255, 0.3);
-    box-shadow: 0 4px 15px rgba(0, 100, 150, 0.2);
-    backdrop-filter: blur(4px);
+    top: -7px;
+    left: 15px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    pointer-events: none;
+    z-index: 1000;
 }
 
-#hud-left {
-    left: 12px;
+.stat-bar-item {
+    width: 250px; /* Scaling up slightly for clarity on high-res monitors */
+    height: 50px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    image-rendering: pixelated;
+    font-family: 'upheaval', cursive;
+    color: #ffd18a; /* Soft golden color matching the coins */
+    font-size: 20px;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+}
+
+.coin-item {
+    background-image: url('../assets/gamestatscoin.png');
+    padding-left: 75px; /* Offset text to be next to the coin icon on base 150px, scaled to 250px */
+}
+
+.plain-item {
+    background-image: url('../assets/gamestats.png');
+    justify-content: center; /* Center text on simple wooden bars */
+    padding-left: 0;
 }
 
 #hud-right {
@@ -35,12 +48,11 @@
     text-shadow: 0 0 6px rgba(100, 180, 255, 0.3);
 }
 
-#hud-left .val,
-#hud-right .val {
-    color: rgba(150, 255, 150, 0.85);
+#hud-right .stat-value {
+    color: #6ee6ff;
     font-weight: bold;
     letter-spacing: 0.5px;
-    text-shadow: 0 0 5px rgba(100, 200, 100, 0.3);
+    text-shadow: 0 0 5px rgba(100, 255, 255, 0.3);
 }
 
 /* --- GAUGES (Power, Depth, Reel) --- */

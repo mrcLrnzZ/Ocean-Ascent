@@ -56,7 +56,7 @@ export class Player {
 
         // --- Game state ---
         this.state = 'walking'; // 'walking', 'onBoat'
-        this.money = 2000;
+        this.money = 20;
         this.boatLevel = 0;
 
         // --- Fishing ---
@@ -80,7 +80,7 @@ export class Player {
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 1;  // seconds
+        this._starvationInterval = 100000;  // seconds
         this._starvationDamage = 1.5;
         this._isStarving = false;
 
