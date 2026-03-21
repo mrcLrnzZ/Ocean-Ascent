@@ -21,7 +21,8 @@
 
         <!-- Parallax Background Layers -->
         <div class="parallax-layer layer-0" style="background-image: url('assets/0_ocean_sky_and_sun.png');"></div>
-        <div class="parallax-layer layer-mountains" style="background-image: url('assets/4_ocean_back_mountain.png');"></div>
+        <div class="parallax-layer layer-mountains" style="background-image: url('assets/4_ocean_back_mountain.png');">
+        </div>
         <div class="parallax-layer layer-clouds" style="background-image: url('assets/3_ocean_clouds.png');"></div>
         <div class="parallax-layer layer-sea" style="background-image: url('assets/1_ocean_sea.png');"></div>
 
@@ -92,7 +93,7 @@
 
         </div>
 
-  
+
 
         <button id="almanac-btn">📖 Almanac</button>
         <button id="bag-btn" onclick="openBag()">🎒 Bag</button>
@@ -140,6 +141,7 @@
             style="position:absolute; left: 50%; transform: translateX(-50%); bottom: 50px;  color: white; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px black; z-index: 1000; display: none;">
             Sea Depth: 0m</div>
         <div id="notif"></div>
+        <div id="level-notif"></div>
         <div id="popup"></div>
 
         <!-- Survival HUD: Health + Hunger (Minecraft-style icon rows) -->
@@ -151,7 +153,7 @@
         <!-- Starvation Warning Overlay -->
         <div id="starvation-warning">
             <div id="starvation-warning-inner">
-                 STARVING! Eat a fish!
+                STARVING! Eat a fish!
             </div>
         </div>
 
@@ -215,10 +217,8 @@
             </div>
         </div>
 
-        <div id="zone-warn">
-            <h3>⚠ Danger Zone!</h3>
-            <p id="zone-warn-msg"></p>
-        </div>
+
+
 
         <!-- You Starved! Game Over Screen -->
         <div id="gameover-screen">

@@ -76,7 +76,7 @@ export const SHORE_LEVEL_LENGTH = 5000;
 export const LEVEL_1_LENGTH = 10000;
 export const LEVEL_2_LENGTH = 10000;
 export const LEVEL_3_LENGTH = 20000;
-export const LEVEL_4_LENGTH = 3000;
+export const LEVEL_4_LENGTH = 2890;
 
 
 // MAP SYSTEM CONFIG
@@ -195,29 +195,29 @@ export const PARALLAX_LAYERS = {
 
 export const MAPS = [
   {
-    id: 0, name: "Shore", requiredBoatLvl: 1, maxDepth: 1, hasDock: true, length: SHORE_LEVEL_LENGTH,
+    id: 0, name: "Sunset Shallows", requiredBoatLvl: 1, maxDepth: 1, hasDock: true, length: SHORE_LEVEL_LENGTH,
     theme: 'sunset',
     backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
   },
   {
-    id: 1, name: "Map 1", requiredBoatLvl: 1, maxDepth: 5, hasDock: false, length: LEVEL_1_LENGTH,
+    id: 1, name: "Sunset Shallows Mountains", requiredBoatLvl: 1, maxDepth: 5, hasDock: false, length: LEVEL_1_LENGTH,
     theme: 'sunset',
     backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
   },
   {
-    id: 2, name: "Map 2", requiredBoatLvl: 2, maxDepth: 5, hasDock: false, length: LEVEL_2_LENGTH,
+    id: 2, name: "Mt. Ever the rest", requiredBoatLvl: 2, maxDepth: 5, hasDock: false, length: LEVEL_2_LENGTH,
     theme: 'default',
     backgrounds: ['assets/sky_clouds.png', 'assets/sky_back_mountain.png', 'assets/sky_front_mountain.png', 'assets/parallax_seav2.png']
   },
   {
-    id: 3, name: "Map 3", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_3_LENGTH,
+    id: 3, name: "Midnight Trench", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_3_LENGTH,
     theme: 'night',
     backgrounds: ['assets/moon_back.png', 'assets/moon_mid.png', 'assets/moon_front.png', 'assets/parallax_seanightv3.png']
   },
   {
-    id: 4, name: "Ending", requiredBoatLvl: 3, maxDepth: 5, hasDock: true, length: LEVEL_4_LENGTH,
+    id: 4, name: "Paris France", requiredBoatLvl: 3, maxDepth: 5, hasDock: true, length: LEVEL_4_LENGTH,
     theme: 'sunset',
     backgrounds: ['assets/skycloud.png', 'assets/backhill.png', 'assets/backbuilding1.png', 'assets/backbuilding2.png', 'assets/backbuilding3.png', 'assets/eifeltower.png', 'assets/riversidebuilding.png', 'assets/riverbankwithpeople.png', 'assets/parallax_seav2.png']
 

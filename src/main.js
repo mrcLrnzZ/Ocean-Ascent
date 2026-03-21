@@ -3,7 +3,7 @@ import { drawSky, drawDock, drawBackground, drawGround, drawWaterBackground, dra
 import { Player } from './player.js';
 import { Merchant, RodMerchant } from './merchant.js';
 import { Boat } from './boat.js';
-import { GROUND_Y, WATER_Y, W, H, getDepthEndLine } from './constants.js';
+import { GROUND_Y, WATER_Y, W, H, getDepthEndLine, MAPS } from './constants.js';
 import { debugCam, toggleDebugCam } from './debugcam.js';
 import { FishManager } from './fish_manager.js';
 import { uiManager } from './ui.js';
@@ -73,10 +73,14 @@ startBtn.addEventListener('click', () => {
 
         }else{
             introVideo.style.display = 'none';
-        homepage.style.display = 'none';
+            homepage.style.display = 'none';
             gameCanvas.style.display = 'block';
-            requestAnimationFrame(loop);
+            
+            // Show initial map notification
+            const initialMap = MAPS[0];
+            uiManager.showLevelPopup(initialMap.name);
 
+            requestAnimationFrame(loop);
         }
 
 
@@ -192,7 +196,7 @@ function loop(timestamp) {
             boat.x = 2900;
             boat.state = 'idle';
             hasReachedEndingDock = true;
-            uiManager.showNotification("You've reached the end. [R] to Disembark.");
+            uiManager.showNotification("You've reached the end. Congrats!");
 
             // Auto-disembark merchant when boat stops at the final dock
             if (rodMerchant.onBoat) {
@@ -238,6 +242,7 @@ function loop(timestamp) {
             }
         }
     }
+
 
     if (ePressedNow && !uiManager.isOpen) {
         audio.play('opentrade');

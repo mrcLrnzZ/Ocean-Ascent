@@ -60,7 +60,7 @@ export const endingDockOverlay = {
 
 export const deepsoil = {
     x: 0,
-    y: 2900,
+    y: 2890,
     scale: 5
 }
 
