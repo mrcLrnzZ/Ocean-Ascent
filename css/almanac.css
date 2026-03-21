@@ -3,7 +3,7 @@
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    background: url('assets/openedAlmanac.png') no-repeat center/contain; /* Adjusted padding to ensure content stays within the "paper" area */
+    background: url('../assets/openedAlmanac.png') no-repeat center/contain; /* Adjusted padding to ensure content stays within the "paper" area */
     padding: 70px 110px 90px 110px;
     color: #3a2210;
     width: 900px; height: 700px;
@@ -203,7 +203,7 @@ color: rgba(58, 34, 16, 0.4);
 }
 
 .flip-next { transform: rotateY(-180deg); /* flips left-to-right */ }
-.flip-prev { transform: rotateY(180deg); /* flips right-to-left */ }
+.flip-prev { transform: rotateY(180deg); /* flips right-to-left * / }
 
 #left-page { transform-origin: right center; /* flips from spine */ }
 #right-page { transform-origin: left center;  /* flips from spine */ }

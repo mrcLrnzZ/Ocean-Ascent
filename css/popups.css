@@ -1,0 +1,301 @@
+/* --- POPUPS & WARNINGS --- */
+#popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(40, 70, 95, 0.9) 0%, rgba(30, 55, 80, 0.9) 100%);
+    border: 2px solid rgba(120, 200, 255, 0.5);
+    border-radius: 16px;
+    padding: 24px 32px;
+    color: rgba(150, 220, 255, 0.9);
+    min-width: 300px;
+    max-width: 520px;
+    max-height: 80vh;
+    overflow-y: auto;
+    pointer-events: all;
+    display: none;
+    text-align: center;
+    font-family: 'upheaval', cursive;
+    text-shadow: 0 0 6px rgba(100, 180, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 100, 180, 0.25);
+    backdrop-filter: blur(8px);
+}
+
+#popup h2 {
+    color: rgba(180, 255, 150, 0.9);
+    margin-bottom: 16px;
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 6px rgba(120, 200, 120, 0.3);
+}
+
+#popup .row {
+    background: rgba(100, 180, 220, 0.08);
+    border: 1px solid rgba(100, 180, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 13px;
+    margin: 8px 0;
+    text-align: left;
+    font-size: 11px;
+    color: rgba(150, 220, 255, 0.85);
+}
+
+#popup button {
+    background: linear-gradient(135deg, rgba(35, 65, 90, 0.8) 0%, rgba(25, 50, 75, 0.8) 100%);
+    border: 2px solid rgba(100, 180, 255, 0.5);
+    color: rgba(150, 220, 255, 0.85);
+    padding: 8px 18px;
+    margin: 4px;
+    text-transform: uppercase;
+    font-family: 'upheaval', cursive;
+    border-radius: 8px;
+    text-shadow: 0 0 5px rgba(100, 180, 255, 0.3);
+}
+
+#popup button:hover {
+    background: linear-gradient(135deg, rgba(50, 90, 120, 0.9) 0%, rgba(40, 70, 100, 0.9) 100%);
+    border-color: rgba(150, 240, 150, 0.6);
+    color: rgba(180, 255, 150, 0.9);
+    text-shadow: 0 0 6px rgba(120, 200, 120, 0.4);
+}
+
+#popup button.green {
+    background: linear-gradient(135deg, rgba(40, 75, 50, 0.8) 0%, rgba(30, 60, 40, 0.8) 100%);
+    border-color: rgba(120, 220, 120, 0.5);
+    color: rgba(180, 255, 150, 0.85);
+}
+
+#popup button.green:hover {
+    background: linear-gradient(135deg, rgba(60, 100, 70, 0.9) 0%, rgba(50, 85, 60, 0.9) 100%);
+    box-shadow: 0 4px 12px rgba(100, 180, 120, 0.2);
+}
+
+#popup button.gold {
+    background: linear-gradient(135deg, rgba(80, 65, 35, 0.8) 0%, rgba(60, 50, 25, 0.8) 100%);
+    border-color: rgba(200, 160, 80, 0.5);
+    color: rgba(220, 200, 100, 0.85);
+}
+
+#popup button.gold:hover {
+    background: linear-gradient(135deg, rgba(100, 85, 45, 0.9) 0%, rgba(80, 65, 35, 0.9) 100%);
+    color: rgba(255, 220, 120, 0.9);
+    border-color: rgba(220, 180, 100, 0.6);
+}
+
+#zone-warn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(95, 45, 45, 0.9) 0%, rgba(75, 30, 30, 0.9) 100%);
+    border: 2px solid rgba(220, 120, 120, 0.5);
+    border-radius: 16px;
+    padding: 20px 28px;
+    color: rgba(200, 150, 150, 0.9);
+    text-align: center;
+    pointer-events: none;
+    display: none;
+    font-size: 13px;
+    font-family: 'upheaval', cursive;
+    text-shadow: 0 0 6px rgba(180, 100, 100, 0.3);
+    box-shadow: 0 8px 32px rgba(150, 50, 50, 0.2);
+    backdrop-filter: blur(8px);
+}
+
+#zone-warn h3 {
+    color: rgba(220, 150, 150, 0.9);
+    margin-bottom: 8px;
+    text-shadow: 0 0 6px rgba(180, 120, 120, 0.3);
+}
+
+/* ============================================================
+   STARVATION WARNING OVERLAY
+   ============================================================ */
+#starvation-warning {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: none;               /* shown via JS */
+    align-items: flex-start;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1100;
+}
+
+#starvation-warning-inner {
+    margin-top: 160px;
+    font-family: 'upheaval', cursive;
+    font-size: 22px;
+    color: #ff4400;
+    text-shadow: 0 0 12px rgba(255, 80, 0, 0.9), 0 0 30px rgba(255,40,0,0.5);
+    background: rgba(80, 0, 0, 0.55);
+    border: 2px solid rgba(255, 80, 0, 0.6);
+    border-radius: 12px;
+    padding: 10px 28px;
+    animation: starv-pulse 0.8s ease-in-out infinite;
+    backdrop-filter: blur(4px);
+}
+
+@keyframes starv-pulse {
+    0%, 100% { transform: scale(1);    opacity: 1;   }
+    50%       { transform: scale(1.05); opacity: 0.75; }
+}
+
+/* ============================================================
+   BAG POPUP (Inventory System - 3x2 Grid)
+   ============================================================ */
+#bag-popup {
+    background: url('../assets/inventory.png') no-repeat center/contain;
+    position: absolute;
+    top: 35%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px; height: 600px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    image-rendering: pixelated;
+    z-index: 2000;
+    pointer-events: all;
+}
+
+#bag-popup-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#new-bag-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 40px;
+    margin-top: 210px;
+    margin-left: 40px;
+    width: 90%;
+}
+
+.inv-slot {
+    width: 210px;
+    height: 140px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 2px dashed rgba(100, 100, 100, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.inv-slot:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.inv-slot.active {
+    background: rgba(255, 255, 255, 0.2);
+    border: 3px solid #ffcc00;
+}
+
+.inv-fish-img {
+    width: 100px;
+    height: 100px;
+    image-rendering: pixelated;
+    object-fit: contain;
+}
+
+.inv-fish-qty {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'upheaval', cursive;
+    text-shadow: 1px 1px 0 #000;
+}
+
+#eat-sell-panel {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2001;
+}
+
+#eat-sell-bg {
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    position: absolute;
+    top: 0; left: 0;
+    z-index: -1;
+}
+
+.eat-sell-buttons {
+    opacity: 0;
+
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    height: 90px;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.eat-sell-buttons button {
+    flex: 1;
+    cursor: pointer;
+}
+
+#fish-info-panel {
+    border-radius: 10px;
+    padding-top: 0px;
+    margin-top: 25px; /* Reduced to align better with eatselloption.png buttons */
+    width: 105%;
+    padding-right: 20px;
+    margin-left: 90px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 100px;
+    color: #ffd18a;
+    font-family: 'upheaval', cursive;
+    pointer-events: none;
+}
+
+#info-hunger {
+    font-size: x-large;
+
+    color: #ffaa44;
+}
+
+#info-coins {
+    font-size: x-large;
+    color: #ffd700;
+}
+
+#bag-footer {
+    position: absolute;
+    bottom: 40px;
+}
+
+#bag-close-btn {
+        all: unset;
+    transform: translate(320px, -460px);
+    padding: 8px 24px;
+    font-size: xx-large;
+    cursor: pointer;
+    color: rgb(228, 156, 0);
+}

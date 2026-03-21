@@ -1,0 +1,228 @@
+/* --- HUD PANELS --- */
+#hud-left,
+#hud-right {
+    position: absolute;
+    top: 12px;
+    background: linear-gradient(135deg, rgba(30, 60, 85, 0.8) 0%, rgba(25, 50, 75, 0.8) 100%);
+    border: 2px solid rgba(100, 200, 255, 0.6);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 12px;
+    line-height: 2;
+    color: rgba(150, 220, 255, 0.9);
+    image-rendering: pixelated;
+    font-family: 'upheaval', cursive;
+    text-shadow: 0 0 8px rgba(100, 200, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 100, 150, 0.2);
+    backdrop-filter: blur(4px);
+}
+
+#hud-left {
+    left: 12px;
+}
+
+#hud-right {
+    right: 12px;
+    text-align: right;
+}
+
+#hud-left .lbl,
+#hud-right .lbl {
+    color: rgba(120, 200, 255, 0.8);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px rgba(100, 180, 255, 0.3);
+}
+
+#hud-left .val,
+#hud-right .val {
+    color: rgba(150, 255, 150, 0.85);
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 5px rgba(100, 200, 100, 0.3);
+}
+
+/* --- GAUGES (Power, Depth, Reel) --- */
+#power-wrap {
+    position: absolute;
+    bottom: 90px;
+    right: 16px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-family: 'upheaval', cursive;
+}
+
+#power-wrap .lbl {
+    color: rgba(120, 200, 255, 0.8);
+    font-size: 10px;
+    text-shadow: 0 0 5px rgba(100, 180, 255, 0.3);
+    letter-spacing: 1px;
+}
+
+#power-bar {
+    width: 24px;
+    height: 120px;
+    background: rgba(20, 40, 60, 0.7);
+    border: 2px solid rgba(100, 180, 255, 0.5);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 8px rgba(0, 80, 150, 0.15);
+}
+
+#power-fill {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(150, 255, 150, 0.8), rgba(150, 220, 255, 0.8), rgba(80, 180, 255, 0.8));
+    box-shadow: 0 0 10px rgba(100, 180, 150, 0.4);
+    border-radius: 8px;
+}
+
+#depth-wrap {
+    position: absolute;
+    bottom: 90px;
+    left: 16px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-family: 'upheaval', cursive;
+}
+
+#depth-wrap .lbl {
+    color: rgba(120, 200, 255, 0.8);
+    font-size: 10px;
+    text-shadow: 0 0 5px rgba(100, 180, 255, 0.3);
+    letter-spacing: 1px;
+}
+
+#depth-bar {
+    width: 24px;
+    height: 120px;
+    background: rgba(20, 40, 60, 0.7);
+    border: 2px solid rgba(80, 180, 200, 0.5);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 8px rgba(0, 100, 150, 0.15);
+}
+
+#depth-fill {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background: linear-gradient(to bottom, rgba(100, 180, 255, 0.8), rgba(120, 200, 255, 0.8), rgba(100, 200, 200, 0.8));
+    box-shadow: 0 0 10px rgba(100, 200, 200, 0.4);
+    border-radius: 8px;
+}
+
+#depth-val {
+    font-size: 11px;
+    color: rgba(150, 220, 255, 0.85);
+    text-shadow: 0 0 5px rgba(100, 200, 220, 0.3);
+}
+
+#reel-wrap {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 280px;
+    font-family: 'upheaval', cursive;
+}
+
+#reel-label {
+    color: rgba(150, 255, 150, 0.85);
+    font-size: 12px;
+    text-shadow: 0 0 5px rgba(120, 200, 120, 0.3);
+    letter-spacing: 0.5px;
+}
+
+#reel-bar-bg {
+    width: 100%;
+    height: 18px;
+    background: rgba(20, 40, 60, 0.7);
+    border: 2px solid rgba(100, 200, 255, 0.5);
+    border-radius: 9px;
+    overflow: hidden;
+    box-shadow: inset 0 0 8px rgba(0, 100, 150, 0.15);
+}
+
+#reel-fill {
+    height: 100%;
+    background: linear-gradient(to right, rgba(150, 255, 150, 0.8), rgba(150, 220, 255, 0.8), rgba(100, 200, 255, 0.8));
+    transition: width 0.08s;
+    box-shadow: 0 0 10px rgba(120, 200, 150, 0.4);
+    border-radius: 7px;
+}
+
+/* ============================================================
+   SURVIVAL HUD  (Minecraft-style icon rows)
+   ============================================================ */
+#survival-hud {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    pointer-events: none;
+    z-index: 1000;
+    padding: 8px 10px;
+    backdrop-filter: blur(4px);
+
+    /* ↓↓ SCALE THE HUD HERE ↓↓ — change the number to resize (1 = 100%, 1.5 = 150%, 0.8 = 80%) */
+    transform: scale(1.5);
+    transform-origin: bottom left;
+}
+
+
+.survival-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Individual icon images */
+.stat-icon {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    display: block;
+    flex-shrink: 0;
+}
+
+/* Heart icons: 25x27 */
+.heart-icon {
+    width: 25px;
+    height: 24px;
+}
+
+/* Hunger icons: 55x59 – scale down to not be massive in the HUD */
+.hunger-icon {
+    width: 27px;   /* display at roughly half the raw size so the row is similar width to hearts */
+    height: 29px;
+}
+
+/* ── Hunger warning blink animations on the row container ── */
+.hunger-row-low {
+    animation: hunger-blink 1s ease-in-out infinite;
+}
+
+.hunger-row-empty {
+    animation: hunger-blink 0.45s ease-in-out infinite;
+}
+
+@keyframes hunger-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+}
