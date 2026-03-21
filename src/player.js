@@ -75,13 +75,13 @@ export class Player {
 
         // Hunger drain timer (hunger decreases every 30 seconds during play)
         this._hungerTimer = 0;
-        this._hungerDrainInterval = 20; // seconds between each -0.5 hunger
-        this._hungerDrainAmount = 0.5;
+        this._hungerDrainInterval = 1; // seconds between each -0.5 hunger
+        this._hungerDrainAmount = 1.5;
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 5;  // seconds
-        this._starvationDamage = 0.5;
+        this._starvationInterval = 1;  // seconds
+        this._starvationDamage = 1.5;
         this._isStarving = false;
 
         // Prevent stacking multiple starvation loops
@@ -404,9 +404,12 @@ export class Player {
 
         // Populate stats on the game-over screen
         const moneyEl = document.getElementById('gameover-money');
-        const fishEl  = document.getElementById('gameover-fish');
         if (moneyEl) moneyEl.textContent = `💰 Money earned: $${this.money}`;
-        if (fishEl)  fishEl.textContent  = `🎣 Fish in bag: ${this.inventory.length}`;
+        const fishEl = document.getElementById('gameover-fish');
+        if (fishEl) {
+            const count = this.inventory.filter(slot => slot !== null).length;
+            fishEl.textContent = `🎣 Fish in bag: ${count}`;
+        }
 
         // Show the game-over overlay
         const screen = document.getElementById('gameover-screen');
