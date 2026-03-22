@@ -76,17 +76,17 @@ button {
     pointer-events: all;
     cursor: pointer;
     font-family: 'upheaval', cursive;
-    font-size: 17px;
-    letter-spacing: 2.5px;
+    font-size: 1.1cqw;
+    letter-spacing: 0.15cqw;
     color: #ffe8a0;
     border: none;
     outline: none;
-    border-radius: 6px;
+    border-radius: 0.4cqw;
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 0.5cqw;
 
     background: linear-gradient(to bottom,
         #d9922a 0%,
@@ -95,8 +95,8 @@ button {
         #7c3e08 100%
     );
 
-    padding: 12px 28px;
-
+    padding: 0.8cqh 1.5cqw;
+    white-space: nowrap;
     box-shadow:
         inset 0 1px 0 rgba(255, 230, 140, 0.5),
         inset 0 -1px 0 rgba(0, 0, 0, 0.5),
@@ -106,8 +106,8 @@ button {
         0 1px 0 1px #1e0a02,
         0 0 0 2px #c07828,
         0 0 0 3px #1e0a02,
-        0 5px 0 3px #3a1806,
-        0 8px 16px rgba(0, 0, 0, 0.7);
+        0 0.5cqh 0 0.2cqw #3a1806,
+        0 0.8cqh 1.6cqw rgba(0, 0, 0, 0.7);
 
     text-shadow:
         0 1px 0 #1a0800,
@@ -169,12 +169,8 @@ button:active {
 
 #almanac-btn {
     position: absolute;
-    top: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-left: 690px;
-    padding: 5px 20px;
-    font-size: 17px;
+    top: 1cqh;
+    right: 18cqw; /* Anchored to right edge */
 }
 #fs-btn {
     position: absolute;
@@ -186,29 +182,21 @@ button:active {
 }
 #bag-btn {
     position: absolute;
-    top: 5px;
-    left: 50%;
-    margin-left: 110px;
-    transform: translateX(-50%);
-    padding: 5px 20px;
-    font-size: 17px;
-          margin-left: 810px;
+    top: 1cqh;
+    right: 8cqw; /* Anchored to right edge */
 }
 
 #burger-menu {
     position: absolute;
-    top: 5px;
-    left: 50%;
-    margin-left: 190px;
-    transform: translateX(-50%);
+    top: 1cqh;
+    right: 1.5cqw; /* Anchored to right edge */
     z-index: 1000;
-    margin-left: 890px;
 }
 #burger-btn {
-    padding: 4px 14px;
-    font-size: 18px;
+    padding: 0.4cqh 1cqw;
+    font-size: 1.5cqw;
     line-height: 1;
-    letter-spacing: 1px;
+    letter-spacing: 0;
 }
 
 .burger-dropdown {
@@ -235,9 +223,9 @@ button:active {
 
 #mechanics-btn,
 #tutorial-btn {
-  margin-top: 5px;
-    padding: 8px 20px;
-    font-size: 14px;
+    margin-top: 0.5cqh;
+    padding: 0.8cqh 1.5cqw;
+    font-size: 1.1cqw;
     width: 100%;
     text-align: left;
 }

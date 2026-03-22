@@ -12,33 +12,46 @@
     font-style: normal;
 }
 
-html, body {
+html,
+body {
     background: #000;
     width: 100vw;
     height: 100vh;
     overflow: hidden !important;
     margin: 0;
     padding: 0;
-    position: fixed; /* absolute lock */
+    position: fixed;
+    /* absolute lock */
 }
 
-/* Canvas fills the screen exactly */
+/* Canvas fills screen but maintains 16:9 ratio with Side Blocks */
 #gameCanvas {
     display: block;
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 56.25vw; /* 16:9 of width */
+    max-height: 100vh;
+    max-width: 177.78vh; /* 16:9 of height */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+    background: #000;
 }
 
 #overlay {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100vw;
-    height: 100vh;
+    height: 56.25vw;
+    max-height: 100vh;
+    max-width: 177.78vh;
     pointer-events: none;
+    z-index: 1000;
+    container-type: size; /* Crucial for responsive UI scaling */
 }

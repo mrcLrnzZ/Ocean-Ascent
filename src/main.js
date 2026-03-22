@@ -104,13 +104,14 @@ const fishManager = new FishManager();
 const player = new Player(fishManager); // pass fishManager to player
 const boatMerchant = new Merchant(540, GROUND_Y, "boat");
 const rodMerchant = new RodMerchant(300, GROUND_Y);
-const boat = new Boat(750, 650);
+const boat = new Boat(750, 720);
 
 const keys = {};
 let frame = 0;
 let cameraX = 0;
 let cameraY = 0;
 let currentMap = 0;
+const gameZoom = 1.0; // Zoom a bit (1.0 = normal, 1.2 = zoomed in)
 let eWasUp = true;
 let rWasUp = true;
 let hasReachedEndingDock = false;
@@ -292,7 +293,7 @@ function loop(timestamp) {
     }
 
     // Camera logic: Follow player, boat, debug, or fishing hook
-    camera.update(player, boat, debugCam, keys, W, H);
+    camera.update(player, boat, debugCam, keys, W, H, gameZoom);
     cameraX = camera.x;
     cameraY = camera.y;
 
@@ -301,6 +302,8 @@ function loop(timestamp) {
         ctx.clearRect(0, 0, W, H);
 
         ctx.save();
+        // Apply zoom from the top center
+        ctx.scale(gameZoom, gameZoom);
         ctx.translate(0, -Math.floor(cameraY));
 
         drawSky(ctx, frame, currentMap);
@@ -352,9 +355,21 @@ function loop(timestamp) {
         console.log(e);
     }
 }
-
-// ── Game-Over helpers (called from gameover-screen buttons) ──────────────────
-window.gameHome = function () {
-    // Full page reload — simplest and most reliable way to return to start screen
+window.gameHome = function() {
     window.location.reload();
 };
+
+
+
+// para sa refresh bruh
+const efas = false;
+
+if (efas) {
+    window.addEventListener('beforeunload', (e) => {
+        if (gameStarted) {
+        e.preventDefault();
+    }
+});
+
+}
+

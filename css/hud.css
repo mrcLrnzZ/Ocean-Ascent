@@ -1,31 +1,32 @@
 #hud-stats-v2 {
     position: absolute;
-    top: -7px;
-    left: 15px;
+    top: -10px;
+    left: 2cqw;
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 0.5cqw; /* Tightened gap for a better grouping */
     pointer-events: none;
     z-index: 1000;
 }
 
 .stat-bar-item {
-    width: 250px; /* Scaling up slightly for clarity on high-res monitors */
-    height: 50px;
-    background-size: cover;
+    width: 14cqw; /* Relative to screen width */
+    aspect-ratio: 5 / 1; /* Match original image proportion perfectly */
+    background-size: 100% 100%; /* Prevents background cutout/cropping */
     background-repeat: no-repeat;
+    margin: 0;
     display: flex;
     align-items: center;
     image-rendering: pixelated;
     font-family: 'upheaval', cursive;
-    color: #ffd18a; /* Soft golden color matching the coins */
-    font-size: 20px;
-    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4);
+    color: #ffd18a; 
+    font-size: 1.1cqw; /* Scales with the width */
+    text-shadow: 0.1cqw 0.1cqw 0px rgba(0, 0, 0, 0.4);
 }
 
 .coin-item {
     background-image: url('../assets/gamestatscoin.png');
-    padding-left: 75px; /* Offset text to be next to the coin icon on base 150px, scaled to 250px */
+    padding-left: 10%; /* Stays exactly relative to the coin icon on any scale */
 }
 
 .plain-item {
@@ -140,14 +141,14 @@
 
 #reel-wrap {
     position: absolute;
-    bottom: 50px;
+    bottom: 5cqh;
     left: 50%;
     transform: translateX(-50%);
     display: none;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    width: 280px;
+    gap: 0.6cqh;
+    width: 15cqw;
     font-family: 'upheaval', cursive;
 }
 
@@ -181,19 +182,15 @@
    ============================================================ */
 #survival-hud {
     position: absolute;
-    bottom: 16px;
-    left: 16px;
+    bottom: 2cqh; /* Anchored to bottom edge of 16:9 box */
+    left: 1.5cqw;  /* Anchored to left edge */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 0.5cqh;
     pointer-events: none;
     z-index: 1000;
-    padding: 8px 10px;
-
-    /* ↓↓ SCALE THE HUD HERE ↓↓ — change the number to resize (1 = 100%, 1.5 = 150%, 0.8 = 80%) */
-    transform: scale(1.5);
-    transform-origin: bottom left;
+    transform: none; /* Removed the scale to fix layout gaps */
 }
 
 
@@ -214,14 +211,14 @@
 
 /* Heart icons: 25x27 */
 .heart-icon {
-    width: 25px;
-    height: 24px;
+    width: 2.2cqw; /* Relative size instead of scale */
+    height: 4.0cqh;
 }
 
 /* Hunger icons: 55x59 – scale down to not be massive in the HUD */
 .hunger-icon {
-    width: 27px;   /* display at roughly half the raw size so the row is similar width to hearts */
-    height: 29px;
+    width: 2.4cqw; /* Relative size instead of scale */
+    height: 4.5cqh;
 }
 
 /* ── Hunger warning blink animations on the row container ── */
