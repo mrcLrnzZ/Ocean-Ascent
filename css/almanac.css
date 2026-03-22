@@ -270,7 +270,7 @@ color: rgba(58, 34, 16, 0.4);
 }
 
 .flip-next { transform: rotateY(-180deg); /* flips left-to-right */ }
-.flip-prev { transform: rotateY(180deg); /* flips right-to-left * / }
+.flip-prev { transform: rotateY(180deg); /* flips right-to-left */ }
 
-#left-page { transform-origin: right center; /* flips from spine */ }
-#right-page { transform-origin: left center;  /* flips from spine */ }
+#left-page { transform-origin: right center; }
+#right-page { transform-origin: left center; }

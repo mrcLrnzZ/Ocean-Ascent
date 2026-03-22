@@ -54,28 +54,28 @@ startBtn.addEventListener('click', () => {
         const introVideo = document.getElementById('introVideo');
         const gameCanvas = document.getElementById('gameCanvas');
 
- const banana = false;
+        const banana = false;
 
         if (banana) {
 
-              introVideo.style.display = 'block';
-        gameCanvas.style.display = 'none';
-        homepage.style.display = 'none';
+            introVideo.style.display = 'block';
+            gameCanvas.style.display = 'none';
+            homepage.style.display = 'none';
 
-        introVideo.play();
+            introVideo.play();
 
-        // When video ends, start the game
-        introVideo.addEventListener('ended', () => {
-            introVideo.style.display = 'none';
-            gameCanvas.style.display = 'block';
-            requestAnimationFrame(loop);
-        }, { once: true });
+            // When video ends, start the game
+            introVideo.addEventListener('ended', () => {
+                introVideo.style.display = 'none';
+                gameCanvas.style.display = 'block';
+                requestAnimationFrame(loop);
+            }, { once: true });
 
-        }else{
+        } else {
             introVideo.style.display = 'none';
             homepage.style.display = 'none';
             gameCanvas.style.display = 'block';
-            
+
             // Show initial map notification
             const initialMap = MAPS[0];
             uiManager.showLevelPopup(initialMap.name);
@@ -168,11 +168,11 @@ function loop(timestamp) {
     _lastTime = timestamp;
 
     // Game state object
-    const G = { 
-        keys: (transitionManager.active || uiManager.isOpen) ? {} : keys, 
-        state: player.state || 'walking', 
-        frame, 
-        currentMap 
+    const G = {
+        keys: (transitionManager.active || uiManager.isOpen) ? {} : keys,
+        state: player.state || 'walking',
+        frame,
+        currentMap
     };
 
     // --- UPDATE LOGIC ---
@@ -233,7 +233,7 @@ function loop(timestamp) {
             // Allow disembark if boat is near dock AND the map actually has a dock
             if (hasDock && Math.abs(boat.x - dockX) < 500 && boat.state === 'idle') {
                 player.state = 'walking';
-                
+
                 // Move player to ground area near boat
                 const walkMin = isEnding ? 2500 : 0;
                 const walkMax = isEnding ? 4500 : 1100;
@@ -313,33 +313,32 @@ function loop(timestamp) {
             boatMerchant.draw(ctx, cameraX, player);
         }
 
-        drawDock(ctx, cameraX, currentMap);
+        drawDock(ctx, cameraX, currentMap); // pang ending syuugg (nakakalito e)
 
-        if (player.state !== 'onBoat' || player.state === 'onBoat') {
-            player.draw(ctx, cameraX);
-        }
-
-        if (rodMerchant.onBoat || rodMerchant.currentMapId === currentMap) {
+        if (player.state !== 'onBoat') player.draw(ctx, cameraX);
+        if (!rodMerchant.onBoat && rodMerchant.currentMapId === currentMap) {
             rodMerchant.draw(ctx, cameraX, player);
         }
 
-        drawDockOverlay(ctx, cameraX, currentMap);
+        drawDockOverlay(ctx, cameraX, currentMap); // pang shore
+
+        if (player.state === 'onBoat') player.draw(ctx, cameraX);
+        if (rodMerchant.onBoat) rodMerchant.draw(ctx, cameraX, player);
+
+        boat.draw(ctx, cameraX, frame, player);
 
         // Draw fish for this map (depth < 5) before the foreground overlay
         fishManager.draw(ctx, cameraX, (f) => f.mapId === currentMap && f.depthLevel < 5);
 
         boat.draw(ctx, cameraX, frame, player);
 
-        // 6. Foreground layers
         drawWaterForeground(ctx, cameraX, frame, currentMap);
 
-        // Draw Abyss fish (depth 5) for this map after the pitch-black overlay to keep them visible
         fishManager.draw(ctx, cameraX, (f) => f.mapId === currentMap && f.depthLevel === 5);
         effectManager.draw(ctx, cameraX);
         drawDeepSoil(ctx, cameraX, currentMap);
         ctx.restore();
 
-        // Weather effects drawn in SCREEN-SPACE (after restore) so they don't scroll
         WeatherSystem.drawWeatherEffects(ctx, cameraY);
 
         if (transitionManager.active) {
