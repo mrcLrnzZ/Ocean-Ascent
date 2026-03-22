@@ -147,7 +147,7 @@
     position: absolute;
     top: 35%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 65cqw; height: 65cqh;
+    width: 45cqw; height: 65cqh;
     display: none;
     flex-direction: column;
     align-items: center;
@@ -170,24 +170,26 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    gap: 3cqw;
-    margin-top: 18cqh;
-    margin-left: 2cqw;
-    width: 85%;
+    gap: 3.5cqh 1.3cqw;
+    padding: 0;
+    margin: 18cqh auto 0 auto; /* Center the grid horizontally */
+    width: 80%; /* Adjusted to fit the PNG background perfectly */
 }
 
 .inv-slot {
-    width: 16cqw;
-    height: 18cqh;
+    width: 12cqw;
+    transform: translate(-0.9cqw, 1.9cqw);
+    height: 16cqh;
     background: rgba(0, 0, 0, 0.05);
-    border: 2px dashed rgba(100, 100, 100, 0.1);
-    border-radius: 8px;
+    border: 0.2cqw dashed rgba(100, 100, 100, 0.1);
+    border-radius: 0.8cqw;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     position: relative;
+    box-sizing: border-box;
 }
 
 .inv-slot:hover {
@@ -200,8 +202,8 @@
 }
 
 .inv-fish-img {
-    width: 100px;
-    height: 100px;
+    width: 70%; /* Scale relative to slot size */
+    height: 70%;
     image-rendering: pixelated;
     object-fit: contain;
 }
@@ -242,13 +244,12 @@
 
 .eat-sell-buttons {
     opacity: 0;
-
     display: flex;
     justify-content: space-between;
     width: 90%;
-    height: 90px;
-    margin-top: 15px;
-    gap: 10px;
+    height: 10cqh; /* Scaled relative to the height of the container box */
+    margin-top: 1.5cqh;
+    gap: 1cqw;
 }
 
 .eat-sell-buttons button {
@@ -257,29 +258,28 @@
 }
 
 #fish-info-panel {
-    border-radius: 10px;
-    padding-top: 0px;
-    margin-top: 25px; /* Reduced to align better with eatselloption.png buttons */
-    width: 105%;
-    padding-right: 20px;
-    margin-left: 90px;
+    border-radius: 1cqh;
+    margin-top: 7cqh; /* Proportional to artwork */
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 100px;
+    justify-content: center; /* Center the icons within the panel */
+    gap: 9cqw;
     color: #ffd18a;
     font-family: 'upheaval', cursive;
     pointer-events: none;
 }
 
-#info-hunger {
-    font-size: x-large;
+#info-hunger, #info-coins {
+    font-size: 1.5cqw;
+}
 
+#info-hunger {
     color: #ffaa44;
 }
 
 #info-coins {
-    font-size: x-large;
     color: #ffd700;
 }
 
@@ -289,12 +289,17 @@
 }
 
 #bag-close-btn {
-        all: unset;
-    transform: translate(320px, -460px);
-    padding: 8px 24px;
-    font-size: xx-large;
+    all: unset;
+    position: absolute;
+    
+    top: -55cqh;
+    right: -20cqw;
+    padding: 0.8cqh 1.5cqw;
+    font-size: 2cqw;
     cursor: pointer;
     color: rgb(228, 156, 0);
+    z-index: 2002;
+    text-shadow: 0 0.1cqw 0.2cqw rgba(0,0,0,0.5);
 }
 
 /* --- DIALOGUE MODE FOR MERCHANTS --- */
