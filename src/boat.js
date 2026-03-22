@@ -24,24 +24,24 @@ export class Boat {
     setLevel(lvl) {
         this.isPurchased = true;
         this.level = lvl;
-        if (lvl === 1) { 
-            this.img.src = 'assets/boatlvl1.png'; 
+        if (lvl === 1) {
+            this.img.src = 'assets/boatlvl1.png';
             this.speed = 20;
             this.scale = 6;
             this.width = 80;
             this.height = 40;
             this.floorYOffset = 140;
         }
-        if (lvl === 2) { 
-            this.img.src = 'assets/boatlvl2.png'; 
+        if (lvl === 2) {
+            this.img.src = 'assets/boatlvl2.png';
             this.speed = 8;
             this.scale = 4;
             this.width = 128;
             this.height = 128;
             this.floorYOffset = 370;
         }
-        if (lvl === 3) { 
-            this.img.src = 'assets/boatlvl3.png'; 
+        if (lvl === 3) {
+            this.img.src = 'assets/boatlvl3.png';
             this.speed = 300;
             this.scale = 6;
             this.width = 128;
@@ -99,7 +99,7 @@ export class Boat {
         let tiltAngle = 0;
         if (player.state === 'onBoat') {
             const playerRelCenter = player.x + (player.frameW * player.scale) / 2 - (this.x + bounds.width / 2);
-            tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1; 
+            tiltAngle = (playerRelCenter / (bounds.width / 2)) * 0.1;
         }
 
         ctx.save();
@@ -123,19 +123,22 @@ export class Boat {
             ctx.font = "bold 14px Arial";
             ctx.textAlign = "center";
 
+            // Anchor prompts above player's head instead of the boat top (which can be off-screen for Level 3)
+            const promptY = player.y - 20;
+
             if (playerRelCenterX < zoneWidth) {
                 // Left zone: Fishing
                 const action = this.state === 'fishing' ? "Stop Fishing" : "Fish";
-                ctx.fillText(`Press [E] to ${action}`, screenX + zoneWidth / 2, floatingY - 20);
+                ctx.fillText(`Press [E] to ${action}`, screenX + zoneWidth / 2, promptY);
             } else if (playerRelCenterX > bounds.width - zoneWidth) {
                 // Right zone: Navigation
                 const action = this.state === 'sailing' ? "Stop Sailing" : "Sail";
-                ctx.fillText(`Press [E] to ${action}`, screenX + bounds.width - zoneWidth / 2, floatingY - 20);
+                ctx.fillText(`Press [E] to ${action}`, screenX + bounds.width - zoneWidth / 2, promptY);
             } else if (this.state === 'idle') {
                 const isAtEndingDock = Math.abs(this.x - 2600) < 200;
                 const isAtStartingDock = Math.abs(this.x - 750) < 100;
                 if (isAtEndingDock || isAtStartingDock) {
-                    ctx.fillText("Press [R] to Disembark", screenX + bounds.width / 2, floatingY - 60);
+                    ctx.fillText("Press [R] to Disembark", screenX + bounds.width / 2, promptY - 40);
                 }
             }
         } else if (Math.abs(player.x - this.x) < 100 && player.state === 'walking') {
@@ -143,7 +146,7 @@ export class Boat {
             ctx.fillStyle = "white";
             ctx.font = "bold 14px Arial";
             ctx.textAlign = "center";
-            ctx.fillText("Press [R] to Board Boat", screenX + bounds.width / 2, floatingY - 20);
+            ctx.fillText("Press [R] to Board Boat", screenX + bounds.width / 2, player.y - 20);
         }
     }
 }

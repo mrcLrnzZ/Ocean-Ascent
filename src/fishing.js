@@ -411,12 +411,12 @@ export class Rod {
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
-                    const fishId   = this.caughtFish.type;
+                    const fishId = this.caughtFish.type;
                     const fishData = SPRITE_DATA[fishId] || {};
 
                     // --- Bag check ---
                     const added = this.player.addFish(fishId, fishData);
-                    
+
                     if (!added) {
                         // Bag is full — release the fish and notify
                         import('./ui.js').then(module => {

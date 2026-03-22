@@ -54,28 +54,28 @@ startBtn.addEventListener('click', () => {
         const introVideo = document.getElementById('introVideo');
         const gameCanvas = document.getElementById('gameCanvas');
 
- const banana = false;
+        const banana = false;
 
         if (banana) {
 
-              introVideo.style.display = 'block';
-        gameCanvas.style.display = 'none';
-        homepage.style.display = 'none';
+            introVideo.style.display = 'block';
+            gameCanvas.style.display = 'none';
+            homepage.style.display = 'none';
 
-        introVideo.play();
+            introVideo.play();
 
-        // When video ends, start the game
-        introVideo.addEventListener('ended', () => {
-            introVideo.style.display = 'none';
-            gameCanvas.style.display = 'block';
-            requestAnimationFrame(loop);
-        }, { once: true });
+            // When video ends, start the game
+            introVideo.addEventListener('ended', () => {
+                introVideo.style.display = 'none';
+                gameCanvas.style.display = 'block';
+                requestAnimationFrame(loop);
+            }, { once: true });
 
-        }else{
+        } else {
             introVideo.style.display = 'none';
             homepage.style.display = 'none';
             gameCanvas.style.display = 'block';
-            
+
             // Show initial map notification
             const initialMap = MAPS[0];
             uiManager.showLevelPopup(initialMap.name);
@@ -168,11 +168,11 @@ function loop(timestamp) {
     _lastTime = timestamp;
 
     // Game state object
-    const G = { 
-        keys: (transitionManager.active || uiManager.isOpen) ? {} : keys, 
-        state: player.state || 'walking', 
-        frame, 
-        currentMap 
+    const G = {
+        keys: (transitionManager.active || uiManager.isOpen) ? {} : keys,
+        state: player.state || 'walking',
+        frame,
+        currentMap
     };
 
     // --- UPDATE LOGIC ---
@@ -233,7 +233,7 @@ function loop(timestamp) {
             // Allow disembark if boat is near dock AND the map actually has a dock
             if (hasDock && Math.abs(boat.x - dockX) < 500 && boat.state === 'idle') {
                 player.state = 'walking';
-                
+
                 // Move player to ground area near boat
                 const walkMin = isEnding ? 2500 : 0;
                 const walkMax = isEnding ? 4500 : 1100;
