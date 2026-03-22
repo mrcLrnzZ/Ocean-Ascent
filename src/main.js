@@ -104,7 +104,7 @@ const fishManager = new FishManager();
 const player = new Player(fishManager); // pass fishManager to player
 const boatMerchant = new Merchant(540, GROUND_Y, "boat");
 const rodMerchant = new RodMerchant(300, GROUND_Y);
-const boat = new Boat(750, 820);
+const boat = new Boat(750, 720);
 
 const keys = {};
 let frame = 0;
@@ -352,9 +352,21 @@ function loop(timestamp) {
         console.log(e);
     }
 }
-
-// ── Game-Over helpers (called from gameover-screen buttons) ──────────────────
-window.gameHome = function () {
-    // Full page reload — simplest and most reliable way to return to start screen
+window.gameHome = function() {
     window.location.reload();
 };
+
+
+
+// para sa refresh bruh
+const efas = true;
+
+if (efas) {
+    window.addEventListener('beforeunload', (e) => {
+        if (gameStarted) {
+        e.preventDefault();
+    }
+});
+
+}
+

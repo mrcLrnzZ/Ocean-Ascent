@@ -15,19 +15,19 @@ export class UIManager {
         this.currentDepthLevel = 1;
 
         // Define missing functions correctly on the window to retain HTML onClick handlers
-        window.buyBoat  = this.buyBoat.bind(this);
-        window.buyRod   = this.buyRod.bind(this);
-        window.closeUI  = this.closeUI.bind(this);
-        window.openBag  = this.openBag.bind(this);
+        window.buyBoat = this.buyBoat.bind(this);
+        window.buyRod = this.buyRod.bind(this);
+        window.closeUI = this.closeUI.bind(this);
+        window.openBag = this.openBag.bind(this);
         window.closeBag = this.closeBag.bind(this);
-        window.eatFish  = (index) => { if (this.player) this.player.eatFish(index); };
+        window.eatFish = (index) => { if (this.player) this.player.eatFish(index); };
         window.sellFish = (index) => { if (this.player) this.player.sellFish(index); };
         window.toggleBurgerMenu = this.toggleBurgerMenu.bind(this);
-        window.openMechanics      = this.openMechanics.bind(this);
-        window.openTutorial       = this.openTutorial.bind(this);
-        window.closeTutorial      = this.closeTutorial.bind(this);
+        window.openMechanics = this.openMechanics.bind(this);
+        window.openTutorial = this.openTutorial.bind(this);
+        window.closeTutorial = this.closeTutorial.bind(this);
         window.changeTutorialPage = this.changeTutorialPage.bind(this);
-        window.closeMechanics      = this.closeMechanics.bind(this);
+        window.closeMechanics = this.closeMechanics.bind(this);
         window.changeMechanicsPage = this.changeMechanicsPage.bind(this);
         this.tutorial = new TutorialManager();
         this.almanac = new AlmanacManager(this);
@@ -51,8 +51,8 @@ export class UIManager {
     updateHUD() {
         if (!this.player) return;
         document.getElementById('h-money').textContent = `$${this.player.money}`;
-        document.getElementById('h-rod').textContent   = rodNames[this.player.rodLevel];
-        document.getElementById('h-boat').textContent  = this.player.boatLevel === 0 ? "None" : `Level ${this.player.boatLevel} Boat`;
+        document.getElementById('h-rod').textContent = rodNames[this.player.rodLevel];
+        document.getElementById('h-boat').textContent = this.player.boatLevel === 0 ? "None" : `Level ${this.player.boatLevel} Boat`;
 
         // Total catches (sum of counts in slots)
         let totalCaught = 0;
@@ -353,36 +353,36 @@ export class UIManager {
     }
     // Mechanics
     openMechanics() {
-    document.getElementById('burger-dropdown')?.classList.add('hidden');
-    if (this.isOpen) return;
-    this.isOpen = true;
-    this.mechanics.open();
-      }
+        document.getElementById('burger-dropdown')?.classList.add('hidden');
+        if (this.isOpen) return;
+        this.isOpen = true;
+        this.mechanics.open();
+    }
 
-      closeMechanics() {
-          this.mechanics.close();
-          this.isOpen = false;
-      }
+    closeMechanics() {
+        this.mechanics.close();
+        this.isOpen = false;
+    }
 
-      changeMechanicsPage(dir) {
-          this.mechanics.changePage(dir);
-      }
-      // Tutorial
+    changeMechanicsPage(dir) {
+        this.mechanics.changePage(dir);
+    }
+    // Tutorial
     openTutorial() {
-      document.getElementById('burger-dropdown')?.classList.add('hidden');
-      if (this.isOpen) return;
-      this.isOpen = true;
-      this.tutorial.open(audio);
-  }
+        document.getElementById('burger-dropdown')?.classList.add('hidden');
+        if (this.isOpen) return;
+        this.isOpen = true;
+        this.tutorial.open(audio);
+    }
 
-  closeTutorial() {
-    this.tutorial.close();
-    this.isOpen = false;
-}
+    closeTutorial() {
+        this.tutorial.close();
+        this.isOpen = false;
+    }
 
-  changeTutorialPage(dir) {
-      this.tutorial.changePage(dir, audio);
-  }
+    changeTutorialPage(dir) {
+        this.tutorial.changePage(dir, audio);
+    }
 
 }
 

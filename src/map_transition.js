@@ -28,7 +28,7 @@ export class MapTransitionManager {
                 newMap = this.pendingMapChange;
                 boat.x = this.pendingBoatX;
                 player.x = this.pendingPlayerX;
-                
+
                 // Show notification for the new map
                 const mapInfo = MAPS[newMap];
                 if (mapInfo) {

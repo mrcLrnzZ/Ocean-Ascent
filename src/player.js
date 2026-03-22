@@ -68,7 +68,7 @@ export class Player {
 
         // Hunger drain timer (hunger decreases every 30 seconds during play)
         this._hungerTimer = 0;
-        this._hungerDrainInterval = 100000; // seconds between each -0.5 hunger
+        this._hungerDrainInterval = 1; // seconds between each -0.5 hunger
         this._hungerDrainAmount = 1.5;
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
