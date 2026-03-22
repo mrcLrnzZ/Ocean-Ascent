@@ -1,5 +1,8 @@
-export const W = innerWidth;
-export const H = innerHeight;
+// Fixed resolution for stable math
+export const W = 1920; 
+export const H = 1080;
+
+
 
 export const GROUND_Y = 500;
 export const WATER_Y = 600;
@@ -55,7 +58,7 @@ export const THEMES = {
       5: '#000000ff'
     }
   },
-    sunset: {
+  sunset: {
     skyTop: '#ff6600ff',
     skyBot: '#e0f000ff',
     waterTop: '#4090c880',
@@ -158,7 +161,7 @@ export const PARALLAX_LAYERS = {
     // { y: -500, width: 1900, height: 1000, scale: 1.5, speed: 0.7 },
     // { y: 200, width: 1900, height: 1000, scale: 0.5, speed: 0.8 }
   ],
-    1: [ 
+  1: [
     { y: -30, width: 2500, height: 1000, scale: 0.5, speed: 0.1 },
 
     { y: -50, width: 1900, height: 1500, scale: 0.5, speed: 0.2 },
@@ -197,13 +200,13 @@ export const MAPS = [
   {
     id: 0, name: "Sunset Shallows", requiredBoatLvl: 1, maxDepth: 1, hasDock: true, length: SHORE_LEVEL_LENGTH,
     theme: 'sunset',
-    backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
+    backgrounds: ['assets/sky_cloudssunset.png', 'assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png', 'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
   },
   {
     id: 1, name: "Sunset Shallows Mountains", requiredBoatLvl: 1, maxDepth: 5, hasDock: false, length: LEVEL_1_LENGTH,
     theme: 'sunset',
-    backgrounds: ['assets/sky_cloudssunset.png','assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png',  'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
+    backgrounds: ['assets/sky_cloudssunset.png', 'assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png', 'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 
   },
   {

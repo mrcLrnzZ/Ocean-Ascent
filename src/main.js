@@ -104,7 +104,7 @@ const fishManager = new FishManager();
 const player = new Player(fishManager); // pass fishManager to player
 const boatMerchant = new Merchant(540, GROUND_Y, "boat");
 const rodMerchant = new RodMerchant(300, GROUND_Y);
-const boat = new Boat(750, 650);
+const boat = new Boat(750, 820);
 
 const keys = {};
 let frame = 0;
