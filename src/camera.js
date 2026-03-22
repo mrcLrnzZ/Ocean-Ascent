@@ -8,7 +8,11 @@ export class Camera {
         this.y = 0;
     }
 
-    update(player, boat, debugCam, keys, W, H) {
+    update(player, boat, debugCam, keys, W, H, zoom = 1.0) {
+        // Adjust screen dimensions based on zoom
+        const targetW = W / zoom;
+        const targetH = H / zoom;
+
         if (debugCam.enabled) {
             if (keys['w'] || keys['ArrowUp']) debugCam.y -= debugCam.speed;
             if (keys['s'] || keys['ArrowDown']) debugCam.y += debugCam.speed;
@@ -18,18 +22,19 @@ export class Camera {
             this.y = debugCam.y;
         } else {
             if (player.rod.isCasting) {
-                this.x = Math.max(0, player.rod.x - W / 2);
+                this.x = Math.max(0, player.rod.x - targetW / 2);
             } else if (player.state === 'onBoat') {
-                this.x = boat.x - W / 2 + (boat.width * boat.scale) / 2;
+                this.x = boat.x - targetW / 2 + (boat.width * boat.scale) / 2;
             } else {
-                this.x = Math.max(0, player.x - W / 2);
+                this.x = Math.max(0, player.x - targetW / 2);
             }
 
             if (player.rod.isCasting) {
-                const targetCamY = player.rod.y - H / 2;
+                const targetCamY = player.rod.y - targetH / 2;
                 this.y += (targetCamY - this.y) * 0.1;
             } else {
-                this.y += (0 - this.y) * 0.1;
+                // Return to baseline height (default was 0, now -100 as per user change)
+                this.y += (-100 - this.y) * 0.1;
             }
         }
     }

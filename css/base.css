@@ -52,4 +52,6 @@ body {
     max-height: 100vh;
     max-width: 177.78vh;
     pointer-events: none;
+    z-index: 1000;
+    container-type: size; /* Crucial for responsive UI scaling */
 }

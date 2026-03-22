@@ -1,15 +1,18 @@
 /* --- HOMEPAGE --- */
 .homepage-container {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 56.25vw;
+    max-height: 100vh;
+    max-width: 177.78vh;
     overflow: hidden;
     z-index: 9999;
     pointer-events: all;
     background-color: #1a6fa0;
-    /* Fallback ocean color to prevent any brown showing */
+    container-type: size; /* Follows same 16:9 lock as canvas */
 }
 
 /* Parallax Layer Setup */
@@ -196,26 +199,27 @@
 .game-title {
     position: relative;
     font-family: 'upheaval', cursive;
-    font-size: clamp(50px, 12vw, 240px);
+    font-size: 11cqw; /* Relative to 16:9 container width */
     color: #dff6ff;
     display: inline-block;
     transform: scaleY(1.5);
-    letter-spacing: 4px;
+    letter-spacing: 0.2cqw;
+    white-space: nowrap; /* Forces one line as requested */
     margin-bottom: 40px;
     animation: titlePulse 4s ease-in-out infinite;
     text-shadow:
-        -3px -3px 0 #0b2a4a,
-        3px -3px 0 #0b2a4a,
-        -3px 3px 0 #0b2a4a,
-        3px 3px 0 #0b2a4a,
-        0 -3px 0 #0b2a4a,
-        0 3px 0 #0b2a4a,
-        -3px 0 0 #0b2a4a,
-        3px 0 0 #0b2a4a,
-        6px 8px 0 rgba(0, 40, 80, 0.6),
-        0 0 20px rgba(120, 200, 255, 0.9),
-        0 0 50px rgba(80, 170, 255, 0.7),
-        0 0 100px rgba(40, 140, 255, 0.5);
+        -0.2cqw -0.2cqw 0 #0b2a4a,
+        0.2cqw -0.2cqw 0 #0b2a4a,
+        -0.2cqw 0.2cqw 0 #0b2a4a,
+        0.2cqw 0.2cqw 0 #0b2a4a,
+        0 -0.2cqw 0 #0b2a4a,
+        0 0.2cqw 0 #0b2a4a,
+        -0.2cqw 0 0 #0b2a4a,
+        0.2cqw 0 0 #0b2a4a,
+        0.4cqw 0.5cqw 0 rgba(0, 40, 80, 0.6),
+        0 0 1.5cqw rgba(120, 200, 255, 0.9),
+        0 0 3.5cqw rgba(80, 170, 255, 0.7),
+        0 0 7cqw rgba(40, 140, 255, 0.5);
 }
 
 /* Wave ripple on each letter */
@@ -358,7 +362,7 @@
     align-items: center;
     width: 100%;
     max-width: 300px;
-    transform: translate(30vw, 30vh);
+    transform: translate(30vw, 30vh); /* Restored to exactly what you had bruh */
 }
 
 .menu-button {

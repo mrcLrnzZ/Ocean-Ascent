@@ -147,7 +147,7 @@
     position: absolute;
     top: 35%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 800px; height: 600px;
+    width: 65cqw; height: 65cqh;
     display: none;
     flex-direction: column;
     align-items: center;
@@ -168,17 +168,17 @@
 
 #new-bag-grid {
     display: grid;
-    grid-template-columns: repeat(3, 200px);
+    grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
-    gap: 40px;
-    margin-top: 210px;
-    margin-left: 40px;
-    width: 90%;
+    gap: 3cqw;
+    margin-top: 18cqh;
+    margin-left: 2cqw;
+    width: 85%;
 }
 
 .inv-slot {
-    width: 210px;
-    height: 140px;
+    width: 16cqw;
+    height: 18cqh;
     background: rgba(0, 0, 0, 0.05);
     border: 2px dashed rgba(100, 100, 100, 0.1);
     border-radius: 8px;
@@ -221,10 +221,10 @@
 
 #eat-sell-panel {
     position: absolute;
-    top: 100%;
+    top: 98%;
     left: 50%;
     transform: translateX(-50%);
-    width: 440px;
+    width: 35cqw;
     display: flex;
     flex-direction: column;
     align-items: center;

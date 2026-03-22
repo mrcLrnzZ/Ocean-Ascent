@@ -27,14 +27,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 32px;
-    background: transparent;
-    padding: 20px;
-    margin-top: 150px;
-    max-width: 8000px;
-    width: 95vw;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
     animation: go-inner-pop 0.8s ease-out forwards;
-
 }
 
 @keyframes go-inner-pop {
@@ -43,50 +39,48 @@
 }
 
 #gameover-img {
-    max-width: 100%;
-    height: 800px;
+    height: 70cqh;
+    max-width: 90cqw;
     filter: drop-shadow(0 0 25px rgba(255, 40, 40, 0.6));
     animation: img-pulse 3s ease-in-out infinite;
     image-rendering: pixelated;
+    object-fit: contain;
 }
 
 
 
 #gameover-stats {
     display: flex;
-    gap: 32px;
+    gap: 2cqw;
     border-radius: 12px;
-    padding: 18px 40px;
+    padding: 1.5cqh 3cqw;
     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    font-size: 18px;
+    font-size: 1.8cqh;
     color: #000000;
     letter-spacing: 1px;
-    transform: translateY(-350px);
+    margin-top: -30cqh; /* Adjusted relative position */
 }
 
 #gameover-buttons {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
-    transform: translate(20px, -380px);
-
+    margin-top: 2cqh;
 }
 
 #gameover-home-btn {
     font-family: 'upheaval', cursive;
-    font-size: 16px;
-    padding: 14px 40px;
-    border-radius: 12px;
+    padding: 1.5cqh 4cqw;
+    border-radius: 1.2cqh;
     cursor: pointer;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.15cqw;
     text-transform: uppercase;
     transition: all 0.2s ease;
     pointer-events: all;
     background: linear-gradient(135deg, rgba(145, 0, 0, 0.95) 0%, rgba(139, 0, 0, 0.95) 100%);
-    border: 2px solid rgba(255, 0, 0, 0.6);
+    border: 0.2cqh solid rgba(255, 0, 0, 0.6);
     color: rgba(255, 0, 0, 0.95);
-    font-size: xx-large;
-    box-shadow: 0 4px 20px rgba(255, 0, 0, 0.25);
+    font-size: 4cqh;
+    box-shadow: 0 0.4cqh 2cqh rgba(255, 0, 0, 0.25);
 }
 
 #gameover-home-btn:hover {
