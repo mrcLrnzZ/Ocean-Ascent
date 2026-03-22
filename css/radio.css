@@ -1,9 +1,8 @@
-/* --- RADIO UI --- */
 #radio-container {
     position: absolute;
-    bottom: -300px; /* Hide initially below screen */
-    right: 30px;
-    width: 220px;
+    bottom: -50cqh; /* Hide initially below 16:9 safe zone */
+    right: 2cqw;
+    width: 14cqw;
     transition: bottom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2), 
                 top 0.5s ease, left 0.5s ease, transform 0.5s ease;
     pointer-events: auto;
@@ -12,7 +11,7 @@
 }
 
 #radio-container.visible {
-    bottom: 25px;
+    bottom: 2cqh;
 }
 
 /* Middle of Screen State */
@@ -36,15 +35,14 @@
     z-index: 0;
 }
 
-/* Black Strip Screen */
 .radio-screen {
     position: absolute;
     top: 40%; /* Positioned middle of radio */
     left: 55%;
     width: 39%;
-    height: 28px;
+    height: 3cqh;
     background: #080808;
-    border: 1px solid #222;
+    border: 0.1cqw solid #222;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -61,10 +59,10 @@
 #song-name {
     color: #00ff44; /* Retro green display */
     font-family: 'upheaval', cursive;
-    font-size: 10px;
-    letter-spacing: 1px;
+    font-size: 0.8cqw;
+    letter-spacing: 0.05cqw;
     text-transform: uppercase;
-    text-shadow: 0 0 5px rgba(0, 255, 68, 0.5);
+    text-shadow: 0 0 0.5cqw rgba(0, 255, 68, 0.5);
 }
 
 @keyframes radio-scroll {
@@ -121,17 +119,17 @@
     all: unset;
     background-color: #bd6b00;
     color: #3a2300;
-font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     position: absolute;
-    border-radius: 5px 5px 0 0;
+    border-radius: 0.4cqw 0.4cqw 0 0;
     cursor: pointer;
-    bottom: 12px;
-    right: 250px;
-    padding: 0px 14px;
-    font-size: 22px;
+    bottom: 0px;
+    right: 16cqw; 
+    padding: 0px 1cqw;
+    font-size: 1.2cqw;
     opacity: 0.5;
-    transform: translateY(20px);
-    height: 40px;
+    transform: translateY(1.5cqh);
+    height: 6cqh;
     z-index: 1001;
     pointer-events: all;
 }
