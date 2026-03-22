@@ -58,6 +58,14 @@ export const endingDockOverlay = {
     scale: 2
 };
 
+export const dockOverlayData = { // Renamed to avoid confusion with endingDockOverlay
+    x: 540,
+    y: 545,
+    w: 131,
+    h: 31,
+    scale: 5
+};
+
 export const deepsoil = {
     x: 0,
     y: 2890,
@@ -81,26 +89,33 @@ export function drawDock(ctx, cx, currentMap) {
         if (endingDockImg.complete && endingDockImg.naturalWidth !== 0) {
             ctx.drawImage(endingDockImg, drawX, drawY, drawW, drawH);
         }
-    } else {
-        if (dockImg.complete && dockImg.naturalWidth !== 0) {
-            ctx.drawImage(dockImg, drawX, drawY, drawW, drawH);
-        }
     }
 }
 
 export function drawDockOverlay(ctx, cx, currentMap) {
-    if (currentMap !== MAPS.length - 1) return;
+    if (!MAPS[currentMap].hasDock) return;
 
     const gx = -cx;
     ctx.imageSmoothingEnabled = false;
-    
-    const drawX = endingDockOverlay.x + gx;
-    const drawY = endingDockOverlay.y - (endingDockOverlay.h * endingDockOverlay.scale);
-    const drawW = endingDockOverlay.w * endingDockOverlay.scale;
-    const drawH = endingDockOverlay.h * endingDockOverlay.scale;
 
-    if (endingDockOverlayImg.complete && endingDockOverlayImg.naturalWidth !== 0) {
-        ctx.drawImage(endingDockOverlayImg, drawX, drawY, drawW, drawH);
+    if (currentMap === MAPS.length - 1) { // Ending Map
+        const drawX = endingDockOverlay.x + gx;
+        const drawY = endingDockOverlay.y - (endingDockOverlay.h * endingDockOverlay.scale);
+        const drawW = endingDockOverlay.w * endingDockOverlay.scale;
+        const drawH = endingDockOverlay.h * endingDockOverlay.scale;
+
+        if (endingDockOverlayImg.complete && endingDockOverlayImg.naturalWidth !== 0) {
+            ctx.drawImage(endingDockOverlayImg, drawX, drawY, drawW, drawH);
+        }
+    } else if (currentMap === 0) { // First Map
+        const drawX = dockOverlayData.x + gx;
+        const drawY = dockOverlayData.y - (dockOverlayData.h * dockOverlayData.scale);
+        const drawW = dockOverlayData.w * dockOverlayData.scale;
+        const drawH = dockOverlayData.h * dockOverlayData.scale;
+
+        if (dockImg.complete && dockImg.naturalWidth !== 0) {
+            ctx.drawImage(dockImg, drawX, drawY, drawW, drawH);
+        }
     }
 }
 

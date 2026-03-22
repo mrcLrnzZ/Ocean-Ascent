@@ -75,7 +75,7 @@ export class Merchant {
 
 export class RodMerchant extends Merchant {
     constructor(x, y) {
-        super(x, y, "rod");
+        super(x, y + 8, "rod"); // Fixed initial position to stand on ground
         this.frameH = 94; // New sprite height
         this.onBoat = false;
         this.walkingToBoat = false;
@@ -97,7 +97,7 @@ export class RodMerchant extends Merchant {
         this.onBoat = false;
         this.disembarked = true;
         this.targetDisembarkX = targetX;
-        this.y = GROUND_Y;
+        this.y = GROUND_Y + 8; // Stand firmly on shore
         this.currentMapId = mapId;
         
         if (shouldWait) {
@@ -119,9 +119,9 @@ export class RodMerchant extends Merchant {
             // Middle of the boat
             this.x = boat.x + (bounds.width / 2) - (this.frameW * this.scale) / 2;
 
-            // Floating with waves (similar to boat/player logic)
+            // Sync with boat height - adjusted to stand on deck
             const floatingY = waveSurf(boat.x + bounds.width / 2, frame) - bounds.height * 0.8;
-            this.y = floatingY + boat.floorYOffset;
+            this.y = floatingY + boat.floorYOffset + 8; // Added +8 offset to fix "floating" look
 
             this.img = this.idleImg;
             this.interactionRadius = 100;

@@ -313,33 +313,32 @@ function loop(timestamp) {
             boatMerchant.draw(ctx, cameraX, player);
         }
 
-        drawDock(ctx, cameraX, currentMap);
+        drawDock(ctx, cameraX, currentMap); // pang ending syuugg (nakakalito e)
 
-        if (player.state !== 'onBoat' || player.state === 'onBoat') {
-            player.draw(ctx, cameraX);
-        }
-
-        if (rodMerchant.onBoat || rodMerchant.currentMapId === currentMap) {
+        if (player.state !== 'onBoat') player.draw(ctx, cameraX);
+        if (!rodMerchant.onBoat && rodMerchant.currentMapId === currentMap) {
             rodMerchant.draw(ctx, cameraX, player);
         }
 
-        drawDockOverlay(ctx, cameraX, currentMap);
+        drawDockOverlay(ctx, cameraX, currentMap); // pang shore
+
+        if (player.state === 'onBoat') player.draw(ctx, cameraX);
+        if (rodMerchant.onBoat) rodMerchant.draw(ctx, cameraX, player);
+
+        boat.draw(ctx, cameraX, frame, player);
 
         // Draw fish for this map (depth < 5) before the foreground overlay
         fishManager.draw(ctx, cameraX, (f) => f.mapId === currentMap && f.depthLevel < 5);
 
         boat.draw(ctx, cameraX, frame, player);
 
-        // 6. Foreground layers
         drawWaterForeground(ctx, cameraX, frame, currentMap);
 
-        // Draw Abyss fish (depth 5) for this map after the pitch-black overlay to keep them visible
         fishManager.draw(ctx, cameraX, (f) => f.mapId === currentMap && f.depthLevel === 5);
         effectManager.draw(ctx, cameraX);
         drawDeepSoil(ctx, cameraX, currentMap);
         ctx.restore();
 
-        // Weather effects drawn in SCREEN-SPACE (after restore) so they don't scroll
         WeatherSystem.drawWeatherEffects(ctx, cameraY);
 
         if (transitionManager.active) {
