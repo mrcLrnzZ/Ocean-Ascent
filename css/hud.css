@@ -182,21 +182,15 @@
    ============================================================ */
 #survival-hud {
     position: absolute;
-    bottom: 16px;
-    left: 16px;
+    bottom: 2cqh; /* Anchored to bottom edge of 16:9 box */
+    left: 1.5cqw;  /* Anchored to left edge */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 0.5cqh;
     pointer-events: none;
     z-index: 1000;
-    padding: 8px 10px;
-
-    /* ↓↓ SCALE THE HUD RELATIVE TO CONTAINER ↓↓ */
-    transform: scale(calc(1 * 2 / 100 * 1cqw)); /* Proportional scale */
-    width: 20cqw;
-    transform-origin: bottom left;
-    transform-origin: bottom left;
+    transform: none; /* Removed the scale to fix layout gaps */
 }
 
 
@@ -217,14 +211,14 @@
 
 /* Heart icons: 25x27 */
 .heart-icon {
-    width: 25px;
-    height: 24px;
+    width: 2.2cqw; /* Relative size instead of scale */
+    height: 4.0cqh;
 }
 
 /* Hunger icons: 55x59 – scale down to not be massive in the HUD */
 .hunger-icon {
-    width: 27px;   /* display at roughly half the raw size so the row is similar width to hearts */
-    height: 29px;
+    width: 2.4cqw; /* Relative size instead of scale */
+    height: 4.5cqh;
 }
 
 /* ── Hunger warning blink animations on the row container ── */
