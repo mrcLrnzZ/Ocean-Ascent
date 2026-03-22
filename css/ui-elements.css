@@ -37,43 +37,37 @@
 
 #level-notif {
     position: absolute;
-    top: 40px;          
-    right: 20px;      
-    transform: translateX(120%); /* starts off-screen */
-
+    top: 40px;
+    right: 20px;
+    transform: translateX(120%);
     pointer-events: none;
     opacity: 0;
-
     white-space: nowrap;
     font-family: 'upheaval', cursive;
     color: #ffd18a;
     font-size: 24px;
     text-align: right;
-
-    text-shadow: 0 0 10px rgba(2, 2, 2, 0.9), 
+    text-shadow: 0 0 10px rgba(2, 2, 2, 0.9),
                  0 0 40px rgba(0, 150, 255, 0.5),
                  0 0 60px rgba(0, 150, 255, 0.3),
                  4px 4px 0px rgba(0, 0, 0, 0.8);
-
     letter-spacing: 4px;
     z-index: 2000;
-
-    transition: 
+    transition:
         transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275),
         opacity 0.6s ease;
-
     filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
 }
 
 #level-notif.show {
-    transform: translateX(0); /* slide INTO view */
+    transform: translateX(0);
     opacity: 1;
 }
 
 #level-notif div {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* right-align inner items */
+    align-items: flex-end;
     justify-content: center;
 }
 
@@ -82,55 +76,168 @@ button {
     pointer-events: all;
     cursor: pointer;
     font-family: 'upheaval', cursive;
-    background: linear-gradient(135deg, rgba(35, 65, 90, 0.8) 0%, rgba(25, 50, 75, 0.8) 100%);
-    border: 2px solid rgba(100, 180, 255, 0.6);
-    border-radius: 10px;
-    color: rgba(150, 220, 255, 0.85);
-    transition: all 0.3s ease;
-    text-shadow: 0 0 5px rgba(100, 180, 255, 0.3);
-    box-shadow: 0 4px 12px rgba(0, 80, 150, 0.15);
-    padding: 6px 12px;
-    backdrop-filter: blur(3px);
+    font-size: 17px;
+    letter-spacing: 2.5px;
+    color: #ffe8a0;
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    background: linear-gradient(to bottom,
+        #d9922a 0%,
+        #b86e18 28%,
+        #9a560e 60%,
+        #7c3e08 100%
+    );
+
+    padding: 12px 28px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 230, 140, 0.5),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+        inset 1px 0 0 rgba(255, 200, 80, 0.15),
+        inset -1px 0 0 rgba(0, 0, 0, 0.25),
+        0 0 0 1px #1e0a02,
+        0 1px 0 1px #1e0a02,
+        0 0 0 2px #c07828,
+        0 0 0 3px #1e0a02,
+        0 5px 0 3px #3a1806,
+        0 8px 16px rgba(0, 0, 0, 0.7);
+
+    text-shadow:
+        0 1px 0 #1a0800,
+        1px 1px 0 #1a0800;
+
+    transition: background 0.1s, box-shadow 0.1s, transform 0.08s;
+    image-rendering: pixelated;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 1px; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 245, 180, 0.65), transparent);
+    border-radius: 99px;
+    pointer-events: none;
 }
 
 button:hover {
-    background: linear-gradient(135deg, rgba(50, 90, 120, 0.9) 0%, rgba(40, 70, 100, 0.9) 100%);
-    border-color: rgba(150, 240, 150, 0.7);
-    color: rgba(180, 255, 150, 0.9);
-    box-shadow: 0 6px 20px rgba(80, 150, 100, 0.25);
-    text-shadow: 0 0 6px rgba(120, 200, 120, 0.4);
+    background: linear-gradient(to bottom,
+        #ecaa3c 0%,
+        #ca8020 28%,
+        #aa6212 60%,
+        #8a4a0a 100%
+    );
+    box-shadow:
+        inset 0 1px 0 rgba(255, 240, 160, 0.6),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+        inset 1px 0 0 rgba(255, 210, 90, 0.2),
+        inset -1px 0 0 rgba(0, 0, 0, 0.2),
+        0 0 0 1px #1e0a02,
+        0 1px 0 1px #1e0a02,
+        0 0 0 2px #d08830,
+        0 0 0 3px #1e0a02,
+        0 5px 0 3px #3a1806,
+        0 10px 20px rgba(0, 0, 0, 0.7);
+    color: #fff5c0;
     transform: translateY(-1px);
+}
+
+button:active {
+    background: linear-gradient(to bottom,
+        #7c3e08 0%,
+        #9a560e 40%,
+        #b86e18 80%,
+        #9a560e 100%
+    );
+    box-shadow:
+        inset 0 3px 6px rgba(0, 0, 0, 0.65),
+        inset 0 1px 2px rgba(0, 0, 0, 0.4),
+        0 0 0 1px #1e0a02,
+        0 0 0 2px #b06818,
+        0 0 0 3px #1e0a02,
+        0 1px 0 3px #3a1806,
+        0 3px 6px rgba(0, 0, 0, 0.6);
+    transform: translateY(3px);
 }
 
 #almanac-btn {
     position: absolute;
-    top: 8px;
+    top: 5px;
     left: 50%;
     transform: translateX(-50%);
-    margin-left: -30px;
-    padding: 4px 14px;
-    font-size: 11px;
+    margin-left: 690px;
+    padding: 5px 20px;
+    font-size: 17px;
 }
-
 #fs-btn {
     position: absolute;
     top: 8px;
     left: 50%;
-    margin-left: 60px;
     transform: translateX(-50%);
-    padding: 4px 10px;
-    font-size: 14px;
+    padding: 8px 14px;
+    font-size: 20px;
 }
-
-/* ============================================================
-   BAG BUTTON
-   ============================================================ */
 #bag-btn {
     position: absolute;
-    top: 8px;
+    top: 5px;
     left: 50%;
     margin-left: 110px;
     transform: translateX(-50%);
+    padding: 5px 20px;
+    font-size: 17px;
+          margin-left: 810px;
+}
+
+#burger-menu {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    margin-left: 190px;
+    transform: translateX(-50%);
+    z-index: 1000;
+    margin-left: 890px;
+}
+#burger-btn {
     padding: 4px 14px;
-    font-size: 11px;
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: 1px;
+}
+
+.burger-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: rgba(18, 8, 2, 0.97);
+    border: 1px solid #3a1806;
+    border-top: 1px solid #c07828;
+    border-radius: 0 0 6px 6px;
+    border-radius: 10px;
+    padding: 8px;
+    min-width: 180px;
+    z-index: 1001;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
+}
+.burger-dropdown.hidden {
+    display: none;
+}
+
+#mechanics-btn,
+#tutorial-btn {
+  margin-top: 5px;
+    padding: 8px 20px;
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
 }

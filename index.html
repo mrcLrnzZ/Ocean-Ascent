@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/homepage.css">
     <link rel="stylesheet" href="css/gameover.css">
     <link rel="stylesheet" href="css/almanac.css">
+    <link rel="stylesheet" href="css/tutorial.css">
 </head>
 
 <body>
@@ -43,7 +44,10 @@
 
         <!-- Homepage Content -->
         <div class="homepage-content">
-            <h1 class="game-title">Ocean Ascent</h1>
+          <h1 class="game-title" data-text="OCEAN ASCENT">
+      <span>O</span><span>C</span><span>E</span><span>A</span><span>N</span>
+      <span>A</span><span>S</span><span>C</span><span>E</span><span>N</span><span>T</span>
+</h1>
             <div class="menu-buttons">
                 <button id="startBtn" class="menu-button">[ PLAY ]</button>
             </div>
@@ -95,8 +99,17 @@
 
 
 
-        <button id="almanac-btn">📖 Almanac</button>
-        <button id="bag-btn" onclick="openBag()">🎒 Bag</button>
+        <button id="almanac-btn"> Almanac </button>
+        <button id="bag-btn" onclick="openBag()"> Bag </button>
+        <div id="burger-menu">
+        <button id="burger-btn" onclick="toggleBurgerMenu()">☰</button>
+        <div id="burger-dropdown" class="burger-dropdown hidden">
+          <button id="mechanics-btn" onclick="openMechanics()">Mechanics</button>
+          <button id="tutorial-btn" onclick="openTutorial()">How to Play</button>
+        </div>
+      </div>
+
+
 
         <div id="power-wrap">
             <div class="lbl">PWR</div>
@@ -121,7 +134,7 @@
         </div>
 
         <button id="debug-btn"
-            style="position:absolute; top: 10px; right: 80px; z-index: 1000; padding: 5px; cursor: pointer;">Debug Cam:
+            style="position:absolute; top: 5px; right: 350px; z-index: 1000; padding: 5px; cursor: pointer;">Debug Cam:
             OFF</button>
 
         <!-- Weather Control Panel -->
@@ -135,7 +148,7 @@
                 <button onclick="window.setWeather('foggy')"  style="flex:1; min-width:60px; padding:3px 6px; cursor:pointer; background:#2a3040; border:1px solid #6a7888; color:#cce; border-radius:4px;">🌫 Foggy</button>
             </div>
 
-          
+
         </div> -->
         <div id="sea-depth-meter"
             style="position:absolute; left: 50%; transform: translateX(-50%); bottom: 50px;  color: white; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px black; z-index: 1000; display: none;">
@@ -156,6 +169,7 @@
                 STARVING! Eat a fish!
             </div>
         </div>
+
 
         <!-- Bag / Inventory Popup -->
         <div id="bag-popup">
@@ -198,8 +212,6 @@
                 <button onclick="closeAlmanacUI()" class="close-btn">✖</button>
             </div>
 
-            <!-- Items rendered here by JS -->
-            <!-- <div id="almanac-grid" class="almanac-grid"></div> -->
             <div id="almanac-book">
                 <div class="page-wrapper">
                     <div id="left-page" class="almanac-page"></div>
@@ -217,6 +229,52 @@
             </div>
         </div>
 
+
+        <!-- tutorial -->
+        <div id="tutorial-popup" class="almanac-container" style="display:none;">
+      <div class="almanac-header">
+          <h2>How to Play</h2>
+          <button onclick="closeTutorial()" class="close-btn">✖</button>
+      </div>
+      <div id="tutorial-book">
+          <div class="page-wrapper">
+              <div id="tutorial-left" class="almanac-page tut-page"></div>
+          </div>
+          <div class="page-wrapper">
+              <div id="tutorial-right" class="almanac-page tut-page"></div>
+          </div>
+      </div>
+      <div class="almanac-footer">
+          <button id="tut-btn-prev" class="page-btn" onclick="changeTutorialPage(-1)">◀ Prev</button>
+          <span id="tutorial-page-num">1 / 4</span>
+          <button id="tut-btn-next" class="page-btn" onclick="changeTutorialPage(1)">Next ▶</button>
+      </div>
+  </div>
+
+
+    <div id="mechanics-popup" class="almanac-container" style="display:none;">
+
+        <div class="almanac-header">
+            <h2>Mechanics</h2>
+            <button onclick="closeMechanics()" class="close-btn">✖</button>
+        </div>
+
+        <div id="mechanics-book">
+            <div class="page-wrapper">
+                <div id="mechanics-left" class="almanac-page tut-page"></div>
+            </div>
+            <div class="page-wrapper">
+                <div id="mechanics-right" class="almanac-page tut-page"></div>
+            </div>
+        </div>
+
+        <div class="almanac-footer">
+            <button id="mech-btn-prev" class="page-btn" onclick="changeMechanicsPage(-1)">◀ Prev</button>
+            <span id="mechanics-page-num">1 / 3</span>
+            <button id="mech-btn-next" class="page-btn" onclick="changeMechanicsPage(1)">Next ▶</button>
+        </div>
+
+    </div>
 
 
 

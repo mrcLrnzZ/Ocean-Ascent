@@ -2,6 +2,8 @@
 import { SPRITE_DATA } from './fish.js';
 import { audio } from './main.js';
 import { AlmanacManager } from './almanac.js';
+import { TutorialManager } from './tutorial.js';
+import { MechanicsManager } from './mechanics.js';
 
 export const boatPrices = [0, 20, 50, 100];
 export const rodPrices = [0, 0, 50, 150, 400, 800];
@@ -20,8 +22,16 @@ export class UIManager {
         window.closeBag = this.closeBag.bind(this);
         window.eatFish  = (index) => { if (this.player) this.player.eatFish(index); };
         window.sellFish = (index) => { if (this.player) this.player.sellFish(index); };
-        
+        window.toggleBurgerMenu = this.toggleBurgerMenu.bind(this);
+        window.openMechanics      = this.openMechanics.bind(this);
+        window.openTutorial       = this.openTutorial.bind(this);
+        window.closeTutorial      = this.closeTutorial.bind(this);
+        window.changeTutorialPage = this.changeTutorialPage.bind(this);
+        window.closeMechanics      = this.closeMechanics.bind(this);
+        window.changeMechanicsPage = this.changeMechanicsPage.bind(this);
+        this.tutorial = new TutorialManager();
         this.almanac = new AlmanacManager(this);
+        this.mechanics = new MechanicsManager();
     }
 
     // Dependencies injected to prevent heavy coupling
@@ -30,6 +40,7 @@ export class UIManager {
         this.boat = boatRef;
         this.onUpdateHUD = updateHUDCallback;
         this.updateHUD(); // initial render
+        this.mechanics.init(audio);
 
         // Almanac listener
         document.getElementById('almanac-btn').addEventListener('click', () => {
@@ -232,7 +243,7 @@ export class UIManager {
     onSlotClick(index) {
         const inv = this.player.inventory;
         const fish = inv[index];
-        
+
         if (!fish) {
             this.selectedSlot = null;
             document.getElementById('eat-sell-panel').style.display = 'none';
@@ -241,7 +252,7 @@ export class UIManager {
             document.getElementById('eat-sell-panel').style.display = 'flex';
             this.updateInfoPanel(fish);
         }
-        
+
         this.renderBag();
         audio.play('click');
     }
@@ -249,7 +260,7 @@ export class UIManager {
     updateInfoPanel(fish) {
         document.getElementById('info-hunger').textContent = `+${fish.hungerValue} Hunger`;
         document.getElementById('info-coins').textContent = `+$${fish.sellValue} Coins`;
-        
+
         // Update buttons
         document.getElementById('eat-btn').onclick = () => {
             this.player.eatFish(this.selectedSlot);
@@ -284,7 +295,7 @@ export class UIManager {
                 depthMeter.textContent = `Depth: ${metersDeep}m (Level ${levelNum})`;
 
                 // Show level change notification
-               
+
             } else {
                 depthMeter.style.display = 'none';
             }
@@ -299,7 +310,7 @@ export class UIManager {
         if (notif) {
             notif.textContent = msg;
             notif.style.opacity = "1";
-            
+
             if (this.notifTimeout) clearTimeout(this.notifTimeout);
             this.notifTimeout = setTimeout(() => {
                 notif.style.opacity = "0";
@@ -322,6 +333,57 @@ export class UIManager {
             }, duration);
         }
     }
+
+    toggleBurgerMenu() {
+        const dropdown = document.getElementById('burger-dropdown');
+        if (!dropdown) return;
+
+        const isHidden = dropdown.classList.toggle('hidden');
+
+        if (!isHidden) {
+            const onOutsideClick = (e) => {
+                const menu = document.getElementById('burger-menu');
+                if (menu && !menu.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    document.removeEventListener('click', onOutsideClick);
+                }
+            };
+            setTimeout(() => document.addEventListener('click', onOutsideClick), 0);
+        }
+    }
+    // Mechanics
+    openMechanics() {
+    document.getElementById('burger-dropdown')?.classList.add('hidden');
+    if (this.isOpen) return;
+    this.isOpen = true;
+    this.mechanics.open();
+      }
+
+      closeMechanics() {
+          this.mechanics.close();
+          this.isOpen = false;
+      }
+
+      changeMechanicsPage(dir) {
+          this.mechanics.changePage(dir);
+      }
+      // Tutorial
+    openTutorial() {
+      document.getElementById('burger-dropdown')?.classList.add('hidden');
+      if (this.isOpen) return;
+      this.isOpen = true;
+      this.tutorial.open(audio);
+  }
+
+  closeTutorial() {
+    this.tutorial.close();
+    this.isOpen = false;
+}
+
+  changeTutorialPage(dir) {
+      this.tutorial.changePage(dir, audio);
+  }
+
 }
 
 // Export singleton instance
