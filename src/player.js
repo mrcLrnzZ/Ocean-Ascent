@@ -68,17 +68,22 @@ export class Player {
 
         // Hunger drain timer (hunger decreases every 30 seconds during play)
         this._hungerTimer = 0;
-        this._hungerDrainInterval = 1; // seconds between each -0.5 hunger
+        this._hungerDrainInterval = 10; // seconds between each -0.5 hunger
         this._hungerDrainAmount = 1.5;
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 10000000;  // seconds
+        this._starvationInterval = 2;  // seconds
         this._starvationDamage = 1.5;
         this._isStarving = false;
 
         // Prevent stacking multiple starvation loops
         this._starvationActive = false;
+
+        // --- Regeneration Settings ---
+        this._regenTimer = 0;
+        this._regenInterval = 2;    // How often to heal (every X seconds)
+        this._regenAmount = 0.5;     // Health gained per tick (+0.5 is half a heart)
     }
 
     /**
@@ -328,6 +333,18 @@ export class Player {
             // Hunger restored — stop starvation
             this._isStarving = false;
             this._starvationTimer = 0;
+
+            // --- Regeneration mechanic (Minecraft style!) ---
+            // If the player is well-fed (max hunger), they slowly regain health.
+            if (this.hunger >= this.maxHunger && this.health < this.maxHealth) {
+                this._regenTimer += dt;
+                if (this._regenTimer >= this._regenInterval) {
+                    this._regenTimer = 0;
+                    this.health = Math.min(this.maxHealth, this.health + this._regenAmount);
+                }
+            } else {
+                this._regenTimer = 0;
+            }
         }
 
         // Update HTML UI survival bars
