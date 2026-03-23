@@ -19,9 +19,9 @@
 .parallax-layer {
     position: absolute;
     left: 0;
-    width: 200vw;
-    height: 135vh;
-    /* 5vh overfill at bottom */
+    width: 200cqw;
+    height: 135cqh;
+    /* 5cqh overfill at bottom */
     background-repeat: repeat-x;
     background-position: bottom center !important;
     background-size: auto 100%;
@@ -41,8 +41,8 @@
 
 .layer-0 {
     z-index: 1;
-    width: 150vw;
-    height: 110vh;
+    width: 150cqw;
+    height: 110cqh;
     background-image: url('../assets/0_ocean_sky_and_sun.png');
     background-size: cover !important;
     background-position: center bottom !important;
@@ -52,13 +52,13 @@
 
 .layer-mountains {
     z-index: 2;
-    height: 110vh;
+    height: 110cqh;
 
     animation: scrollParallax 30s linear infinite;
 }
 
 .layer-clouds {
-    height: 170vh;
+    height: 170cqh;
     z-index: 3;
     background-position: top !important;
     /* Clouds are in sky */
@@ -70,12 +70,12 @@
 .layer-sea {
     z-index: 4;
     top: auto;
-    /* Override the inherited -30vh top */
-    bottom: -150px;
+    /* Override the inherited -30cqh top */
+    bottom: -13cqh;
     /* Anchor flush to bottom, slight overflow to eliminate gap */
-    height: 105vh;
+    height: 105cqh;
     /* Tall enough to fill from horizon down */
-    width: 200vw;
+    width: 200cqw;
     background-size: cover !important;
     background-position: bottom center !important;
     animation: scrollParallax 5s linear infinite;
@@ -89,8 +89,8 @@
     left: 30%;
     transform: translateX(-50%);
     z-index: 10;
-    width: 240px;
-    height: 200px;
+    width: 12.5cqw;
+    height: 18.5cqh;
     pointer-events: none;
     animation: floatBoat 4s ease-in-out infinite;
 }
@@ -104,7 +104,7 @@
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
     z-index: 10;
     scale: 1.5;
-    transform: translate(-20vh, 5vh);
+    transform: translate(-20cqh, 5cqh);
 }
 
 .home-fisherman {
@@ -112,10 +112,10 @@
     bottom: 70%;
     /* Positioned on the boat */
     left: 185%;
-    width: 60px;
+    width: 3.125cqw;
     /* Adjust based on original scale */
-    height: 60px;
-    transform: translate(-8vh, 1vh);
+    height: 5.5cqh;
+    transform: translate(-8cqh, 1cqh);
     overflow: hidden;
     scale: 5;
     /* Hide other frames */
@@ -123,8 +123,8 @@
 
 .fisherman-sprite {
     height: 100%;
-    width: 240px;
-    /* 4 frames * 60px */
+    width: 12.5cqw;
+    /* 4 frames * 3.125cqw */
     image-rendering: pixelated;
     animation: playSprite 1s steps(4) infinite;
 }
@@ -135,7 +135,7 @@
     }
 
     50% {
-        transform: translateX(-50%) translateY(-10px) rotate(1deg);
+        transform: translateX(-50%) translateY(-1cqh) rotate(1deg);
     }
 
     100% {
@@ -149,7 +149,7 @@
     }
 
     to {
-        transform: translateX(-240px);
+        transform: translateX(-12.5cqw);
     }
 
     /* Shifts the entire 4-frame width over */
@@ -205,7 +205,7 @@
     transform: scaleY(1.5);
     letter-spacing: 0.2cqw;
     white-space: nowrap; /* Forces one line as requested */
-    margin-bottom: 40px;
+    margin-bottom: 2cqw;
     animation: titlePulse 4s ease-in-out infinite;
     text-shadow:
         -0.2cqw -0.2cqw 0 #0b2a4a,
@@ -284,11 +284,11 @@
     }
 
     40% {
-        transform: translateY(-12px);
+        transform: translateY(-1.1cqh);
     }
 
     60% {
-        transform: translateY(4px);
+        transform: translateY(0.4cqh);
     }
 }
 
@@ -358,23 +358,23 @@
 .menu-buttons {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0.8cqw;
     align-items: center;
     width: 100%;
-    max-width: 300px;
-    transform: translate(30vw, 30vh); /* Restored to exactly what you had bruh */
+    max-width: 15.6cqw;
+    transform: translate(30cqw, 30cqh); /* Restored to exactly what you had bruh */
 }
 
 .menu-button {
     all: unset;
     font-family: 'upheaval', cursive;
-    font-size: 92px;
+    font-size: 4.8cqw;
     font-weight: bold;
     color: #ffa237;
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-top: -108px;
+    margin-top: -5.6cqw;
     transition: color 0.2s ease, transform 0.2s ease;
     pointer-events: all;
     width: 200%;
