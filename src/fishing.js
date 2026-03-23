@@ -39,7 +39,7 @@ export class Rod {
         this.landedX = null;
         this.landedXOffset = 0;
         this.landedY = null;
-        this.sinkSpeed = 10.8;
+        this.sinkSpeed = 50.8;
         this.sinkDepth = SHORE_LINE_DEPTH;
         this.depthOffset = 0;
         this.maxDepthOffset = 0;
@@ -319,7 +319,9 @@ export class Rod {
                             fish.caught = true;
                             this.caughtFish = fish;
                             this.struggling = true;
-                            this.catchProgress = 0;
+                            // Start with a small grace period based on rarity so it doesn't instantly escape
+                            const rarity = SPRITE_DATA[this.caughtFish.type]?.rarity || 'common';
+                            this.catchProgress = rarity === 'legendary' ? 4 : (rarity === 'epic' ? 3 : 2);
                             this.hookFlash = 120;
                             audio.play('hooked');
                             break;
@@ -354,18 +356,22 @@ export class Rod {
 
             let requiredTaps = 2; // default for common
             let escapeChance = 0; // chance to escape per frame
+            let drainRate = 0.02; // how fast the meter drains per frame
 
             switch (SPRITE_DATA[this.caughtFish.type].rarity) {
-                case 'common': requiredTaps = 2; escapeChance = 0.000; break;
-                case 'uncommon': requiredTaps = 4; escapeChance = 0.000; break;
-                case 'rare': requiredTaps = 8; escapeChance = 0.0005; break; // ~6% per second
-                case 'epic': requiredTaps = 15; escapeChance = 0.001; break; // ~18% per second
-                case 'legendary': requiredTaps = 25; escapeChance = 0.002; break; // ~30% per second
-                default: requiredTaps = 2; escapeChance = 0.000; break;
+                case 'common': requiredTaps = 5; escapeChance = 0.000; drainRate = 0.02; break;
+                case 'uncommon': requiredTaps = 8; escapeChance = 0.000; drainRate = 0.03; break;
+                case 'rare': requiredTaps = 12; escapeChance = 0.0005; drainRate = 0.04; break;
+                case 'epic': requiredTaps = 20; escapeChance = 0.001; drainRate = 0.06; break;
+                case 'legendary': requiredTaps = 35; escapeChance = 0.002; drainRate = 0.08; break;
+                default: requiredTaps = 5; escapeChance = 0.000; drainRate = 0.02; break;
             }
 
-            // RNG Escape Roll
-            if (Math.random() < escapeChance) {
+            // Drain progress over time
+            this.catchProgress -= drainRate;
+
+            // RNG Escape Roll OR Drained to 0
+            if (this.catchProgress <= 0 || Math.random() < escapeChance) {
                 console.log(`${this.caughtFish.type} snapped the line and got away!`);
                 audio.play('failed');
                 this.caughtFish.caught = false;
@@ -407,7 +413,7 @@ export class Rod {
             const dist = Math.hypot(dx, dy);
 
             // Dynamic reel speed: faster if empty hook (15), slower if fish caught (3)
-            const reelSpeed = this.caughtFish ? 5 : 10;
+            const reelSpeed = this.caughtFish ? 50 : 50;
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
@@ -569,37 +575,7 @@ export class Rod {
             }
         }
 
-        // Struggle minigame UI
-        if (this.struggling && this.caughtFish) {
-            let requiredTaps = 2;
-            const fishRarity = SPRITE_DATA[this.caughtFish.type]?.rarity || 'common';
-            switch (fishRarity) {
-                case 'common': requiredTaps = 2; break;
-                case 'uncommon': requiredTaps = 4; break;
-                case 'rare': requiredTaps = 8; break;
-                case 'epic': requiredTaps = 15; break;
-                case 'legendary': requiredTaps = 25; break;
-            }
-
-            // Draw progress bar above the fish
-            const barW = 100;
-            const barH = 10;
-            ctx.fillStyle = 'rgba(0,0,0,0.7)';
-            ctx.fillRect(screenX - barW / 2, screenY - 40, barW, barH);
-
-            // Progress fill
-            const fillRatio = Math.max(0, Math.min(1.0, this.catchProgress / requiredTaps));
-            ctx.fillStyle = fillRatio > 0.8 ? '#00ff00' : (fillRatio > 0.3 ? '#ffff00' : '#ff0000');
-            ctx.fillRect(screenX - barW / 2, screenY - 40, barW * fillRatio, barH);
-
-            ctx.fillStyle = 'white';
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = 3;
-            ctx.font = 'bold 14px monospace';
-            ctx.textAlign = 'center';
-            ctx.strokeText('Spam [F]!', screenX, screenY - 50);
-            ctx.fillText('Spam [F]!', screenX, screenY - 50);
-        }
+        // Struggle Minigame UI moved out to drawMinigameUI to stand above fish overlays
 
         ctx.restore();
 
@@ -640,6 +616,43 @@ export class Rod {
             ctx.fillText(label, playerScreenX, this.player.y - 12);
             ctx.restore();
         }
+    }
+
+    drawMinigameUI(ctx, cameraX) {
+        if (!this.struggling || !this.caughtFish) return;
+
+        const screenX = this.x - cameraX;
+        const screenY = this.y;
+
+        let requiredTaps = 5;
+        const fishRarity = SPRITE_DATA[this.caughtFish.type]?.rarity || 'common';
+        switch (fishRarity) {
+            case 'common': requiredTaps = 5; break;
+            case 'uncommon': requiredTaps = 8; break;
+            case 'rare': requiredTaps = 12; break;
+            case 'epic': requiredTaps = 20; break;
+            case 'legendary': requiredTaps = 35; break;
+        }
+
+        // Draw progress bar above the fish
+        const barW = 100;
+        const barH = 10;
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        // Placed much higher (-70) so it visibly floats above larger fish
+        ctx.fillRect(screenX - barW / 2, screenY - 70, barW, barH); 
+
+        // Progress fill
+        const fillRatio = Math.max(0, Math.min(1.0, this.catchProgress / requiredTaps));
+        ctx.fillStyle = fillRatio > 0.8 ? '#00ff00' : (fillRatio > 0.3 ? '#ffff00' : '#ff0000');
+        ctx.fillRect(screenX - barW / 2, screenY - 70, barW * fillRatio, barH);
+
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 3;
+        ctx.font = 'bold 14px monospace';
+        ctx.textAlign = 'center';
+        ctx.strokeText('Spam [F]!', screenX, screenY - 80);
+        ctx.fillText('Spam [F]!', screenX, screenY - 80);
     }
 
     reset() {

@@ -95,7 +95,6 @@ const mapSpawnTable = {
         2: [ // Mid-water — slightly deeper, still safe
             { type: 'bluetang',   prob: 0.20 },
             { type: 'clownfish', prob: 0.40 },
-            { type: 'devilfish', prob: 0.40 }
         ]
         // Depths 3-5 are not accessible on Shore (maxDepth: 2)
     },
@@ -110,7 +109,6 @@ const mapSpawnTable = {
         2: [ // Shallows
             { type: 'bluetang',    prob: 0.10 },
             { type: 'clownfish',  prob: 0.40 },
-            { type: 'devilfish',  prob: 0.30 },
             { type: 'swordfish',  prob: 0.20 }
         ],
         3: [ // Mid-Deep
@@ -129,7 +127,9 @@ const mapSpawnTable = {
         5: [ // Deep — NO abyssal legendaries yet on Map 1
             { type: 'veiltail',   prob: 0.35 },
             { type: 'anglerfish', prob: 0.35 },
-            { type: 'orca',       prob: 0.30 }
+            { type: 'orca',       prob: 0.30 },
+            { type: 'vampiresquid',       prob: 0.30 }
+
         ]
     },
 
@@ -141,7 +141,6 @@ const mapSpawnTable = {
             { type: 'devilfish',  prob: 0.33 }
         ],
         2: [ // Shallows
-            { type: 'devilfish',  prob: 0.20 },
             { type: 'swordfish',  prob: 0.25 },
             { type: 'flowerhead', prob: 0.25 },
             { type: 'choifish',   prob: 0.30 }
@@ -172,20 +171,21 @@ const mapSpawnTable = {
         1: [ // Surface (night sky)
             { type: 'bluetang',    prob: 0.35 },
             { type: 'clownfish',  prob: 0.25 },
-            { type: 'devilfish',  prob: 0.25 },
-            { type: 'swordfish',  prob: 0.15 }
+            { type: 'swordfish',  prob: 0.15 },
+            { type: 'devilfish',  prob: 0.25 }
         ],
         2: [ // Shallows
             { type: 'swordfish',  prob: 0.30 },
             { type: 'flowerhead', prob: 0.30 },
             { type: 'choifish',   prob: 0.25 },
-            { type: 'devilfish',  prob: 0.15 }
         ],
         3: [ // Mid-Deep
             { type: 'choifish',         prob: 0.25 },
             { type: 'turtle',           prob: 0.25 },
             { type: 'shark',            prob: 0.25 },
-            { type: 'doomsdayoarfish',  prob: 0.25 }
+            { type: 'doomsdayoarfish',  prob: 0.25 },
+            { type: 'halfmoon',          prob: 0.15 }
+
         ],
         4: [ // Trench — heavy predators
             { type: 'orca',             prob: 0.10 },

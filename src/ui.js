@@ -321,8 +321,9 @@ export class UIManager {
     showLevelPopup(title, duration = 4000) {
         const notif = document.getElementById('level-notif');
         if (notif) {
-            notif.innerHTML = `<div style="font-size: 16px; opacity: 0.8; margin-bottom: 5px; letter-spacing: 5px; font-weight: 100;">NOW ENTERING</div>
-                               <div style="font-size: 48px; text-transform: uppercase; font-weight: bold;">${title}</div>`;
+            notif.innerHTML = `<div class="level-label">NOW ENTERING</div>
+                               <div class="level-title">${title}</div>`;
+
             notif.classList.add('show');
 
             if (this.levelNotifTimeout) clearTimeout(this.levelNotifTimeout);

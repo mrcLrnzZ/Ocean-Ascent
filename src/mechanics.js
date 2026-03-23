@@ -24,10 +24,10 @@ const section = (heading, paragraphs) => `
 `;
 
 const bullet = (items) => `
-    <div style="display:flex; flex-direction:column; gap:5px; padding: 4px 0 8px 4px;">
+    <div class="tut-bullet-list">
         ${items.map(item => `
-            <div style="display:flex; gap:8px; align-items:flex-start;">
-                <span style="color:#8a1010; font-family:'Georgia',serif; font-size:14px; flex-shrink:0; margin-top:1px;">◆</span>
+            <div class="tut-bullet-item">
+                <span class="tut-bullet-icon">◆</span>
                 <span class="tut-step-desc">${item}</span>
             </div>
         `).join('')}
@@ -42,10 +42,8 @@ const tip = (label, desc, color = '#8a1010') => `
 `;
 
 const loopStep = (num, text) => `
-    <div style="display:flex; gap:10px; align-items:flex-start; padding:7px 8px;
-                border-bottom:1px solid rgba(58,34,16,.14);">
-        <span style="font-family:'Georgia',serif; font-style:italic; font-size:16px;
-                     color:#8a1010; min-width:24px; flex-shrink:0;">${num}.</span>
+    <div class="tut-loop-step">
+        <span class="tut-loop-num">${num}.</span>
         <span class="tut-step-desc" style="font-style:normal;">${text}</span>
     </div>
 `;

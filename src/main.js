@@ -55,7 +55,7 @@ startBtn.addEventListener('click', () => {
         const gameCanvas = document.getElementById('gameCanvas');
         const overlay = document.getElementById('overlay');
 
-        const banana = true;
+        const banana = false;
 
         if (banana) {
 
@@ -133,6 +133,14 @@ let hasReachedEndingDock = false;
 let _lastTime = null; // for real delta-time
 
 uiManager.init(player, boat);
+
+const complete = document.getElementById('complete-btn');
+if (complete) {
+    complete.addEventListener('click', () => {
+        transitionManager.bypassRequirements = true;
+        uiManager.showNotification("Requirements bypassed! You can now sail anywhere.");
+    });
+}
 
 // 3. INPUT LISTENERS
 window.addEventListener('keydown', e => keys[e.key] = true);
@@ -354,6 +362,12 @@ function loop(timestamp) {
 
         fishManager.draw(ctx, cameraX, (f) => f.mapId === currentMap && f.depthLevel === 5);
         effectManager.draw(ctx, cameraX);
+
+        // Draw Fishing Minigame UI so it floats above fish
+        if (player.rod) {
+            player.rod.drawMinigameUI(ctx, cameraX);
+        }
+
         drawDeepSoil(ctx, cameraX, currentMap);
         ctx.restore();
 
