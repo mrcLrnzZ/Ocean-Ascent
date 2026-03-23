@@ -13,6 +13,7 @@ export class MapTransitionManager {
         this.pendingMapChange = null;
         this.pendingPlayerX = null;
         this.pendingBoatX = null;
+        this.bypassRequirements = false; // Added for bypass functionality
     }
 
     updateTransition(currentMap, boat, player) {
@@ -59,7 +60,8 @@ export class MapTransitionManager {
                 const targetMap = currentMap + 1;
                 const nextMapReq = MAPS[targetMap].requiredBoatLvl;
                 
-                let canEnter = false;
+                let canEnter = this.bypassRequirements; // Default to bypass if active
+                if (!canEnter) {
                 if (targetMap === 4) {
                     const totalFishTypes = Object.keys(SPRITE_DATA).length;
                     const caughtCount = Object.keys(player.caughtFishCounts).length;
@@ -85,6 +87,7 @@ export class MapTransitionManager {
                         if (uiManager) {
                             uiManager.showNotification(`Need Level ${nextMapReq} Boat to sail further!`);
                         }
+                    }
                     }
                 }
 

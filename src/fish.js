@@ -9,10 +9,9 @@ export const SPRITE_DATA = {
     clownfish: { src: 'assets/fish/clownfish.png', almanacSrc: 'assets/almanac/almanacClownfish.png', frames: 5, renderScale: 1, name: 'Clownfish', rarity: 'common', price: 15, hungerValue: 1, desc: 'A vibrant reef dweller known for its bright colors.', scale: 1.4 },
 
     // Level 2: Shallows
-    devilfish: { src: 'assets/fish/devilfish.png', almanacSrc: 'assets/almanac/almanacDevilfish.png', frames: 6, renderScale: 0.29, name: 'Devilfish', rarity: 'uncommon', price: 30, hungerValue: 1.5, desc: 'A sleek and aggressive predator built for speed.', scale: 1 },
     swordfish: { src: 'assets/fish/swordfish.png', almanacSrc: 'assets/almanac/almanacSwordfish.png', frames: 4, renderScale: 0.29, name: 'Swordfish', rarity: 'uncommon', price: 28, hungerValue: 1.5, desc: 'Recognized by its long, blade-like snout.', scale: 1.2 },
     flowerhead: { src: 'assets/fish/flowerhead.png', almanacSrc: 'assets/almanac/almanacFlowerhead.png', frames: 6, renderScale: 0.29, name: 'Flowerhead', rarity: 'uncommon', price: 35, hungerValue: 1.8, desc: 'An agile fish with elegant movements.', scale: 1.4 },
-
+    devilfish: { src: 'assets/fish/devilfish.png', almanacSrc: 'assets/almanac/almanacDevilfish.png', frames: 6, renderScale: 0.29, name: 'Devilfish', rarity: 'uncommon', price: 30, hungerValue: 1.5, desc: 'A sleek and aggressive predator built for speed.', scale: 1 },
     // Level 3: Mid-Deep
     choifish: { src: 'assets/fish/choifish.png', almanacSrc: 'assets/almanac/almanacChoifish.png', frames: 6, renderScale: 0.45, name: 'Choifish', rarity: 'rare', price: 60, hungerValue: 2.5, desc: 'A deep-water species with a sturdy build.', scale: 1.9 },
     shark: { src: 'assets/fish/shark.png', almanacSrc: 'assets/almanac/almanacShark.png', frames: 5, renderScale: 2.45, name: 'Shark', rarity: 'rare', price: 70, hungerValue: 3.5, desc: 'Apex predator often found patrolling the mid-depths.', scale: 1.8 },
