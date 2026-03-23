@@ -186,46 +186,14 @@ button:active {
     right: 8cqw; /* Anchored to right edge */
 }
 
-#burger-menu {
+#mechanics-btn {
     position: absolute;
     top: 1cqh;
-    right: 1.5cqw; /* Anchored to right edge */
-    z-index: 1000;
-}
-#burger-btn {
-    padding: 0.4cqh 1cqw;
-    font-size: 1.5cqw;
-    line-height: 1;
-    letter-spacing: 0;
+    right: 28cqw;
 }
 
-.burger-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    background: rgba(18, 8, 2, 0.97);
-    border: 1px solid #3a1806;
-    border-top: 1px solid #c07828;
-    border-radius: 0 0 6px 6px;
-    border-radius: 10px;
-    padding: 8px;
-    min-width: 180px;
-    z-index: 1001;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
-}
-.burger-dropdown.hidden {
-    display: none;
-}
-
-#mechanics-btn,
 #tutorial-btn {
-    margin-top: 0.5cqh;
-    padding: 0.8cqh 1.5cqw;
-    font-size: 1.1cqw;
-    width: 100%;
-    text-align: left;
+    position: absolute;
+    top: 1cqh;
+    right: 39cqw;
 }
