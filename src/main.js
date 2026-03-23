@@ -53,6 +53,7 @@ startBtn.addEventListener('click', () => {
         // Show and play the intro video
         const introVideo = document.getElementById('introVideo');
         const gameCanvas = document.getElementById('gameCanvas');
+        const overlay = document.getElementById('overlay');
 
         const banana = true;
 
@@ -61,6 +62,7 @@ startBtn.addEventListener('click', () => {
             introVideo.style.display = 'block';
             gameCanvas.style.display = 'none';
             homepage.style.display = 'none';
+            if (overlay) overlay.style.display = 'none';
 
             introVideo.play();
 
@@ -68,6 +70,15 @@ startBtn.addEventListener('click', () => {
             introVideo.addEventListener('ended', () => {
                 introVideo.style.display = 'none';
                 gameCanvas.style.display = 'block';
+                if (overlay) overlay.style.display = 'block';
+
+                // Show initial map notification
+                const initialMap = MAPS[0];
+                uiManager.showLevelPopup(initialMap.name);
+
+                // Start with the tutorial popup
+                uiManager.openTutorial();
+
                 requestAnimationFrame(loop);
             }, { once: true });
 
@@ -75,10 +86,14 @@ startBtn.addEventListener('click', () => {
             introVideo.style.display = 'none';
             homepage.style.display = 'none';
             gameCanvas.style.display = 'block';
+            if (overlay) overlay.style.display = 'block';
 
             // Show initial map notification
             const initialMap = MAPS[0];
             uiManager.showLevelPopup(initialMap.name);
+
+            // Start with the tutorial popup
+            uiManager.openTutorial();
 
             requestAnimationFrame(loop);
         }
