@@ -420,7 +420,7 @@ export class Rod {
                     if (!added) {
                         // Bag is full — release the fish and notify
                         import('./ui.js').then(module => {
-                            module.uiManager.showNotification(`🎒 Bag full! (6/6) Eat or sell fish to make room.`, 4000);
+                            module.uiManager.showNotification(` Bag full! (6/6) Eat or sell fish to make room.`, 4000);
                         });
                         this.caughtFish.caught = false; // release back into the world
                         this.caughtFish = null;
@@ -492,8 +492,8 @@ export class Rod {
             1: '#e0e0e0', // Level 1: Bamboo (White/Grey)
             2: '#ff4d4d', // Level 2: Fiberglass (Red)
             3: '#4dff4d', // Level 3: Graphite (Green)
-            4: '#00ffe2', // Level 4: Carbon (Blue)
-            5: '#ffd700'  // Level 5: Master (Gold/Legendary)
+            4: '#ff00ffff', // Level 4: Carbon (Blue)
+            5: '#00ffffff'  // Level 5: Master (Gold/Legendary)
         };
         ctx.strokeStyle = lineColors[this.player.rodLevel] || '#e0e0e0';
         ctx.lineWidth = 1;

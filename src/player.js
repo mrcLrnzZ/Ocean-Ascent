@@ -449,10 +449,10 @@ export class Player {
             this.fishIdleImg.src = `${folder}fishidle_green.png`;
         } else if (this.rodLevel === 4) {
             const folder = 'assets/rod/';
-            this.walkImg.src = `${folder}walk_blue.png`;
-            this.idleImg.src = `${folder}idle_blue.png`;
-            this.throwImg.src = `${folder}fullthrow_blue.png`;
-            this.fishIdleImg.src = `${folder}fishidle_blue.png`;
+            this.walkImg.src = `${folder}walk_black.png`;
+            this.idleImg.src = `${folder}idle_black.png`;
+            this.throwImg.src = `${folder}fullthrow_black.png`;
+            this.fishIdleImg.src = `${folder}fishidle_black.png`;
         } else if (this.rodLevel === 5) {
             const folder = 'assets/rod/';
             this.walkImg.src = `${folder}walk_blue.png`;
