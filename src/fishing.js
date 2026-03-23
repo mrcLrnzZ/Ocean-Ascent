@@ -429,6 +429,9 @@ export class Rod {
                     }
 
                     this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
+                    
+                    this.player.caughtFishCounts[fishId] = (this.player.caughtFishCounts[fishId] || 0) + 1;
+                    
                     console.log(`Landed a ${this.caughtFish.type}! Added to bag.`);
                     audio.play('success');
                     setTimeout(() => {

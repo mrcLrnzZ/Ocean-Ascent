@@ -1,6 +1,7 @@
 // src/map_transition.js
 import { MAPS, MAP_TRANSITION_X_LEFT } from './constants.js';
 import { uiManager } from './ui.js';
+import { SPRITE_DATA } from './fish.js';
 
 export class MapTransitionManager {
     constructor() {
@@ -57,7 +58,37 @@ export class MapTransitionManager {
                 // Use jumping map for requirement check
                 const targetMap = currentMap + 1;
                 const nextMapReq = MAPS[targetMap].requiredBoatLvl;
-                if (player.boatLevel >= nextMapReq) {
+                
+                let canEnter = false;
+                if (targetMap === 4) {
+                    const totalFishTypes = Object.keys(SPRITE_DATA).length;
+                    const caughtCount = Object.keys(player.caughtFishCounts).length;
+                    if (player.boatLevel >= nextMapReq && caughtCount >= totalFishTypes) {
+                        canEnter = true;
+                    } else {
+                        boat.x = currentMapLength; // block
+                        boat.vx = 0;
+                        if (uiManager) {
+                            if (player.boatLevel < nextMapReq) {
+                                uiManager.showNotification(`Need Level ${nextMapReq} Boat to sail further!`);
+                            } else {
+                                uiManager.showNotification(`Must catch all fish kinds in Almanac (Caught: ${caughtCount}/${totalFishTypes})`);
+                            }
+                        }
+                    }
+                } else {
+                    if (player.boatLevel >= nextMapReq) {
+                        canEnter = true;
+                    } else {
+                        boat.x = currentMapLength; // block
+                        boat.vx = 0;
+                        if (uiManager) {
+                            uiManager.showNotification(`Need Level ${nextMapReq} Boat to sail further!`);
+                        }
+                    }
+                }
+
+                if (canEnter) {
                     this.active = true;
                     this.direction = 1;
                     this.sweepDir = 1;
@@ -66,12 +97,6 @@ export class MapTransitionManager {
                     this.pendingBoatX = MAP_TRANSITION_X_LEFT + 10;
                     this.pendingPlayerX = this.pendingBoatX + playerRel;
                     boat.vx = 0;
-                } else {
-                    boat.x = currentMapLength; // block
-                    boat.vx = 0;
-                    if (uiManager) {
-                        uiManager.showNotification(`Need Level ${nextMapReq} Boat to sail further!`);
-                    }
                 }
             } else {
                 boat.x = currentMapLength; // Edge of world
