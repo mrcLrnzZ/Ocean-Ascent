@@ -54,7 +54,7 @@ startBtn.addEventListener('click', () => {
         const introVideo = document.getElementById('introVideo');
         const gameCanvas = document.getElementById('gameCanvas');
 
-        const banana = false;
+        const banana = true;
 
         if (banana) {
 
@@ -193,8 +193,8 @@ function loop(timestamp) {
     if (currentMap === 4 && !hasReachedEndingDock && !transitionManager.active) {
         boat.state = 'sailing';
         boat.x += 10; // Auto-move boat towards the dock
-        if (boat.x >= 2900) {
-            boat.x = 2900;
+        if (boat.x >= 2865) {
+            boat.x = 2865;
             boat.state = 'idle';
             hasReachedEndingDock = true;
             uiManager.showNotification("You've reached the end. Congrats!");

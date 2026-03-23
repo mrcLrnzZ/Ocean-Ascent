@@ -8,7 +8,7 @@ export const GROUND_Y = 500;
 export const WATER_Y = 600;
 
 
-export const SHORE_END = 305;
+export const SHORE_END = 315;
 export const PIER_END_X = 1100;
 export const SHORE_LINE_DEPTH = 100;
 export const GRAVITY = 0.5;
@@ -79,7 +79,7 @@ export const SHORE_LEVEL_LENGTH = 5000;
 export const LEVEL_1_LENGTH = 10000;
 export const LEVEL_2_LENGTH = 10000;
 export const LEVEL_3_LENGTH = 20000;
-export const LEVEL_4_LENGTH = 2890;
+export const LEVEL_4_LENGTH = 2865;
 
 
 // MAP SYSTEM CONFIG

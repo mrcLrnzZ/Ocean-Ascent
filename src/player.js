@@ -58,6 +58,7 @@ export class Player {
         this.rod = new Rod(this, fishManager);
 
         this.inventory = new Array(6).fill(null);
+        this.caughtFishCounts = {}; // Permanent record for almanac
         this.maxSlots = 6;
 
         // --- Survival System ---
@@ -73,7 +74,7 @@ export class Player {
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 2;  // seconds
+        this._starvationInterval = 200000000;  // seconds
         this._starvationDamage = 1.5;
         this._isStarving = false;
 

@@ -92,10 +92,8 @@ export class AlmanacManager {
         }
 
         const data = SPRITE_DATA[fishId];
-        // Inventory is now an array of {type, ...} objects; count matches
-        const inv   = this.uiManager.player.inventory;
-        const count = Array.isArray(inv) ? inv.reduce((sum, f) => sum + (f && f.type === fishId ? f.count : 0), 0) : (inv[fishId] || 0);
-        const hasCaught = count > 0;
+        const caughtCount = this.uiManager.player.caughtFishCounts[fishId] || 0;
+        const hasCaught = caughtCount > 0;
         const scale = data.scale || 1;
 
         container.innerHTML = `
@@ -115,7 +113,7 @@ export class AlmanacManager {
                             ${hasCaught ? data.desc : 'Unknown species. Catch it to reveal its secrets.'}
                         </div>
 
-                        ${hasCaught ? `<div class="fish-count">Caught: ${count}</div>` : ''}
+                        ${hasCaught ? `<div class="fish-count">Caught: ${caughtCount}</div>` : ''}
                     </div>
                 </div>
 
