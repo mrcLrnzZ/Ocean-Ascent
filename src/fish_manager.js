@@ -46,10 +46,42 @@ export class FishManager {
         }
 
         // Spawn a small school of Anchovies under the shore dock (map 0)
-        for (let i = 0; i < 15; i++) {
-            const x = Math.random() * 650 + 550;
-            const y = WATER_Y + Math.random() * 80 + 30;
-            this.fishes.push(new Fish('anchovy', x, y, 1, 0));
+        this.spawnExtraFish(15, [0], [1], 'anchovy');
+    }
+
+    spawnExtraFish(fishPerLevel = 200, targetMaps = null, targetDepths = null, forceType = null) {
+        const mapsToSpawn = targetMaps || MAPS.map(m => m.id);
+        
+        for (const mapId of mapsToSpawn) {
+            const map = MAPS.find(m => m.id === mapId);
+            if (!map) continue;
+
+            const minDepth = targetDepths ? Math.min(...targetDepths) : (map.minDepth || 1);
+            const maxDepth = targetDepths ? Math.max(...targetDepths) : (map.maxDepth || 1);
+
+            for (let depth = minDepth; depth <= maxDepth; depth++) {
+                if (targetDepths && !targetDepths.includes(depth)) continue;
+
+                const minLevelY = getDepthStartLine(depth);
+                const maxLevelY = getDepthEndLine(depth);
+                const layerHeight = maxLevelY - minLevelY;
+
+                for (let i = 0; i < fishPerLevel; i++) {
+                    const y = minLevelY + 100 + Math.random() * (layerHeight - 200);
+                    const groundX = getDeepSoilX(y);
+                    const margin = 200;
+                    const safeOffset = 80;
+
+                    const minX = Math.max(groundX + safeOffset, margin);
+                    const maxX = map.length - margin;
+                    if (maxX <= minX) continue;
+                    const x = Math.random() * (maxX - minX) + minX;
+
+                    const type = forceType || getSpawnType(mapId, depth);
+                    if (!type) continue;
+                    this.fishes.push(new Fish(type, x, y, depth, mapId));
+                }
+            }
         }
     }
 

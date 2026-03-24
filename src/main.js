@@ -167,7 +167,7 @@ let rWasUp = true;
 let hasReachedEndingDock = false;
 let _lastTime = null; // for real delta-time
 
-uiManager.init(player, boat);
+uiManager.init(player, boat, fishManager);
 radio.init();
 
 const complete = document.getElementById('complete-btn');

@@ -15,6 +15,7 @@ export class Boat {
         this.floorYOffset = 140; // Adjust this to move player up/down on boat deck
 
         this.isPurchased = false;
+        this.isFlipped = false;
         this.level = 0;
         this.state = 'idle'; // 'idle', 'sailing', 'fishing'
         this.vx = 0;
@@ -105,6 +106,10 @@ export class Boat {
         ctx.save();
         ctx.translate(screenX + bounds.width / 2, floatingY + bounds.height);
         ctx.rotate(tiltAngle);
+
+        if (this.isFlipped) {
+            ctx.scale(1, -1);
+        }
 
         if (!this.img.complete || this.img.naturalWidth === 0) {
             ctx.fillStyle = "brown";

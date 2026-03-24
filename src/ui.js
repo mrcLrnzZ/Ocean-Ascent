@@ -4,6 +4,8 @@ import { audio } from './main.js';
 import { AlmanacManager } from './almanac.js';
 import { TutorialManager } from './tutorial.js';
 import { MechanicsManager } from './mechanics.js';
+import { toggleDebugCam, debugCam } from './debugcam.js';
+import { camera } from './camera.js';
 
 export const boatPrices = [0, 50, 500, 1000];
 export const rodPrices = [0, 0, 50, 150, 400, 800];
@@ -12,6 +14,7 @@ export const rodNames = ["", "Stick Rod", "Hot Rod", "Bamboo Rod", "Corrupted Ro
 export class UIManager {
     constructor() {
         this.isOpen = false;
+        this.cheatboxOpen = false;
         this.currentDepthLevel = 1;
 
         // Define missing functions correctly on the window to retain HTML onClick handlers
@@ -32,12 +35,14 @@ export class UIManager {
         this.tutorial = new TutorialManager();
         this.almanac = new AlmanacManager(this);
         this.mechanics = new MechanicsManager();
+        this.initCheatBox();
     }
 
     // Dependencies injected to prevent heavy coupling
-    init(playerRef, boatRef, updateHUDCallback) {
+    init(playerRef, boatRef, fishManagerRef, updateHUDCallback) {
         this.player = playerRef;
         this.boat = boatRef;
+        this.fishManager = fishManagerRef;
         this.onUpdateHUD = updateHUDCallback;
         this.updateHUD(); // initial render
         this.mechanics.init(audio);
@@ -390,6 +395,145 @@ export class UIManager {
         this.tutorial.changePage(dir, audio);
     }
 
+    initCheatBox() {
+        this.cheatbox = document.getElementById('cheatbox');
+        this.cheatInput = document.getElementById('cheat-input');
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === '/' && !this.isOpen) {
+                e.preventDefault();
+                this.openCheatBox();
+            }
+        });
+
+        this.cheatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                this.processCheat(this.cheatInput.value.trim().toLowerCase());
+                this.closeCheatBox();
+            } else if (e.key === 'Escape') {
+                this.closeCheatBox();
+            }
+        });
+
+        // Close when clicking outside
+        window.addEventListener('mousedown', (e) => {
+            if (this.isOpen && this.cheatboxOpen && !this.cheatbox.contains(e.target)) {
+                this.closeCheatBox();
+            }
+        });
+    }
+
+    openCheatBox() {
+        this.isOpen = true;
+        this.cheatboxOpen = true;
+        this.cheatbox.style.display = 'flex';
+        // Use a tiny timeout to ensure display: flex is set before adding the class for transition
+        setTimeout(() => {
+            this.cheatbox.classList.add('visible');
+            this.cheatInput.focus();
+        }, 10);
+    }
+
+    closeCheatBox() {
+        this.cheatbox.classList.remove('visible');
+        this.cheatInput.value = '';
+        setTimeout(() => {
+            if (!this.cheatbox.classList.contains('visible')) {
+                this.cheatbox.style.display = 'none';
+                this.isOpen = false;
+                this.cheatboxOpen = false;
+            }
+        }, 300);
+    }
+
+    processCheat(code) {
+        if (!this.player) return;
+
+        if (code === 'moremoney') {
+            this.player.money += 10000;
+            this.updateHUD();
+            this.showNotification("$$$$ MORE MONEY $$$$");
+            audio.play('buy');
+        } else if (code === 'tootired') {
+            // Complete almanac
+            const fishKeys = Object.keys(SPRITE_DATA);
+            fishKeys.forEach(fishId => {
+                this.player.caughtFishCounts[fishId] = Math.max(this.player.caughtFishCounts[fishId] || 0, 1);
+            });
+            this.showNotification("ALMANAC COMPLETED! RELAX...");
+            audio.play('sell'); // Using sell sound as a "success" sound
+        } else if (code === 'kenjimasarap0123') {
+            if (this.boat) {
+                this.boat.isFlipped = !this.boat.isFlipped;
+                this.showNotification(this.boat.isFlipped ? "BOAT FLIPPED! OH NO!" : "BOAT RESTORED! PHEW!");
+                audio.play('buy');
+            }
+        } else if (code === 'gitreset') {
+            // Revert all cheats
+            this.player.money = 20;
+            this.player.caughtFishCounts = {};
+            if (this.boat) {
+                this.boat.isFlipped = false;
+                this.boat.setLevel(this.boat.level); // Reset speed/size properties
+            }
+            
+            this.updateHUD(); // Refresh HUD with new money count
+            this.showNotification("SYSTEM RESET COMPLETE");
+            audio.play('click');
+        } else if (code === 'hesoyam') {
+            // Max health and hunger
+            this.player.health = this.player.maxHealth;
+            this.player.hunger = this.player.maxHunger;
+            this.showNotification("HEALTH & HUNGER RESTORED");
+            audio.play('buy');
+        } else if (code === 'speed1000') {
+            if (this.boat) {
+                this.boat.speed = 1000; // 1000 is likely too fast (warping through maps)
+                this.showNotification("BOAT SUPER SPEED: ON");
+                audio.play('buy');
+            }
+        } else if (code === 'cjaythedev') {
+            if (this.fishManager) {
+                this.fishManager.spawnExtraFish(1000); // Add 100 more fish per map/level
+                this.showNotification("MORE FISH TO SPAWN! REEL 'EM IN!");
+                audio.play('buy');
+            }
+        } else if (code === 'no clip') {
+            if (!debugCam.enabled) {
+                toggleDebugCam(camera.x, camera.y);
+                this.showNotification("NO CLIP MODE: ENABLED");
+            }
+        } else if (code === 'pilc on') {
+            if (debugCam.enabled) {
+                toggleDebugCam(camera.x, camera.y);
+                this.showNotification("NO CLIP MODE: DISABLED");
+            }
+        } else if (code === 'uodparty') {
+            if (this.fishManager) {
+                this.fishManager.fishes.forEach(fish => {
+                    fish.frames = 4;
+                    fish.renderScale = 0.5; // adjust for uod size
+                    fish.name = 'Uod';
+                    fish.img.src = 'assets/fish/uod.png';
+                    // The onload listener in the Fish class will re-trigger and update frameW/H
+                });
+                this.showNotification("!!! UOD PARTY TIME !!!");
+                audio.play('buy');
+            }
+        } else if (code === 'giantfih') {
+            if (this.fishManager) {
+                this.fishManager.fishes.forEach(fish => {
+                    fish.renderScale *= 5;
+                    fish.renderW = fish.frameW * fish.renderScale;
+                    fish.renderH = fish.frameH * fish.renderScale;
+                });
+                this.showNotification("GIANT FISH HAVE ARRIVED!");
+                audio.play('buy');
+            }
+        } else {
+            this.showNotification("Invalid command");
+        }
+    }
 }
 
 // Export singleton instance
