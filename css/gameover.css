@@ -39,12 +39,14 @@
 }
 
 #gameover-img {
-    height: 70cqh;
+    height: 90cqh;
     max-width: 90cqw;
     filter: drop-shadow(0 0 25px rgba(255, 40, 40, 0.6));
     animation: img-pulse 3s ease-in-out infinite;
     image-rendering: pixelated;
     object-fit: contain;
+    margin-top: 3cqh; /* Adjusted relative position */
+
 }
 
 
@@ -58,13 +60,14 @@
     font-size: 1.8cqh;
     color: #000000;
     letter-spacing: 1px;
-    margin-top: -30cqh; /* Adjusted relative position */
+    transform: translateY(-32cqh);
+
 }
 
 #gameover-buttons {
     display: flex;
     justify-content: center;
-    margin-top: 2cqh;
+    transform: translateY(-30cqh);
 }
 
 #gameover-home-btn {

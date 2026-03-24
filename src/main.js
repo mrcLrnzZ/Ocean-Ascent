@@ -55,7 +55,7 @@ startBtn.addEventListener('click', () => {
         const gameCanvas = document.getElementById('gameCanvas');
         const overlay = document.getElementById('overlay');
 
-        const banana = false;
+        const banana = true;
 
         if (banana) {
 
@@ -391,7 +391,7 @@ window.gameHome = function() {
 
 
 // para sa refresh bruh
-const efas = false;
+const efas = true;
 
 if (efas) {
     window.addEventListener('beforeunload', (e) => {
