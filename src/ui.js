@@ -5,9 +5,9 @@ import { AlmanacManager } from './almanac.js';
 import { TutorialManager } from './tutorial.js';
 import { MechanicsManager } from './mechanics.js';
 
-export const boatPrices = [0, 20, 50, 100];
+export const boatPrices = [0, 50, 500, 1000];
 export const rodPrices = [0, 0, 50, 150, 400, 800];
-export const rodNames = ["", "Bamboo Rod", "Fiberglass Rod", "Graphite Rod", "Carbon Rod", "Master Rod"];
+export const rodNames = ["", "Stick Rod", "Hot Rod", "Bamboo Rod", "Corrupted Rod", "Lightning Rod"];
 
 export class UIManager {
     constructor() {
@@ -235,6 +235,7 @@ export class UIManager {
         if (this.selectedSlot !== null && inv[this.selectedSlot]) {
             this.updateInfoPanel(inv[this.selectedSlot]);
         } else {
+            this.selectedSlot = null; // Reset selection if slot is now empty
             const panel = document.getElementById('eat-sell-panel');
             if (panel) panel.style.display = 'none';
         }
@@ -264,10 +265,14 @@ export class UIManager {
         // Update buttons
         document.getElementById('eat-btn').onclick = () => {
             this.player.eatFish(this.selectedSlot);
+            this.renderBag(); // Update bag UI
+            this.updateHUD(); // Sync health/hunger bars
             audio.play('click');
         };
         document.getElementById('sell-btn').onclick = () => {
             this.player.sellFish(this.selectedSlot);
+            this.renderBag(); // Update bag UI
+            this.updateHUD(); // Sync money display
             audio.play('click');
         };
     }

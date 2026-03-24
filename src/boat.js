@@ -26,7 +26,7 @@ export class Boat {
         this.level = lvl;
         if (lvl === 1) {
             this.img.src = 'assets/boatlvl1.png';
-            this.speed = 20;
+            this.speed = 10;
             this.scale = 6;
             this.width = 80;
             this.height = 40;
@@ -34,7 +34,7 @@ export class Boat {
         }
         if (lvl === 2) {
             this.img.src = 'assets/boatlvl2.png';
-            this.speed = 8;
+            this.speed = 20;
             this.scale = 4;
             this.width = 128;
             this.height = 128;
@@ -42,7 +42,7 @@ export class Boat {
         }
         if (lvl === 3) {
             this.img.src = 'assets/boatlvl3.png';
-            this.speed = 300;
+            this.speed = 30;
             this.scale = 6;
             this.width = 128;
             this.height = 128;

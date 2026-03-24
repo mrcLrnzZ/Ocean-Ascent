@@ -51,7 +51,7 @@ export class Player {
 
         // --- Game state ---
         this.state = 'walking'; 
-        this.money = 20000;
+        this.money = 20;
         this.boatLevel = 0;
 
         // --- Fishing ---
@@ -69,13 +69,13 @@ export class Player {
 
         // Hunger drain timer (hunger decreases every 30 seconds during play)
         this._hungerTimer = 0;
-        this._hungerDrainInterval = 10; // seconds between each -0.5 hunger
-        this._hungerDrainAmount = 1.5;
+        this._hungerDrainInterval = 30; // seconds between each -0.5 hunger
+        this._hungerDrainAmount = 0.5;
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 200000000;  // seconds
-        this._starvationDamage = 1.5;
+        this._starvationInterval = 5;  // seconds
+        this._starvationDamage = 0.5;
         this._isStarving = false;
 
         // Prevent stacking multiple starvation loops
@@ -136,8 +136,6 @@ export class Player {
         }
 
         this._updateSurvivalUI();
-        // Re-render inventory
-        import('./ui.js').then(m => m.uiManager.renderBag());
     }
 
     /**
@@ -154,11 +152,7 @@ export class Player {
             this.inventory[slotIndex] = null;
         }
 
-        // Re-render bag + HUD
-        import('./ui.js').then(m => {
-            m.uiManager.renderBag();
-            m.uiManager.updateHUD();
-        });
+        // Fish is gone
     }
 
     update(dt, G, boat, fishManager, currentMap = 0) {
