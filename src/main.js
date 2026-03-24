@@ -39,6 +39,36 @@ document.addEventListener('touchstart', startHomepageAudio, { once: true });
 // Start rain animation
 HomeWeather.init();
 
+// ─── Radio ───────────────────────────────────────────────
+const radioContainer = document.getElementById('radio-container');
+const radioBtn       = document.getElementById('radio-toggle-btn');
+
+function showRadioBtn() {
+    if (radioBtn) radioBtn.style.display = 'block';
+}
+
+if (radioBtn) {
+    radioBtn.onclick = () => {
+        if (!radioContainer) return;
+        radioContainer.classList.toggle('visible');
+        if (!radioContainer.classList.contains('visible')) {
+            radioContainer.classList.remove('centered');
+        }
+    };
+}
+
+if (radioContainer) {
+    radioContainer.addEventListener('click', (e) => {
+        if (e.target.closest('.radio-btn')) return;
+        if (e.target.id === 'radio-img' && radioContainer.classList.contains('visible')) {
+            radioContainer.classList.toggle('centered');
+            if (radioContainer.classList.contains('centered') && !radio.isPlaying) {
+                radio.play();
+            }
+        }
+    });
+}
+
 startBtn.addEventListener('click', () => {
     if (!gameStarted) {
         gameStarted = true;
@@ -55,8 +85,11 @@ startBtn.addEventListener('click', () => {
         const gameCanvas = document.getElementById('gameCanvas');
         const overlay = document.getElementById('overlay');
 
-        const banana = true;
+        const banana = false;
 
+
+
+        
         if (banana) {
 
             introVideo.style.display = 'block';
@@ -75,6 +108,7 @@ startBtn.addEventListener('click', () => {
                 // Show initial map notification
                 const initialMap = MAPS[0];
                 uiManager.showLevelPopup(initialMap.name);
+                showRadioBtn();
 
                 // Start with the tutorial popup
                 uiManager.openTutorial();
@@ -91,6 +125,7 @@ startBtn.addEventListener('click', () => {
             // Show initial map notification
             const initialMap = MAPS[0];
             uiManager.showLevelPopup(initialMap.name);
+            showRadioBtn();
 
             // Start with the tutorial popup
             uiManager.openTutorial();
@@ -133,6 +168,7 @@ let hasReachedEndingDock = false;
 let _lastTime = null; // for real delta-time
 
 uiManager.init(player, boat);
+radio.init();
 
 const complete = document.getElementById('complete-btn');
 if (complete) {
@@ -150,33 +186,6 @@ window.addEventListener('keyup', e => keys[e.key] = false);
 document.getElementById('debug-btn').addEventListener('click', () => {
     toggleDebugCam(cameraX, cameraY);
 });
-
-// Radio toggle logic
-const radioContainer = document.getElementById('radio-container');
-const radioToggleBtn = document.getElementById('radio-toggle-btn');
-if (radioToggleBtn && radioContainer) {
-    radioToggleBtn.addEventListener('click', () => {
-        radioContainer.classList.toggle('visible');
-        // If hiding, also remove centered
-        if (!radioContainer.classList.contains('visible')) {
-            radioContainer.classList.remove('centered');
-        }
-    });
-
-    // Center the radio when clicked
-    radioContainer.addEventListener('click', (e) => {
-        // Don't toggle if clicking buttons
-        if (e.target.closest('.radio-btn')) return;
-
-        if (radioContainer.classList.contains('visible')) {
-            radioContainer.classList.toggle('centered');
-            // If centered, play music if not already playing
-            if (radioContainer.classList.contains('centered') && !radio.isPlaying) {
-                radio.play();
-            }
-        }
-    });
-}
 
 buildWeatherWeightPanel();
 updateWeatherDisplay();

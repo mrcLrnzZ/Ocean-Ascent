@@ -12,15 +12,15 @@ export class RadioManager {
         this.audio = new Audio();
         this.audio.loop = true;
         
-        // Element IDs
-        this.displayEl = document.getElementById('song-name');
-        this.playPauseBtn = document.getElementById('radio-play-pause');
-        this.container = document.getElementById('radio-container');
-        
-        this.init();
+        this.displayEl = null;
+        this.playPauseBtn = null;
+        this.container = null;
     }
 
     init() {
+        this.displayEl = document.getElementById('song-name');
+        this.playPauseBtn = document.getElementById('radio-play-pause');
+        this.container = document.getElementById('radio-container');
         if (this.playPauseBtn) {
             this.playPauseBtn.addEventListener('click', () => this.toggle())
         }
