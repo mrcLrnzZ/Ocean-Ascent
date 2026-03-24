@@ -212,7 +212,7 @@ export const MAPS = [
   {
     id: 2, name: "Mt. Ever the rest", requiredBoatLvl: 2, maxDepth: 5, hasDock: false, length: LEVEL_2_LENGTH,
     theme: 'default',
-    backgrounds: ['assets/sky_clouds.png', 'assets/sky_back_mountain.png', 'assets/sky_front_mountain.png', 'assets/parallax_seav2.png']
+    backgrounds: ['assets/sky_clouds.png', 'assets/Sky_back_mountain.png', 'assets/sky_front_mountain.png', 'assets/parallax_seav2.png']
   },
   {
     id: 3, name: "Midnight Trench", requiredBoatLvl: 3, maxDepth: 5, hasDock: false, length: LEVEL_3_LENGTH,
