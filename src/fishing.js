@@ -53,9 +53,28 @@ export class Rod {
         // Catch Minigame
         this.catchProgress = 0;
         this.struggling = false; // true when a fish is hooked but not yet fully caught
+
+        // Dynamic Stats (Calculated each update based on rod level)
+        this.sinkSpeed = 1.8;
+        this.pullSpeed = 4.0;
+        this.reelSpeedEmpty = 15;
+        this.reelSpeedFish = 5;
+        this.powerChargeRate = 0.3;
+    }
+
+    _updateStats() {
+        const lvl = this.player.rodLevel;
+        // Level 1: Base
+        // Each level adds performance
+        this.sinkSpeed = 1.8 + (lvl - 1) * 0.45;       // Sinks faster
+        this.pullSpeed = 4.0 + (lvl - 1) * 1.5;       // Pulls up faster
+        this.reelSpeedEmpty = 15 + (lvl - 1) * 5;    // Reels empty hook faster
+        this.reelSpeedFish = 5 + (lvl - 1) * 1.8;    // Reels caught fish faster
+        this.powerChargeRate = 0.3 + (lvl - 1) * 0.1; // Charges throw power faster
     }
 
     update(keys, isThrowAnim = false, currentMap = 0) {
+        this._updateStats();
         const ePressedNow = keys['f'] && this.eWasUp;
         this.eWasUp = !keys['f'];
         const currentlyOnBoat = this.player.state === 'onBoat' && this.player.boatRef;
@@ -157,7 +176,7 @@ export class Rod {
                     }
                     return;
                 }
-                this.power = Math.min(this.power + 0.3, this.maxPower);
+                this.power = Math.min(this.power + this.powerChargeRate, this.maxPower);
             } else {
                 this._warnedFull = false;
             }
@@ -236,14 +255,13 @@ export class Rod {
                 this.maxDepthOffset = getDepthEndLine(finalMaxDepth) - WATER_Y;
 
                 // Vertical bait control override
-                const depthSpeed = 4.0; // Responsive manual speed
 
                 if (keys['ArrowUp'] || keys['w']) {
-                    this.depthOffset -= depthSpeed;
+                    this.depthOffset -= this.pullSpeed;
                     this.isSinking = false; // override auto-sink if they pull up
                 }
                 if (keys['ArrowDown'] || keys['s']) {
-                    this.depthOffset += depthSpeed;
+                    this.depthOffset += this.pullSpeed;
                     this.isSinking = false; // override auto-sink if they pull down manually
                 }
 
@@ -282,13 +300,12 @@ export class Rod {
                 this.maxDepthOffset = getDepthEndLine(finalMaxDepth) - WATER_Y;
 
                 // Vertical bait control
-                const depthSpeed = 4.0;
 
                 if (keys['ArrowUp'] || keys['w']) {
-                    this.depthOffset -= depthSpeed;
+                    this.depthOffset -= this.pullSpeed;
                 }
                 if (keys['ArrowDown'] || keys['s']) {
-                    this.depthOffset += depthSpeed;
+                    this.depthOffset += this.pullSpeed;
                 }
 
                 // Hard bounds for depth
@@ -412,8 +429,8 @@ export class Rod {
             const dy = originY - this.y;
             const dist = Math.hypot(dx, dy);
 
-            // Dynamic reel speed: faster if empty hook (15), slower if fish caught (3)
-            const reelSpeed = this.caughtFish ? 5 : 15;
+            // Dynamic reel speed: faster if empty hook, slower if fish caught
+            const reelSpeed = this.caughtFish ? this.reelSpeedFish : this.reelSpeedEmpty;
 
             if (dist < reelSpeed) {
                 if (this.caughtFish) {
@@ -498,11 +515,12 @@ export class Rod {
 
         // Rod line colors based on level
         const lineColors = {
-            1: '#e0e0e0', // Level 1: Bamboo (White/Grey)
-            2: '#ff4d4d', // Level 2: Fiberglass (Red)
-            3: '#4dff4d', // Level 3: Graphite (Green)
-            4: '#ff00ffff', // Level 4: Carbon (Blue)
-            5: '#00ffffff'  // Level 5: Master (Gold/Legendary)
+            1: '#e0e0e0', // Level 1: Stick
+            2: '#ff4d4d', // Level 2: Hot (Red)
+            3: '#4dff4d', // Level 3: Bamboo (Green)
+            4: '#1a1a1a', // Level 4: Corrupted (Black)
+            5: '#00ccff', // Level 5: Lightning (Electric Blue)
+            6: '#330066'  // Level 6: Abyssal (Deep Purple)
         };
         ctx.strokeStyle = lineColors[this.player.rodLevel] || '#e0e0e0';
         ctx.lineWidth = 1;

@@ -8,8 +8,8 @@ import { toggleDebugCam, debugCam } from './debugcam.js';
 import { camera } from './camera.js';
 
 export const boatPrices = [0, 50, 500, 1000];
-export const rodPrices = [0, 0, 50, 150, 400, 800];
-export const rodNames = ["", "Stick Rod", "Hot Rod", "Bamboo Rod", "Corrupted Rod", "Lightning Rod"];
+export const rodPrices = [0, 0, 50, 150, 400, 800, 1500];
+export const rodNames = ["", "Stick Rod", "Hot Rod", "Bamboo Rod", "Corrupted Rod", "Lightning Rod", "The Abyssal Rod"];
 
 export class UIManager {
     constructor() {
@@ -102,7 +102,7 @@ export class UIManager {
             }
         } else {
             // Rod Upgrades
-            if (this.player.rodLevel < 5) {
+            if (this.player.rodLevel < 6) {
                 nextLevel = this.player.rodLevel + 1;
                 price = rodPrices[nextLevel];
                 let name = rodNames[nextLevel];

@@ -62,19 +62,19 @@ export class Player {
         this.maxSlots = 6;
 
         // --- Survival System ---
-        this.maxHealth = 10;    // 10 hearts
+        this.maxHealth = 10;    
         this.health = 10;
         this.maxHunger = 5;     // 5 hunger units
         this.hunger = 5;
 
         // Hunger drain timer (hunger decreases every 30 seconds during play)
         this._hungerTimer = 0;
-        this._hungerDrainInterval = 30; // seconds between each -0.5 hunger
+        this._hungerDrainInterval = 1; // seconds between each -0.5 hunger
         this._hungerDrainAmount = 0.5;
 
         // Starvation: -0.5 HP every 5 seconds when hunger = 0
         this._starvationTimer = 0;
-        this._starvationInterval = 5;  // seconds
+        this._starvationInterval = 1;  // seconds
         this._starvationDamage = 0.5;
         this._isStarving = false;
 
@@ -83,8 +83,8 @@ export class Player {
 
         // --- Regeneration Settings ---
         this._regenTimer = 0;
-        this._regenInterval = 2;    // How often to heal (every X seconds)
-        this._regenAmount = 0.5;     // Health gained per tick (+0.5 is half a heart)
+        this._regenInterval = 2;   
+        this._regenAmount = 0.5;     
     }
 
     /**
@@ -448,7 +448,7 @@ export class Player {
             this.idleImg.src = `${folder}idle_black.png`;
             this.throwImg.src = `${folder}fullthrow_black.png`;
             this.fishIdleImg.src = `${folder}fishidle_black.png`;
-        } else if (this.rodLevel === 5) {
+        } else if (this.rodLevel === 5 || this.rodLevel === 6) {
             const folder = 'assets/rod/';
             this.walkImg.src = `${folder}walk_blue.png`;
             this.idleImg.src = `${folder}idle_blue.png`;

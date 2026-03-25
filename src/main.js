@@ -17,14 +17,28 @@ export const audio = new AudioManager();
 export const radio = new RadioManager();
 
 
-let gameStarted = false;
+window.gameStarted = false;
 let audioStarted = false;
 const homepage = document.getElementById('homepage');
 const startBtn = document.getElementById('startBtn');
 
+window.gameHome = function() {
+    window.gameStarted = false; // Reset to avoid 'beforeunload' confirmation
+    window.location.reload();
+};
+
+// ─── Browser Refresh Alert ───────────────────────────────
+window.onbeforeunload = function(e) {
+    if (window.gameStarted) {
+        e = e || window.event;
+        if (e) e.returnValue = 'Are you sure you want to leave?';
+        return 'Are you sure you want to leaveeee?';
+    }
+};
+
 // Start homepage weather sounds on first user interaction
 function startHomepageAudio() {
-    if (!audioStarted && !gameStarted) {
+    if (!audioStarted && !window.gameStarted) {
         audioStarted = true;
         audio.play("ocean");
         audio.play('heavyrain');
@@ -69,9 +83,33 @@ if (radioContainer) {
     });
 }
 
+function playEndingScene() {
+    const endingVideo = document.getElementById('endingVideo');
+    const gameCanvas = document.getElementById('gameCanvas');
+    const overlay = document.getElementById('overlay');
+    const homepage = document.getElementById('homepage');
+
+    if (endingVideo) {
+        endingVideo.style.display = 'block';
+        gameCanvas.style.display = 'none';
+        homepage.style.display = 'none';
+        if (overlay) overlay.style.display = 'none';
+
+        // Stop game music/ambient
+        audio.stop('ocean');
+        if (radio) radio.pause();
+
+        endingVideo.play();
+
+        endingVideo.addEventListener('ended', () => {
+            window.gameHome(); // Refresh back to menu
+        }, { once: true });
+    }
+}
+
 startBtn.addEventListener('click', () => {
-    if (!gameStarted) {
-        gameStarted = true;
+    if (!window.gameStarted) {
+        window.gameStarted = true;
         uiManager.isOpen = false;
         HomeWeather.stop(); // Stops homepage rain/lightning
 
@@ -85,7 +123,7 @@ startBtn.addEventListener('click', () => {
         const gameCanvas = document.getElementById('gameCanvas');
         const overlay = document.getElementById('overlay');
 
-        const banana = false;
+        const banana = true;
 
 
 
@@ -165,6 +203,8 @@ const gameZoom = 1.0; // Zoom a bit (1.0 = normal, 1.2 = zoomed in)
 let eWasUp = true;
 let rWasUp = true;
 let hasReachedEndingDock = false;
+let endingTimer = 0;
+let playingEnding = false;
 let _lastTime = null; // for real delta-time
 
 uiManager.init(player, boat, fishManager);
@@ -235,6 +275,16 @@ function loop(timestamp) {
             if (rodMerchant.onBoat) {
                 rodMerchant.disembark(5500, true, currentMap);
             }
+        }
+    }
+
+    // --- ENDING VIDEO TRIGGER ---
+    // Start timing 4 seconds after the merchant starts his walk animation
+    if (hasReachedEndingDock && rodMerchant.disembarkState === 'walking' && !playingEnding) {
+        endingTimer++;
+        if (endingTimer >= 240) { // 4 seconds after walking starts
+            playingEnding = true;
+            playEndingScene();
         }
     }
 
@@ -386,28 +436,16 @@ function loop(timestamp) {
             drawTransition(ctx, transitionManager.progress, transitionManager.direction, transitionManager.sweepDir);
         }
 
-        if (!window._gameOver) {
+        if (!window._gameOver && !playingEnding) {
             requestAnimationFrame(loop);
         }
     } catch (e) {
         console.log(e);
     }
 }
-window.gameHome = function() {
-    window.location.reload();
-};
-
-
-
-// para sa refresh bruh
-const efas = true;
-
-if (efas) {
-    window.addEventListener('beforeunload', (e) => {
-        if (gameStarted) {
-        e.preventDefault();
-    }
-});
-
+// Assign event listener to the death screen home button
+const deathHomeBtn = document.getElementById('gameover-home-btn');
+if (deathHomeBtn) {
+    deathHomeBtn.addEventListener('click', () => window.gameHome());
 }
 
