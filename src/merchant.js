@@ -11,7 +11,7 @@ export class Merchant {
         this.scale = 1.5;
 
         this.img = new Image();
-        this.img.src = type === "boat" ? 'assets/merchant_idle.png' : 'assets/Fishermanred_idlev2.png';
+        this.img.src = type === "boat" ? 'assets/boatmerch_idle.png' : 'assets/merchant_idle.png';
 
         this.currentFrame = 0;
         this.frameTimer = 0;
