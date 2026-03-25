@@ -452,11 +452,21 @@ export class Rod {
                     }
 
                     this.fishManager.fishes = this.fishManager.fishes.filter(f => f !== this.caughtFish);
-                    
+
+                    const isFirstCatch = (this.player.caughtFishCounts[fishId] || 0) === 0;
                     this.player.caughtFishCounts[fishId] = (this.player.caughtFishCounts[fishId] || 0) + 1;
-                    
+
                     console.log(`Landed a ${this.caughtFish.type}! Added to bag.`);
                     audio.play('success');
+                    
+                    if (isFirstCatch) {
+                        if (window.showFirstCatchUI) {
+                            window.showFirstCatchUI(fishId, fishData);
+                        } else {
+                            console.error("showFirstCatchUI is not defined on window!");
+                        }
+                    }
+
                     setTimeout(() => {
                         this.reset();
                     }, 100);
@@ -657,7 +667,7 @@ export class Rod {
         const barH = 10;
         ctx.fillStyle = 'rgba(0,0,0,0.7)';
         // Placed much higher (-70) so it visibly floats above larger fish
-        ctx.fillRect(screenX - barW / 2, screenY - 70, barW, barH); 
+        ctx.fillRect(screenX - barW / 2, screenY - 70, barW, barH);
 
         // Progress fill
         const fillRatio = Math.max(0, Math.min(1.0, this.catchProgress / requiredTaps));

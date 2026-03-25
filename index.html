@@ -45,10 +45,10 @@
 
         <!-- Homepage Content -->
         <div class="homepage-content">
-          <h1 class="game-title" data-text="OCEAN ASCENT">
-      <span>O</span><span>C</span><span>E</span><span>A</span><span>N</span>
-      <span>A</span><span>S</span><span>C</span><span>E</span><span>N</span><span>T</span>
-</h1>
+            <h1 class="game-title" data-text="OCEAN ASCENT">
+                <span>O</span><span>C</span><span>E</span><span>A</span><span>N</span>
+                <span>A</span><span>S</span><span>C</span><span>E</span><span>N</span><span>T</span>
+            </h1>
             <div class="menu-buttons">
                 <button id="startBtn" class="menu-button">[ PLAY ]</button>
             </div>
@@ -221,51 +221,64 @@
 
         <!-- tutorial -->
         <div id="tutorial-popup" class="almanac-container" style="display:none;">
-      <div class="almanac-header">
-          <h2>How to Play</h2>
-          <button onclick="closeTutorial()" class="close-btn">✖</button>
-      </div>
-      <div id="tutorial-book">
-          <div class="page-wrapper">
-              <div id="tutorial-left" class="almanac-page tut-page"></div>
-          </div>
-          <div class="page-wrapper">
-              <div id="tutorial-right" class="almanac-page tut-page"></div>
-          </div>
-      </div>
-      <div class="almanac-footer">
-          <button id="tut-btn-prev" class="page-btn" onclick="changeTutorialPage(-1)">◀ Prev</button>
-          <span id="tutorial-page-num">1 / 4</span>
-          <button id="tut-btn-next" class="page-btn" onclick="changeTutorialPage(1)">Next ▶</button>
-      </div>
-  </div>
-
-
-    <div id="mechanics-popup" class="almanac-container" style="display:none;">
-
-        <div class="almanac-header">
-            <h2>Mechanics</h2>
-            <button onclick="closeMechanics()" class="close-btn">✖</button>
-        </div>
-
-        <div id="mechanics-book">
-            <div class="page-wrapper">
-                <div id="mechanics-left" class="almanac-page tut-page"></div>
+            <div class="almanac-header">
+                <h2>How to Play</h2>
+                <button onclick="closeTutorial()" class="close-btn">✖</button>
             </div>
-            <div class="page-wrapper">
-                <div id="mechanics-right" class="almanac-page tut-page"></div>
+            <div id="tutorial-book">
+                <div class="page-wrapper">
+                    <div id="tutorial-left" class="almanac-page tut-page"></div>
+                </div>
+                <div class="page-wrapper">
+                    <div id="tutorial-right" class="almanac-page tut-page"></div>
+                </div>
+            </div>
+            <div class="almanac-footer">
+                <button id="tut-btn-prev" class="page-btn" onclick="changeTutorialPage(-1)">◀ Prev</button>
+                <span id="tutorial-page-num">1 / 4</span>
+                <button id="tut-btn-next" class="page-btn" onclick="changeTutorialPage(1)">Next ▶</button>
             </div>
         </div>
 
-        <div class="almanac-footer">
-            <button id="mech-btn-prev" class="page-btn" onclick="changeMechanicsPage(-1)">◀ Prev</button>
-            <span id="mechanics-page-num">1 / 3</span>
-            <button id="mech-btn-next" class="page-btn" onclick="changeMechanicsPage(1)">Next ▶</button>
+
+        <div id="mechanics-popup" class="almanac-container" style="display:none;">
+
+            <div class="almanac-header">
+                <h2>Mechanics</h2>
+                <button onclick="closeMechanics()" class="close-btn">✖</button>
+            </div>
+
+            <div id="mechanics-book">
+                <div class="page-wrapper">
+                    <div id="mechanics-left" class="almanac-page tut-page"></div>
+                </div>
+                <div class="page-wrapper">
+                    <div id="mechanics-right" class="almanac-page tut-page"></div>
+                </div>
+            </div>
+
+            <div class="almanac-footer">
+                <button id="mech-btn-prev" class="page-btn" onclick="changeMechanicsPage(-1)">◀ Prev</button>
+                <span id="mechanics-page-num">1 / 3</span>
+                <button id="mech-btn-next" class="page-btn" onclick="changeMechanicsPage(1)">Next ▶</button>
+            </div>
+
         </div>
 
-    </div>
 
 
+        <!-- First Catch Popup -->
+        <div id="first-catch-popup" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, rgba(202, 108, 0, 0.95), rgba(216, 122, 0, 0.95)); border: 0.3vw solid #da8d00; border-radius: 2vw; padding: 3vh 4vw; color: white; width: 45vw; text-align: center; font-family: 'upheaval', cursive; box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); z-index: 3000; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto;">
+            <div id="fc-screenshot-area" style="background: rgba(0,0,0,0.3); border-radius: 1vw; padding: 2vh 2vw; margin-bottom: 2vh; border: 0.1vw solid rgba(255,255,255,0.2); width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <h2 style="color: #FFD700; font-size: 2.5vw; margin-top: 0; margin-bottom: 2vh; text-shadow: 2px 2px #000; font-family: 'upheaval', cursive;">Congrats! You caught</h2>
+                <img id="fc-image" src="" alt="Fish Image" style="max-width: 20vw; max-height: 20vh; object-fit: contain; image-rendering: pixelated; margin-bottom: 1.5vh; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5));">
+                <div id="fc-name" style="font-size: 2.5vw; color: #FFF; text-shadow: 2px 2px #000; font-family: 'upheaval', cursive;">[Fish Name]</div>
+            </div>
+            <div style="display: flex; gap: 2vw; justify-content: center; width: 100%;">
+                <button id="fc-capture-btn" onclick="captureFirstCatch(event)" style="background: linear-gradient(135deg, #FFD700, #DAA520); color: black; font-family: 'upheaval', cursive; border: 0.15vw solid #FFF; padding: 1vh 2vw; font-size: 1.5vw; border-radius: 1vw; cursor: pointer; text-shadow: 1px 1px rgb(255, 238, 0);">Capture</button>
+                <button onclick="closeFirstCatchUI()" style="background: linear-gradient(135deg, rgba(200, 50, 50, 0.9), rgba(150, 30, 30, 0.9)); color: white; font-family: 'upheaval', cursive; border: 0.15vw solid #ad0000; padding: 1vh 2vw; font-size: 1.5vw; border-radius: 1vw; cursor: pointer; text-shadow: 1px 1px #000;">Awesome!</button>
+            </div>
+        </div>
 
         <!-- You Starved! Game Over Screen -->
         <div id="gameover-screen">

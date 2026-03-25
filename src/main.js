@@ -22,13 +22,13 @@ let audioStarted = false;
 const homepage = document.getElementById('homepage');
 const startBtn = document.getElementById('startBtn');
 
-window.gameHome = function() {
+window.gameHome = function () {
     window.gameStarted = false; // Reset to avoid 'beforeunload' confirmation
     window.location.reload();
 };
 
 // ─── Browser Refresh Alert ───────────────────────────────
-window.onbeforeunload = function(e) {
+window.onbeforeunload = function (e) {
     if (window.gameStarted) {
         e = e || window.event;
         if (e) e.returnValue = 'Are you sure you want to leave?';
@@ -55,7 +55,7 @@ HomeWeather.init();
 
 // ─── Radio ───────────────────────────────────────────────
 const radioContainer = document.getElementById('radio-container');
-const radioBtn       = document.getElementById('radio-toggle-btn');
+const radioBtn = document.getElementById('radio-toggle-btn');
 
 function showRadioBtn() {
     if (radioBtn) radioBtn.style.display = 'block';
@@ -123,11 +123,11 @@ startBtn.addEventListener('click', () => {
         const gameCanvas = document.getElementById('gameCanvas');
         const overlay = document.getElementById('overlay');
 
-        const banana = true;
+        const banana = false;
 
 
 
-        
+
         if (banana) {
 
             introVideo.style.display = 'block';

@@ -9,7 +9,7 @@ import { camera } from './camera.js';
 
 export const boatPrices = [0, 50, 500, 1000];
 export const rodPrices = [0, 0, 50, 150, 400, 800, 1500];
-export const rodNames = ["", "Stick Rod", "Hot Rod", "Bamboo Rod", "Corrupted Rod", "Lightning Rod", "The Abyssal Rod"];
+export const rodNames = ["", "Stick Rod", "Hot Rod", "Bamboo Rod", "Corrupted Rod", "Lightning Rod"];
 
 export class UIManager {
     constructor() {
@@ -32,6 +32,11 @@ export class UIManager {
         window.changeTutorialPage = this.changeTutorialPage.bind(this);
         window.closeMechanics = this.closeMechanics.bind(this);
         window.changeMechanicsPage = this.changeMechanicsPage.bind(this);
+        
+        window.showFirstCatchUI = this.showFirstCatchUI.bind(this);
+        window.closeFirstCatchUI = this.closeFirstCatchUI.bind(this);
+        window.captureFirstCatch = this.captureFirstCatch.bind(this);
+        
         this.tutorial = new TutorialManager();
         this.almanac = new AlmanacManager(this);
         this.mechanics = new MechanicsManager();
@@ -102,7 +107,7 @@ export class UIManager {
             }
         } else {
             // Rod Upgrades
-            if (this.player.rodLevel < 6) {
+            if (this.player.rodLevel < 5) {
                 nextLevel = this.player.rodLevel + 1;
                 price = rodPrices[nextLevel];
                 let name = rodNames[nextLevel];
@@ -423,6 +428,87 @@ export class UIManager {
         });
     }
 
+    showFirstCatchUI(fishId, fishData) {
+        if (this.isOpen && this.cheatboxOpen) this.closeCheatBox();
+        this.isOpen = true;
+        
+        const popup = document.getElementById('first-catch-popup');
+        const img = document.getElementById('fc-image');
+        const nameText = document.getElementById('fc-name');
+        
+        img.src = fishData.almanacSrc || fishData.src;
+        nameText.textContent = fishData.name || fishId;
+        
+        popup.style.display = 'flex';
+    }
+
+    closeFirstCatchUI() {
+        const popup = document.getElementById('first-catch-popup');
+        popup.style.display = 'none';
+        setTimeout(() => this.isOpen = false, 100);
+        audio.play('click');
+    }
+
+    captureFirstCatch(event) {
+        audio.play('click');
+        
+        if (event && event.target) {
+            event.target.blur(); // Remove focus to prevent spacebar triggering again
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw background
+        ctx.fillStyle = '#223344'; // dark aesthetic blue
+        ctx.fillRect(0, 0, 800, 600);
+        
+        // Inner screenshot border
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(20, 20, 760, 560);
+        
+        ctx.textAlign = 'center';
+        ctx.font = '40px "upheaval", cursive, monospace';
+        
+        // Draw congrats text
+        ctx.fillStyle = '#fbff00ff'; // Gold
+        ctx.shadowColor = 'black';
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 3;
+        ctx.fillText('Congrats! You caught', 400, 100);
+        
+        // Draw name
+        const nameText = document.getElementById('fc-name').textContent;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(nameText, 400, 520);
+        ctx.shadowColor = 'transparent';
+        
+        // Draw Image
+        const img = document.getElementById('fc-image');
+        try {
+            const size = 300;
+            ctx.drawImage(img, 400 - size/2, 150, size, size);
+        } catch(e) { console.error('Error drawing image on canvas', e); }
+        
+        const link = document.createElement('a');
+        link.download = `First_Catch_${nameText.replace(/ /g, '_')}.png`;
+        link.href = canvas.toDataURL();
+        
+        // Temporarily disable the "Are you sure you want to leave" alert
+        const wasStarted = window.gameStarted;
+        window.gameStarted = false;
+        
+        link.click();
+        
+        // Restore after a short delay to ensure download initiates first
+        setTimeout(() => {
+            window.gameStarted = wasStarted;
+        }, 100);
+    }
+
     openCheatBox() {
         this.isOpen = true;
         this.cheatboxOpen = true;
@@ -476,7 +562,7 @@ export class UIManager {
                 this.boat.isFlipped = false;
                 this.boat.setLevel(this.boat.level); // Reset speed/size properties
             }
-            
+
             this.updateHUD(); // Refresh HUD with new money count
             this.showNotification("SYSTEM RESET COMPLETE");
             audio.play('click');
