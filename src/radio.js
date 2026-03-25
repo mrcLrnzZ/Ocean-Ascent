@@ -2,16 +2,22 @@
 export class RadioManager {
     constructor() {
         this.playlist = [
-            { name: "Coastal Breeze", src: "assets/audio/ocean-ambience.mp3" },
-            { name: "Sailing High", src: "assets/audio/onBoat.mp3" },
-            { name: "Deep Blue", src: "assets/audio/underwater.mp3" },
-            { name: "Bawat Pyesa ToneeJay", src: "assets/music/bawatpyesa.mp3" },
+            { name: "Bawat Pyesa - ToneeJay", src: "assets/music/bawatpyesa.mp3" },
+            { name: "Bulong", src: "assets/music/Bulong.mp3" },
+            { name: "Sana - I Belong to the Zoo", src: "assets/music/I Belong to the Zoo - Sana.mp3" },
+            { name: "Multo - Cup of Joe", src: "assets/music/Multo - Cup of Joe.mp3" },
+            { name: "Sino", src: "assets/music/Sino.mp3" },
+            { name: "Kalapastangan - fitterkarma", src: "assets/music/fitterkarma - Kalapastangan.mp3" },
+            { name: "Pag-Ibig ay Kanibalismo II - fitterkarma", src: "assets/music/fitterkarma - Pag-Ibig ay Kanibalismo II.mp3" },
         ];
         this.currentIndex = 0;
         this.isPlaying = false;
         this.audio = new Audio();
         this.audio.loop = true;
-        
+
+        this.switchAudio = new Audio('assets/music/switchingchanneleffect.wav');
+        this.switchAudio.volume = 1.0; // Higher volume this time
+
         this.displayEl = null;
         this.playPauseBtn = null;
         this.container = null;
@@ -26,7 +32,7 @@ export class RadioManager {
         }
         const nextBtn = document.getElementById('radio-next');
         const prevBtn = document.getElementById('radio-prev');
-        
+
         if (nextBtn) nextBtn.addEventListener('click', () => this.next());
         if (prevBtn) prevBtn.addEventListener('click', () => this.prev());
 
@@ -46,7 +52,7 @@ export class RadioManager {
         if (!this.audio.src || this.audio.src.indexOf(this.playlist[this.currentIndex].src) === -1) {
             this.audio.src = this.playlist[this.currentIndex].src;
         }
-        
+
         this.audio.play();
         this.isPlaying = true;
         if (this.playPauseBtn) this.playPauseBtn.textContent = '⏸';
@@ -70,12 +76,41 @@ export class RadioManager {
     }
 
     updateSong() {
+        // Track each switch with a unique ID to prevent race conditions
+        this._currentSwitchId = (this._currentSwitchId || 0) + 1;
+        const mySwitchId = this._currentSwitchId;
         const wasPlaying = this.isPlaying;
-        this.audio.src = this.playlist[this.currentIndex].src;
-        if (wasPlaying) {
-            this.audio.play();
+        
+        // Stop current song and previous switching sound immediately
+        this.audio.pause();
+        this.switchAudio.pause();
+        this.switchAudio.currentTime = 0;
+
+        // Reset display while switching for feedback
+        if (this.displayEl) {
+            this.displayEl.textContent = "Switching...        ";
         }
-        this.updateDisplay();
+
+        // 1. Play the "staticky" switching sound
+        this.switchAudio.play();
+
+        // Function to actually switch the source and play
+        const performSwitch = () => {
+            // If a newer switch request came in, abort this one!
+            if (mySwitchId !== this._currentSwitchId) return;
+
+            this.audio.src = this.playlist[this.currentIndex].src;
+            if (wasPlaying) {
+                this.audio.play();
+            }
+            this.updateDisplay();
+        };
+
+        // 2. Set listeners for the transition
+        this.switchAudio.onended = performSwitch;
+
+        // 3. Fallback timer in case onended doesn't fire (adjusted for 8s effect)
+        setTimeout(performSwitch, 8500); 
     }
 
     updateDisplay() {
