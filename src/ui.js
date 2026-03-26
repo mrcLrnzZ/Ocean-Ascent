@@ -563,9 +563,18 @@ export class UIManager {
                 this.boat.setLevel(this.boat.level); // Reset speed/size properties
             }
 
+            // Reset survival intervals
+            this.player._hungerDrainInterval = 30;
+            this.player._starvationInterval = 5;
+
             this.updateHUD(); // Refresh HUD with new money count
             this.showNotification("SYSTEM RESET COMPLETE");
             audio.play('click');
+        } else if (code === 'die') {
+            this.player._hungerDrainInterval = 1;
+            this.player._starvationInterval = 1;
+            this.showNotification("CURSED: RAPID DRAIN ENABLED!");
+            audio.play('failed');
         } else if (code === 'hesoyam') {
             // Max health and hunger
             this.player.health = this.player.maxHealth;
@@ -616,6 +625,18 @@ export class UIManager {
                 this.showNotification("GIANT FISH HAVE ARRIVED!");
                 audio.play('buy');
             }
+        } else if (code === 'rain') {
+            if (window.setWeather) window.setWeather('rainy');
+            this.showNotification("WEATHER SET TO: RAINY");
+        } else if (code === 'storm') {
+            if (window.setWeather) window.setWeather('stormy');
+            this.showNotification("WEATHER SET TO: STORMY");
+        } else if (code === 'clear') {
+            if (window.setWeather) window.setWeather('clear');
+            this.showNotification("WEATHER SET TO: CLEAR");
+        } else if (code === 'fog') {
+            if (window.setWeather) window.setWeather('foggy');
+            this.showNotification("WEATHER SET TO: FOGGY");
         } else {
             this.showNotification("Invalid command");
         }
@@ -624,3 +645,4 @@ export class UIManager {
 
 // Export singleton instance
 export const uiManager = new UIManager();
+window.uiManager = uiManager;

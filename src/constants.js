@@ -204,7 +204,7 @@ export const MAPS = [
 
   },
   {
-    id: 1, name: "Sunset Shallows Mountains", requiredBoatLvl: 1, maxDepth: 5, hasDock: false, length: LEVEL_1_LENGTH,
+    id: 1, name: "Sunset Shallows Mountains", requiredBoatLvl: 0, maxDepth: 5, hasDock: false, length: LEVEL_1_LENGTH,
     theme: 'sunset',
     backgrounds: ['assets/sky_cloudssunset.png', 'assets/forest_mountainsunset.png', 'assets/sky_front_mountainsunset.png', 'assets/forest_back.png', 'assets/forest_long.png', 'assets/parallax_seav2.png']
 

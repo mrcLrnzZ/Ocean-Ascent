@@ -17,7 +17,8 @@ export class AudioManager {
             buy: new Audio("./assets/audio/buy.mp3"),
             nextPage: new Audio("./assets/audio/nextpage.mp3"),
             heavyrain: new Audio("./assets/audio/heavyrain.wav"),
-            thunder: new Audio("./assets/audio/thunder.wav")
+            thunder: new Audio("./assets/audio/thunder.wav"),
+            defeat: new Audio("./assets/audio/defeatsound.mp3")
         };
         this.sounds.reel.loop = true;
         this.sounds.onBoat.loop = true;
@@ -46,6 +47,7 @@ export class AudioManager {
         
         this.sounds.heavyrain.volume = 0.6;
         this.sounds.thunder.volume = 0.5;
+        this.sounds.defeat.volume = 0.6;
         
         // Track current weather sounds
         this.currentWeatherSound = null;

@@ -123,7 +123,7 @@ startBtn.addEventListener('click', () => {
         const gameCanvas = document.getElementById('gameCanvas');
         const overlay = document.getElementById('overlay');
 
-        const banana = false;
+        const banana = true;
 
 
 

@@ -2,6 +2,7 @@
 import { GROUND_Y, PIER_END_X } from './constants.js';
 import { waveSurf } from './environment.js';
 import { Rod } from './fishing.js';
+import { audio } from './main.js';
 
 
 export class Player {
@@ -421,6 +422,8 @@ export class Player {
         if (screen) {
             screen.classList.add('visible');
         }
+
+        audio.play('defeat');
 
         // Signal the game loop to pause (checked in main.js)
         window._gameOver = true;

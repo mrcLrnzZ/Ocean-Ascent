@@ -171,7 +171,9 @@ export class Rod {
                 const isFull = this.player.inventory.every(s => s !== null);
                 if (isFull) {
                     if (!this._warnedFull) {
-                        import('./ui.js').then(m => m.uiManager.showNotification("🎒 Inventory full! Sell or eat fish first."));
+                        if (window.uiManager) {
+                            window.uiManager.showNotification("Inventory full! Sell or eat fish first.");
+                        }
                         this._warnedFull = true;
                     }
                     return;
@@ -442,9 +444,9 @@ export class Rod {
 
                     if (!added) {
                         // Bag is full — release the fish and notify
-                        import('./ui.js').then(module => {
-                            module.uiManager.showNotification(` Bag full! (6/6) Eat or sell fish to make room.`, 4000);
-                        });
+                        if (window.uiManager) {
+                            window.uiManager.showNotification(` Bag full! (6/6) Eat or sell fish to make room.`, 4000);
+                        }
                         this.caughtFish.caught = false; // release back into the world
                         this.caughtFish = null;
                         this.reset();
