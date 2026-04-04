@@ -27,6 +27,58 @@ window.gameHome = function () {
     window.location.reload();
 };
 
+window.openGameMenu = function() {
+    uiManager.isOpen = true;
+    document.getElementById('game-menu-popup').style.display = 'flex'; // our new menu uses flex mode
+    
+    // update sliders to current levels
+    document.getElementById('sound-volume-slider').value = audio.globalVolume !== undefined ? audio.globalVolume : 1;
+    document.getElementById('music-volume-slider').value = radio.globalVolume !== undefined ? radio.globalVolume : 1;
+};
+
+window.closeGameMenu = function() {
+    uiManager.isOpen = false;
+    document.getElementById('game-menu-popup').style.display = 'none';
+};
+
+window.updateSoundVolume = function(val) {
+    audio.setGlobalVolume(parseFloat(val));
+};
+
+window.updateMusicVolume = function(val) {
+    radio.setGlobalVolume(parseFloat(val));
+};
+const soundSlider = document.getElementById('sound-volume-slider');
+const musicSlider = document.getElementById('music-volume-slider');
+
+if (soundSlider) {
+    soundSlider.addEventListener('input', (e) => {
+        window.updateSoundVolume(e.target.value);
+    });
+}
+
+if (musicSlider) {
+    musicSlider.addEventListener('input', (e) => {
+        window.updateMusicVolume(e.target.value);
+    });
+}
+
+const skipVideoBtn = document.getElementById('skipVideoBtn');
+if (skipVideoBtn) {
+    skipVideoBtn.addEventListener('click', () => {
+        const introVideo = document.getElementById('introVideo');
+        const endingVideo = document.getElementById('endingVideo');
+        
+        if (introVideo && introVideo.style.display !== 'none' && !introVideo.paused) {
+            introVideo.pause();
+            introVideo.dispatchEvent(new Event('ended'));
+        } else if (endingVideo && endingVideo.style.display !== 'none' && !endingVideo.paused) {
+            endingVideo.pause();
+            endingVideo.dispatchEvent(new Event('ended'));
+        }
+    });
+}
+
 // ─── Browser Refresh Alert ───────────────────────────────
 window.onbeforeunload = function (e) {
     if (window.gameStarted) {
@@ -91,6 +143,7 @@ function playEndingScene() {
 
     if (endingVideo) {
         endingVideo.style.display = 'block';
+        if (skipVideoBtn) skipVideoBtn.style.display = 'block';
         gameCanvas.style.display = 'none';
         homepage.style.display = 'none';
         if (overlay) overlay.style.display = 'none';
@@ -102,6 +155,7 @@ function playEndingScene() {
         endingVideo.play();
 
         endingVideo.addEventListener('ended', () => {
+            if (skipVideoBtn) skipVideoBtn.style.display = 'none';
             window.gameHome(); // Refresh back to menu
         }, { once: true });
     }
@@ -131,6 +185,7 @@ startBtn.addEventListener('click', () => {
         if (banana) {
 
             introVideo.style.display = 'block';
+            if (skipVideoBtn) skipVideoBtn.style.display = 'block';
             gameCanvas.style.display = 'none';
             homepage.style.display = 'none';
             if (overlay) overlay.style.display = 'none';
@@ -140,6 +195,7 @@ startBtn.addEventListener('click', () => {
             // When video ends, start the game
             introVideo.addEventListener('ended', () => {
                 introVideo.style.display = 'none';
+                if (skipVideoBtn) skipVideoBtn.style.display = 'none';
                 gameCanvas.style.display = 'block';
                 if (overlay) overlay.style.display = 'block';
 

@@ -27,44 +27,56 @@ export class AudioManager {
         this.sounds.heavyrain.loop = true;
         this.sounds.thunder.loop = true;
 
-        // optional volume control
-        this.sounds.cast.volume = 0.55; 
-        this.sounds.splash.volume = 0.65;
-        this.sounds.reel.volume = 0.40;
+        this.baseVolumes = {
+            cast: 0.55,
+            splash: 0.65,
+            reel: 0.40,
+            success: 0.7,
+            failed: 0.6,
+            hooked: 1,
+            onBoat: 0.4,
+            ocean: 0.5,
+            underwater: 0.12,
+            click: 0.35,
+            openTrade: 0.45,
+            buy: 0.45,
+            nextPage: 0.55,
+            heavyrain: 0.6,
+            thunder: 0.5,
+            defeat: 0.6
+        };
+        this.globalVolume = 1.0;
+        this.updateVolumes();
 
-        this.sounds.success.volume = 0.7;
-        this.sounds.failed.volume = 0.6;
-        this.sounds.hooked.volume = 1;
-
-        this.sounds.onBoat.volume = 0.4;
-        this.sounds.ocean.volume = 0.5;
-        this.sounds.underwater.volume = 0.12;
-
-        this.sounds.click.volume = 0.35;
-        this.sounds.openTrade.volume = 0.45;
-        this.sounds.buy.volume = 0.45;
-        this.sounds.nextPage.volume = 0.55;
-        
-        this.sounds.heavyrain.volume = 0.6;
-        this.sounds.thunder.volume = 0.5;
-        this.sounds.defeat.volume = 0.6;
-        
         // Track current weather sounds
         this.currentWeatherSound = null;
+    }
+
+    setGlobalVolume(vol) {
+        this.globalVolume = vol;
+        this.updateVolumes();
+    }
+
+    updateVolumes() {
+        for (const key in this.sounds) {
+            if (this.baseVolumes[key] !== undefined && this.sounds[key]) {
+                this.sounds[key].volume = this.baseVolumes[key] * this.globalVolume;
+            }
+        }
     }
 
     play(name) {
         const sound = this.sounds[name];
 
         if (!sound) return;
-        
+
         if (sound.loop) {
             if (!sound.paused) return;
         }
-        
+
         sound.currentTime = 0;
         const playPromise = sound.play();
-        
+
         // Handle potential autoplay restrictions
         if (playPromise !== undefined) {
             playPromise.catch(error => {
@@ -72,7 +84,7 @@ export class AudioManager {
             });
         }
     }
-    
+
     stop(name) {
         const sound = this.sounds[name];
         if (!sound) return;

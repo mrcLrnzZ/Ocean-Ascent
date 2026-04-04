@@ -21,6 +21,13 @@ export class RadioManager {
         this.displayEl = null;
         this.playPauseBtn = null;
         this.container = null;
+        this.globalVolume = 1.0;
+    }
+
+    setGlobalVolume(vol) {
+        this.globalVolume = vol;
+        this.audio.volume = vol;
+        this.switchAudio.volume = vol;
     }
 
     init() {
@@ -80,7 +87,7 @@ export class RadioManager {
         this._currentSwitchId = (this._currentSwitchId || 0) + 1;
         const mySwitchId = this._currentSwitchId;
         const wasPlaying = this.isPlaying;
-        
+
         // Stop current song and previous switching sound immediately
         this.audio.pause();
         this.switchAudio.pause();
@@ -110,7 +117,7 @@ export class RadioManager {
         this.switchAudio.onended = performSwitch;
 
         // 3. Fallback timer in case onended doesn't fire (adjusted for 8s effect)
-        setTimeout(performSwitch, 8500); 
+        setTimeout(performSwitch, 8500);
     }
 
     updateDisplay() {
