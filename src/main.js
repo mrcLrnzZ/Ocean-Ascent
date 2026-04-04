@@ -34,6 +34,80 @@ window.openGameMenu = function() {
     // update sliders to current levels
     document.getElementById('sound-volume-slider').value = audio.globalVolume !== undefined ? audio.globalVolume : 1;
     document.getElementById('music-volume-slider').value = radio.globalVolume !== undefined ? radio.globalVolume : 1;
+    updateSaveSlotButtons();
+};
+
+function updateSaveSlotButtons() {
+    for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`load-btn-${i}`);
+        if (btn) {
+            const hasSave = localStorage.getItem(`ocean_ascent_save_slot_${i}`);
+            if (hasSave) {
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+                btn.textContent = `Load ${i}`;
+            } else {
+                btn.style.opacity = "0.5";
+                btn.style.pointerEvents = "none";
+                btn.textContent = `Empty`;
+            }
+        }
+    }
+}
+
+window.saveGame = function(slot) {
+    if (!player || !boat) return;
+    const saveData = {
+        money: player.money,
+        rodLevel: player.rodLevel,
+        boatLevel: player.boatLevel,
+        inventory: player.inventory,
+        caughtFishCounts: player.caughtFishCounts,
+        health: player.health,
+        hunger: player.hunger,
+        x: player.x,
+        y: player.y,
+        currentMap: currentMap,
+        boatX: boat.x,
+        boatY: boat.y,
+        timestamp: Date.now()
+    };
+    localStorage.setItem(`ocean_ascent_save_slot_${slot}`, JSON.stringify(saveData));
+    uiManager.showNotification(`Game saved to Slot ${slot}!`);
+    updateSaveSlotButtons();
+};
+
+window.loadGame = function(slot) {
+    const raw = localStorage.getItem(`ocean_ascent_save_slot_${slot}`);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    
+    if (!player || !boat) return;
+
+    player.money = data.money;
+    player.rodLevel = data.rodLevel;
+    player.boatLevel = data.boatLevel;
+    player.inventory = data.inventory;
+    player.caughtFishCounts = data.caughtFishCounts || {};
+    player.health = data.health;
+    player.hunger = data.hunger;
+    player.x = data.x;
+    player.y = data.y;
+    currentMap = data.currentMap !== undefined ? data.currentMap : 0;
+    
+    if (boat) {
+        boat.x = data.boatX;
+        boat.y = data.boatY;
+        boat.setLevel(player.boatLevel);
+        boat.isPurchased = player.boatLevel > 0;
+    }
+    
+    // Re-initialize visuals
+    player.updateRodSprites();
+    uiManager.updateHUD();
+    
+    uiManager.showNotification(`Slot ${slot} Loaded!`);
+    window.closeGameMenu();
 };
 
 window.closeGameMenu = function() {
