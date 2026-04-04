@@ -361,3 +361,36 @@
     line-height: 1.4;
     text-shadow: 2px 2px 0px #000;
 }
+/* --- GAME MENU SLIDERS --- */
+#game-menu-popup input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #4a2e1b;
+    height: 1vh;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid #1e0a02;
+}
+
+#game-menu-popup input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.5vw;
+    height: 1.5vw;
+    background: linear-gradient(to bottom, #d9922a 0%, #b86e18 100%);
+    border: 0.2vw solid #1e0a02;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+#game-menu-popup input[type='range']::-moz-range-thumb {
+    width: 1.5vw;
+    height: 1.5vw;
+    background: linear-gradient(to bottom, #d9922a 0%, #b86e18 100%);
+    border: 0.2vw solid #1e0a02;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+

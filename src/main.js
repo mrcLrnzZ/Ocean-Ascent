@@ -48,20 +48,6 @@ window.updateSoundVolume = function(val) {
 window.updateMusicVolume = function(val) {
     radio.setGlobalVolume(parseFloat(val));
 };
-const soundSlider = document.getElementById('sound-volume-slider');
-const musicSlider = document.getElementById('music-volume-slider');
-
-if (soundSlider) {
-    soundSlider.addEventListener('input', (e) => {
-        window.updateSoundVolume(e.target.value);
-    });
-}
-
-if (musicSlider) {
-    musicSlider.addEventListener('input', (e) => {
-        window.updateMusicVolume(e.target.value);
-    });
-}
 
 const skipVideoBtn = document.getElementById('skipVideoBtn');
 if (skipVideoBtn) {
